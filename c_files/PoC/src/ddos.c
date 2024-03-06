@@ -7,7 +7,10 @@
 #include <stdlib.h>
 #include <json-c/json.h>
 
-void analyze_ddos(conv_s conversations[MAX_L4_CONVERSATIONS], char * filename, uint32_t conv_count)
+#define MIN_CONVS 1
+int attacket_id_g = 0;
+
+void analyze_ddos(conv_s conversations[MAX_L4_CONVERSATIONS], char * filename, uint32_t conv_count, ret_val * MAIN_RET_VAL)
 {
     int count_flood = 0, index, write_flag = 0;
     double a = 2.0, b = 10.0, ema = 0.0;
@@ -79,7 +82,7 @@ void analyze_ddos(conv_s conversations[MAX_L4_CONVERSATIONS], char * filename, u
             if (DEBUG) info("-------------------------------------");
         }
     }
-    if ((count_flood >= conv_count/2) && (conv_count != 1) )
+    if ((count_flood >= conv_count/2) && ( conv_count > MIN_CONVS ) )
     {
         if (!filename) error("given file name is null");
         else
@@ -110,6 +113,7 @@ void analyze_ddos(conv_s conversations[MAX_L4_CONVERSATIONS], char * filename, u
                     fp = fopen(filename, "w"); /* dump the JSON to a file */
                     if (fp != NULL && write_flag)
                     {
+                        (*MAIN_RET_VAL) |= with_ddos;
                         fprintf(fp, "%s\n", json_object_to_json_string_ext(root, JSON_C_TO_STRING_PRETTY));
                         fclose(fp);
                     }
@@ -227,7 +231,6 @@ int add_to_ddos_ll(ddos_addr_ll **root, struct in_addr atkr_addr, uint32_t src_p
 {
     ddos_addr_ll *temp = *root, *node, *prev = NULL;
     int flag = 0;
-    static int id = 0;
 
     while (temp != NULL)
     {
@@ -249,7 +252,7 @@ int add_to_ddos_ll(ddos_addr_ll **root, struct in_addr atkr_addr, uint32_t src_p
         }
         node->next = NULL;
         node->addr.s_addr = atkr_addr.s_addr;
-        node->id = id;
+        node->id = attacket_id_g++;
         node->src_port = src_port;
         if (prev != NULL)
         {

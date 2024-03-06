@@ -3,6 +3,7 @@
 #include "../includes/ddos.h"
 #include "../includes/mitm.h"
 #include "../includes/general_info.h"
+#include <json-c/json_object.h>
 /*-------------------------GLOBALS---------------------- */
                     /* GLOBAL TABELS */
 arp_conv arp_conversations_table_g[MAX_L2_CONVERSATIONS];
@@ -12,6 +13,11 @@ gen_inf_s general_info_g;
 uint16_t conv_id_tcp_g = 0, conv_id_udp_g = 0, arp_id = 0;
 uint32_t conv_hash_g, host_hash_g, port_hash_g, num_hosts_g = 0, num_ports_g, num_packets_g = 0;
 const double ex_ma_alpha = 0.2; /* exp weight */
+double record_time_duration_g;
+time_t start_time_s_g = 0, end_time_s_g = 0;
+suseconds_t start_usec_g = 0, end_usec_g = 0;
+
+ret_val MAIN_RETURN_VALUE = FAILED;
 
 int main(int argc, char *argv[])
 {
@@ -33,7 +39,7 @@ int main(int argc, char *argv[])
     if (invalid_files(pcap_record_file, filename))
     {
         error("input files are invalid");
-        exit(EXIT_FAILURE);
+        exit(MAIN_RETURN_VALUE);
     }
     
     /* get file size -  prepare and init the tables/datastructures */
@@ -51,12 +57,15 @@ int main(int argc, char *argv[])
     if (handle == NULL)
     {
         fprintf(stderr, "Error opening pcap file: %s\n", errbuf);
-        return EXIT_FAILURE;
+        return MAIN_RETURN_VALUE;
     }
+    /* because it didnt exit untill here... */
+    MAIN_RETURN_VALUE = with_l2l4;
     pcap_loop(handle, 0, packet_handler, NULL);
     pcap_close(handle);
     general_info_g.num_packets = num_packets_g;
-    
+
+    record_time_duration_g = (end_time_s_g + (double)end_usec_g / 1000000) - (start_time_s_g + (double)start_usec_g / 1000000);
     /* sorts the hash table of conversations by id. e.g. (key = table[i].conv_id) (ascending) from 0 -> N */
     qsort(conversations_table_g, MAX_L4_CONVERSATIONS, sizeof(conv_s), compare_L4_conversations);
     qsort(arp_conversations_table_g, MAX_L2_CONVERSATIONS, sizeof(arp_conv), compare_L2_conversations);
@@ -75,25 +84,23 @@ int main(int argc, char *argv[])
     free(filename);
     filename = get_file_name(main_output_file, GLOBAL_L2_EXT);
     save_L2_convs_to_json(arp_conversations_table_g, filename);
-    print_general_info(general_info_g);
+    // print_general_info(general_info_g);
 
     free(filename);
     filename = get_file_name(main_output_file, GLOBAL_INFO_EXT);
-    save_gis_to_json(general_info_g, filename);
+    save_gis_to_json(general_info_g, filename, num_ports_g, num_hosts_g, record_time_duration_g);
 
     free(filename);
     filename = get_file_name(main_output_file, GLOBAL_DDOS_EXT);
-    analyze_ddos(conversations_table_g, filename, conv_id_tcp_g + conv_id_udp_g);
-
+    analyze_ddos(conversations_table_g, filename, conv_id_tcp_g + conv_id_udp_g, &MAIN_RETURN_VALUE);
 
     free(filename);
     filename = get_file_name(main_output_file, GLOBAL_MITM_EXT);
-    analyze_mitm(arp_conversations_table_g, filename, arp_id);
+    analyze_mitm(arp_conversations_table_g, filename, arp_id, &MAIN_RETURN_VALUE);
     free_all_lists();
     
     if (filename) free(filename);
-    okay("completed...");
-    return EXIT_SUCCESS;
+    return MAIN_RETURN_VALUE;
 }
 void init_list(packet_node_s ** root)
 {
@@ -217,7 +224,7 @@ int add_packet_to_list(packet_node_s **root, const u_char * original_packet, siz
     }
     return flag;
 }
-void print_packet_list(packet_node_s ** root, int max)
+void print_packet_list(packet_node_s ** root, int packet_count)
 {
     packet_node_s * temp = *root;
     int i, index;
@@ -232,7 +239,7 @@ void print_packet_list(packet_node_s ** root, int max)
         }
         index = temp->p_id + 1;
         ip_header = (struct ip *) temp->packet_data + ETH_HEADER_SIZE;
-        printf("----------[%05i/%05i]-----------\n", index, max);
+        printf("----------[%05i/%05i]-----------\n", index, packet_count);
         okay("seconds: %li| nano seconds: %li", temp->time_stamp.tv_sec, temp->time_stamp.tv_usec);
         if (ip_header->ip_p == IPPROTO_TCP || ip_header->ip_p == IPPROTO_IP){
             tcp_header = (struct tcphdr *) (temp->packet_data + ETH_HEADER_SIZE + (ip_header->ip_hl << 2));
@@ -324,6 +331,14 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *pkthdr, const u_char
     struct in_addr src_ip, dest_ip;
     arp_type type_arp_op;
     
+    /* handling time calculation... */
+    if (start_time_s_g == 0) {
+        start_time_s_g = pkthdr->ts.tv_sec;
+        start_usec_g = pkthdr->ts.tv_usec;
+    }
+    end_time_s_g = pkthdr->ts.tv_sec;
+    end_usec_g = pkthdr->ts.tv_usec;
+    
     num_packets_g++;
     /* check for type of packet... */
     if (ntohs(eth_header->ether_type) == ETHERTYPE_ARP) {
@@ -371,12 +386,20 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *pkthdr, const u_char
         
         /* src ip */
         host_hash = host_hash_func(host_hash_g,ip_header->ip_src);
-        if (general_info_g.hosts_table[host_hash].raw_addr.s_addr == 0) general_info_g.hosts_table[host_hash].raw_addr = ip_header->ip_src;
+        if (general_info_g.hosts_table[host_hash].raw_addr.s_addr == 0)
+        {
+            general_info_g.hosts_table[host_hash].raw_addr = ip_header->ip_src;
+            num_hosts_g++;
+        }
         general_info_g.hosts_table[host_hash].count++;
 
         /* dst ip */
         host_hash = host_hash_func(host_hash_g,ip_header->ip_dst);
-        if (general_info_g.hosts_table[host_hash].raw_addr.s_addr == 0) general_info_g.hosts_table[host_hash].raw_addr = ip_header->ip_dst;
+        if (general_info_g.hosts_table[host_hash].raw_addr.s_addr == 0)
+        {
+            general_info_g.hosts_table[host_hash].raw_addr = ip_header->ip_dst;
+            num_hosts_g++;
+        }
         general_info_g.hosts_table[host_hash].count++;
 
         strncpy(ip_src_str, inet_ntoa(conversation.src_ip), INET_ADDRSTRLEN);
@@ -403,13 +426,27 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *pkthdr, const u_char
             tcp_header = (struct tcphdr *)(packet + ETH_HEADER_SIZE + (ip_header->ip_hl << 2));
             /* src port */
             port_hash = port_hash_func(port_hash_g, tcp_header->th_sport);
-            if (general_info_g.ports_table[port_hash].nthos_port == 0) general_info_g.ports_table[port_hash].nthos_port = ntohs(tcp_header->th_sport);
-            general_info_g.ports_table[port_hash].count++;
+            if (general_info_g.ports_table[port_hash].nthos_port == 0)
+            {
+                general_info_g.ports_table[port_hash].nthos_port = ntohs(tcp_header->th_sport);
+                general_info_g.ports_table[port_hash].count++;
+                num_ports_g++;
+            } else {
+                general_info_g.ports_table[port_hash].count++;
+            }
 
             /* dst port */
             port_hash = port_hash_func(port_hash_g,tcp_header->th_dport);
-            if (general_info_g.ports_table[port_hash].nthos_port == 0) general_info_g.ports_table[port_hash].nthos_port = ntohs(tcp_header->th_dport);
-            general_info_g.ports_table[port_hash].count++;
+            if (general_info_g.ports_table[port_hash].nthos_port == 0)
+            {
+                general_info_g.ports_table[port_hash].nthos_port = ntohs(tcp_header->th_dport);
+                general_info_g.ports_table[port_hash].count++;
+                num_ports_g++;
+            }
+            else
+            {
+                general_info_g.ports_table[port_hash].count++;
+            }
 
             conversation.src_port = ntohs(tcp_header->th_sport);
             conversation.dest_port = ntohs(tcp_header->th_dport);
@@ -447,13 +484,29 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *pkthdr, const u_char
             udp_header = (struct udphdr *)(packet + ETH_HEADER_SIZE + (ip_header->ip_hl << 2));
             /* src port */
             port_hash = port_hash_func(port_hash_g, udp_header->uh_sport);
-            if (general_info_g.ports_table[port_hash].nthos_port == 0) general_info_g.ports_table[port_hash].nthos_port = ntohs(udp_header->uh_sport);
-            general_info_g.ports_table[port_hash].count++;
+            if (general_info_g.ports_table[port_hash].nthos_port == 0)
+            {
+                general_info_g.ports_table[port_hash].nthos_port = ntohs(udp_header->uh_sport);
+                general_info_g.ports_table[port_hash].count++;
+                num_ports_g++;
+            }
+            else
+            {
+                general_info_g.ports_table[port_hash].count++;
+            }
 
             /* dst port */
             port_hash = port_hash_func(port_hash_g,udp_header->uh_dport);
-            if (general_info_g.ports_table[port_hash].nthos_port == 0) general_info_g.ports_table[port_hash].nthos_port = ntohs(udp_header->uh_dport);
-            general_info_g.ports_table[port_hash].count++;
+            if (general_info_g.ports_table[port_hash].nthos_port == 0)
+            {
+                general_info_g.ports_table[port_hash].nthos_port = ntohs(udp_header->uh_dport);
+                general_info_g.ports_table[port_hash].count++;
+                num_ports_g++;
+            }
+            else
+            {
+                general_info_g.ports_table[port_hash].count++;
+            }
             
             conversation.src_port = ntohs(udp_header->uh_sport);
             conversation.dest_port = ntohs(udp_header->uh_dport);
@@ -547,6 +600,9 @@ void save_L4_convs_to_json(const char *filename)
                     json_object_object_add(packet_info, "time_stamp_raw_sec", json_object_new_uint64(temp->time_stamp.tv_sec));
                     json_object_object_add(packet_info, "time_stamp_raw_usec", json_object_new_uint64(temp->time_stamp.tv_usec));
                     json_object_object_add(packet_info, "time_stamp_rltv", json_object_new_double((temp->time_stamp_rltv)));
+                    json_object_object_add(packet_info, "size_in_bytes", json_object_new_uint64(temp->packet_size));
+                    json_object_object_add(packet_info, "from", json_object_new_string(inet_ntoa(temp->src_ip)));
+                    json_object_object_add(packet_info, "to", json_object_new_string(inet_ntoa(temp->dest_ip)));
                     json_object_array_add(packets_arr, packet_info);
                 }
                 temp = temp->next;
@@ -591,6 +647,8 @@ void save_L4_convs_to_json(const char *filename)
                         }
                     }
                     json_object_object_add(exception, "packet_index", json_object_new_int(conversations_table_g[i].exep_packet_id[exep_index].packet_location)); /* type cause */
+                    json_object_object_add(exception, "from", json_object_new_string(inet_ntoa(conversations_table_g[i].exep_packet_id[exep_index].src_ip)));
+                    json_object_object_add(exception, "to", json_object_new_string(inet_ntoa(conversations_table_g[i].exep_packet_id[exep_index].dest_ip)));
                     json_object_array_add(exeption_arr, exception);
                 }
                 json_object_object_add(conversation_object, "exceptions",exeption_arr);
@@ -671,8 +729,10 @@ void analyze_conversations(conv_s conversations_arr[MAX_L4_CONVERSATIONS])
                                 if (check_dup_ack(temp, lastAtoB) && check_keep_alive(lastBtoA) != 1)
                                 {
                                     if (DEBUG) info("%s%sDUPACK PACKET A->B{CURRENT: %i|LAST: %i}%s", RED_FG, BLACK_BG, temp->p_id, lastAtoB->p_id, RESET_FG);
-                                    conversations_arr[i].exep_packet_id[exception_index].exep = DUP_ACK_ATOB_EXEP;   
-                                    conversations_arr[i].exep_packet_id[exception_index].packet_location = temp->p_id;   
+                                    conversations_arr[i].exep_packet_id[exception_index].exep = DUP_ACK_ATOB_EXEP;
+                                    conversations_arr[i].exep_packet_id[exception_index].src_ip = temp->src_ip;
+                                    conversations_arr[i].exep_packet_id[exception_index].dest_ip = temp->dest_ip;
+                                    conversations_arr[i].exep_packet_id[exception_index].packet_location = temp->p_id;
                                     conversations_arr[i].num_exep++;
                                     exception_index++;
                                 }
@@ -685,8 +745,10 @@ void analyze_conversations(conv_s conversations_arr[MAX_L4_CONVERSATIONS])
                                 if (check_dup_ack(temp, lastBtoA) && check_keep_alive(lastAtoB) != 1)
                                 {
                                     if (DEBUG) info("%s%sDUPACK PACKET B->A {CURRENT: %i|LAST: %i}%s", RED_FG, BLACK_BG, temp->p_id, lastBtoA->p_id, RESET_FG);
-                                    conversations_arr[i].exep_packet_id[exception_index].exep = DUP_ACK_BTOA_EXEP;   
-                                    conversations_arr[i].exep_packet_id[exception_index].packet_location = temp->p_id;   
+                                    conversations_arr[i].exep_packet_id[exception_index].exep = DUP_ACK_BTOA_EXEP;
+                                    conversations_arr[i].exep_packet_id[exception_index].src_ip = temp->src_ip;
+                                    conversations_arr[i].exep_packet_id[exception_index].dest_ip = temp->dest_ip;
+                                    conversations_arr[i].exep_packet_id[exception_index].packet_location = temp->p_id;
                                     conversations_arr[i].num_exep++;
                                     exception_index++;
                                 }
@@ -694,8 +756,10 @@ void analyze_conversations(conv_s conversations_arr[MAX_L4_CONVERSATIONS])
                         }
                     } else if (check_retransmission(temp,lastAtoB, lastBtoA)) {
                         if (DEBUG) info("%s%sRETRANSMISSION%s", RED_FG, BLACK_BG, RESET_FG);
-                        conversations_arr[i].exep_packet_id[exception_index].exep = RETRANS_EXEP;   
-                        conversations_arr[i].exep_packet_id[exception_index].packet_location = temp->p_id;   
+                        conversations_arr[i].exep_packet_id[exception_index].exep = RETRANS_EXEP;
+                        conversations_arr[i].exep_packet_id[exception_index].packet_location = temp->p_id;
+                        conversations_arr[i].exep_packet_id[exception_index].src_ip = temp->src_ip;
+                        conversations_arr[i].exep_packet_id[exception_index].dest_ip = temp->dest_ip;
                         conversations_arr[i].num_exep++;
                         exception_index++;
                     }
@@ -712,7 +776,9 @@ void analyze_conversations(conv_s conversations_arr[MAX_L4_CONVERSATIONS])
                 if (p_type & RST_FLAG) {
                     if (DEBUG) info("%s%sRESET PACKET [conv:%i|p_id:%i]%s", YELLOW_FG, RED_BG, conversations_arr[i].conv_id, temp->p_id, RESET_FG);
                     conversations_arr[i].exep_packet_id[exception_index].exep = RESET_EXEP;
-                    conversations_arr[i].exep_packet_id[exception_index].packet_location = temp->p_id;   
+                    conversations_arr[i].exep_packet_id[exception_index].src_ip = temp->src_ip;
+                    conversations_arr[i].exep_packet_id[exception_index].dest_ip = temp->dest_ip;
+                    conversations_arr[i].exep_packet_id[exception_index].packet_location = temp->p_id;
                     conversations_arr[i].num_exep++;
                     exception_index++;
                     /* check inside last->packet_data something... */
@@ -720,7 +786,9 @@ void analyze_conversations(conv_s conversations_arr[MAX_L4_CONVERSATIONS])
                 if (p_type & RETRANS_FLAG) {
                     if (DEBUG) info("%s%sRETRANSMISSION PACKET [%i]%s", RED_FG, BLACK_BG, p_type, RESET_FG);
                     conversations_arr[i].exep_packet_id[exception_index].exep = RETRANS_EXEP;
-                    conversations_arr[i].exep_packet_id[exception_index].packet_location = temp->p_id;   
+                    conversations_arr[i].exep_packet_id[exception_index].packet_location = temp->p_id;
+                    conversations_arr[i].exep_packet_id[exception_index].src_ip = temp->src_ip;
+                    conversations_arr[i].exep_packet_id[exception_index].dest_ip = temp->dest_ip;
                     conversations_arr[i].num_exep++;
                     exception_index++;
                 }
@@ -731,6 +799,8 @@ void analyze_conversations(conv_s conversations_arr[MAX_L4_CONVERSATIONS])
                     if (DEBUG) info("%s%sZERO WINDOW Packet%s", WHITE_FG, RED_BG, RESET_FG);
                     conversations_arr[i].exep_packet_id[exception_index].exep = ZERO_WINDOW_EXEP;
                     conversations_arr[i].exep_packet_id[exception_index].packet_location = temp->p_id;
+                    conversations_arr[i].exep_packet_id[exception_index].src_ip = temp->src_ip;
+                    conversations_arr[i].exep_packet_id[exception_index].dest_ip = temp->dest_ip;
                     conversations_arr[i].num_exep++;
                     exception_index++;
                 }
@@ -786,7 +856,7 @@ int check_retransmission(packet_node_s *p, packet_node_s *atob, packet_node_s *b
     struct tcphdr *tcphdr_comp;
     int tcp_segment_length_p, tcp_segment_length_comp;
     int ka = check_keep_alive(p);
-    if ((ka != 1) && (atob != NULL || btoa!= NULL) /* && (atob->packet_data != NULL || btoa->packet_data != NULL) */) 
+    if ((ka != 1) && (atob != NULL && btoa != NULL) /* && (atob->packet_data != NULL || btoa->packet_data != NULL) */) 
     {
         iphdr_p = (struct ip *) (p->packet_data + ETH_HEADER_SIZE);
         tcphdr_p = (struct tcphdr *) (p->packet_data + ETH_HEADER_SIZE + (iphdr_p->ip_hl << 2));
@@ -875,7 +945,7 @@ void * search_params(conv_s conv, search_e search , search_ret_e * ret_type, voi
                 while(temp != NULL)
                 {
                     if (DEBUG) info("p_id: %i %f < %f < %f", temp->p_id, start_time, temp->time_stamp_rltv, end_time);
-                    if (    
+                    if (
                         /* seconds is between min and max seconds  */
                         ( temp->time_stamp_rltv <= end_time && temp->time_stamp_rltv >= start_time )
                     )

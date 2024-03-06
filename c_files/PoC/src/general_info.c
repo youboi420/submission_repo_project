@@ -67,7 +67,7 @@ char* get_file_name(char* org_file_name, const char* new_extension)
     }
     return ret_str;
 }
-void save_gis_to_json(gen_inf_s gis, char * filename)
+void save_gis_to_json(gen_inf_s gis, char * filename, uint32_t num_ports_g, uint32_t num_hosts_g, double duration)
 {
     json_object *root_obj, *hosts_arr, *ports_arr, *host, *port;
     FILE *file_ptr;
@@ -78,6 +78,10 @@ void save_gis_to_json(gen_inf_s gis, char * filename)
     json_object_object_add(root_obj, "raw_file_size", json_object_new_int64(gis.filesize));
     json_object_object_add(root_obj, "file_size_mb", json_object_new_double(file_size_mb));
     json_object_object_add(root_obj, "num_packets", json_object_new_int64(gis.num_packets));
+    json_object_object_add(root_obj, "duration", json_object_new_double(duration));
+    json_object_object_add(root_obj, "num_hosts", json_object_new_int64(num_hosts_g));
+    json_object_object_add(root_obj, "num_ports", json_object_new_int64(num_ports_g));
+    
     hosts_arr = json_object_new_array();
     ports_arr = json_object_new_array();
     json_object_object_add(root_obj, "hosts", hosts_arr);
@@ -109,7 +113,6 @@ void save_gis_to_json(gen_inf_s gis, char * filename)
     json_object_put(root_obj);
     if (file_ptr) fclose(file_ptr);
 }
-
 char * get_packet_time_stamp_mt(const struct timeval *timestamp)
 {
     time_t seconds;
@@ -128,7 +131,6 @@ char * get_packet_time_stamp_mt(const struct timeval *timestamp)
     snprintf(ret_time_str, DATE_LIMIT, "%s.%06ld %s", time_str, timestamp->tv_usec, tzname[time_info->tm_isdst]);
     return ret_time_str;
 }
-
 char * get_packet_time_stamp_js(const struct timeval *timestamp)
 {
     time_t seconds;

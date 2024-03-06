@@ -5,20 +5,23 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import React from 'react';
 import { NOTIFY_TYPES, notify } from '../services/notify_service';
 import axios from 'axios';
-const UploadComp = ( {userAnalyzeDataCallback} ) => {
+
+import * as files_service from '../services/files_service'
+
+const UploadComp = ( {userAnalyzeDataCallback, fallBack} ) => {
   const [file, setFile] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
-  const PADDING_C = 15;
+  const PADDING_C = 25;
   
   const fileNotSelected = (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', fontSize: "28px" }}>
       <span>Please select a file!</span>
       <PicktFileIcon style={{ marginLeft: '5px' }} />
     </div>    
   );
 
   const fileSelected = (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', fontSize: "28px" }}>
       <span>Picked: {file?.name}</span>
       <CheckIcon style={{ marginLeft: '5px' }} />
     </div>
@@ -39,24 +42,20 @@ const UploadComp = ( {userAnalyzeDataCallback} ) => {
 
   const handleUpload = async () => {
     if (!file) {
-      notify("No file selected", NOTIFY_TYPES.error);
+      notify("No file selected", NOTIFY_TYPES.short_error);
       return;
     }
     
     try {
       setLoading(true);
-      const formData = new FormData();
+      const formData = new FormData()
       formData.append('file', file);
-      const UPLOAD_URL = "http://" + process.env.REACT_APP_LOCAL_IP_ADDRESS + ":" + process.env.REACT_APP_SER_PORT + "/files/upload"
-      const response = await axios.post(UPLOAD_URL, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      if (response.status === 200) {
+      const response = await files_service.upload(formData)
+      if (response?.status === 200) {
         notify("File uploaded successfully", NOTIFY_TYPES.success);
-      } else if (response.status === 409) {
+      } else if (response?.status === 409) {
         notify("Duplicate file", NOTIFY_TYPES.warn);
+        setFile(null)
       } else {
         notify("Failed to upload file", NOTIFY_TYPES.error);
       }
@@ -65,9 +64,14 @@ const UploadComp = ( {userAnalyzeDataCallback} ) => {
     } catch (error) {
       if (String(error.response.data).indexOf("-duplicate") !== -1) {
         notify("Duplicate file", NOTIFY_TYPES.warn);
-        userAnalyzeDataCallback()
+        setFile(null)
       } else {
-        notify("Error uploading file", NOTIFY_TYPES.error);
+        if (error.response?.status === 400) {
+          notify("bad file uploaded. please upload a valid file.", NOTIFY_TYPES.error);
+          setFile(null)
+        } else {
+          notify("Error uploading file", NOTIFY_TYPES.error);
+        }
       }
     } finally {
       setLoading(false);
@@ -77,7 +81,7 @@ const UploadComp = ( {userAnalyzeDataCallback} ) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start' }}>
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', borderRadius: "7px" }}>
-        {loading && <CircularProgress style={{marginTop: '10px'}} />}
+        {loading && <CircularProgress style={{marginTop: '30px'}} />}
         {
           !loading &&
           <label htmlFor="fileInput">
@@ -89,8 +93,8 @@ const UploadComp = ( {userAnalyzeDataCallback} ) => {
         }
         {
           !loading &&
-          <Button sx={{ mt: 2, textTransform: 'none' }} style={{ textDecoration: 'none', color: 'white' }} onClick={handleUpload} color='primary' variant='contained' startIcon={<FileUploadIcon />}>
-              Upload
+          <Button size='large' sx={{ width: "100%", mt:  2, textTransform: 'none' }} style={{ textDecoration: 'none', color: 'white' }} onClick={handleUpload} color='primary' variant='contained' startIcon={<FileUploadIcon style={{fontSize: "28px"}} />}>
+              <Typography style={{fontSize: "28px", marginTop: 8}}>Upload</Typography>
           </Button>
         }
       </Box>

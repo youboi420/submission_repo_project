@@ -10,7 +10,7 @@
     "conf_ser_env": "node scripts/config_env.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "yair elad - (C) 2024",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.6.7",
@@ -22,6 +22,7 @@
     "multer": "^1.4.5-lts.1",
     "mysql": "^2.18.1",
     "mysql2": "^3.9.1",
-    "nodemon": "^3.0.3"
+    "nodemon": "^3.0.3",
+    "socket.io": "^4.7.4"
   }
 }
