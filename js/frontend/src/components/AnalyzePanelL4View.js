@@ -53,15 +53,19 @@ const AnalyzePanelL4View = ({ isOpen, fileData, jsonData, onCloseCallBack, fetch
   const udpConversationDetails = conversationDetails?.filter(conversation => conversation.conversationType === "UDP");
 
   return (
-    <React.Fragment>
+    <div>
       <Dialog fullScreen open={isOpen} onClose={() => { setViewMode(false); onCloseCallBack() }} TransitionComponent={Transition} onAbort={() => { setViewMode(false); onCloseCallBack() }}
         PaperProps={{
           sx: {
             backgroundColor: '#EEEEEE',
+            opacity: "100%",
+            marginTop: "100px",
+            marginRight: "100px",
+            marginLeft: "100px",
           },
         }}
       >
-        <AppBar sx={{ position: 'relative' }}>
+        <AppBar sx={{ position: 'sticky' }} style={{ top: 0, zIndex: 1000, backgroundColor: 'rgba(25, 118, 210, 0.9)' }} >
           <Toolbar>
             <IconButton
               edge="start"
@@ -72,7 +76,7 @@ const AnalyzePanelL4View = ({ isOpen, fileData, jsonData, onCloseCallBack, fetch
               <CloseIcon />
             </IconButton>
             <Typography sx={{ ml: '20px' }} variant="h6" component="div">
-              {fileData?.filename ? "Layer 4 info about file: " + fileData?.filename : "Somehow not selected"}
+              {fileData?.filename ? "Layer 4 report about file: " + fileData?.filename : "Somehow not selected"}
             </Typography>
           </Toolbar>
         </AppBar>
@@ -135,7 +139,7 @@ const AnalyzePanelL4View = ({ isOpen, fileData, jsonData, onCloseCallBack, fetch
           }
         </div>
       </Dialog>
-    </React.Fragment>
+    </div>
   )
 }
 

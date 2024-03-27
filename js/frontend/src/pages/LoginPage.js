@@ -12,16 +12,22 @@ import Container from '@mui/material/Container'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import LoginPageStyle from '../Style/LoginPage.module.css'
 
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
+
 import { notify, NOTIFY_TYPES } from '../services/notify_service'
 import * as user_service from '../services/user_service'
 import { hashPassword } from '../services/hashPassword'
 import { Navigate, useNavigate } from 'react-router-dom'
 import * as utils_service from '../services/utils_service'
+import { IconButton } from '@mui/material'
 
 
 const defaultTheme = createTheme()
+const ANALYZE_PAGE = '/analyzeandfiles'
 
 export default function LoginPage({ isValidUser }) {
+  const [showPassword, setShowPassword] = React.useState(false)
   const [username, setUsername] = React.useState('')
   const [password_value, setPassword] = React.useState('')
   const [usernameError, setUsernameError] = React.useState('')
@@ -48,7 +54,7 @@ export default function LoginPage({ isValidUser }) {
       const verificationResult = await user_service.verifyUserCookie();
       if (verificationResult.valid === true) {
         notify("Youre already logged in...", NOTIFY_TYPES.success)
-        navigate('/analyze')
+        navigate(ANALYZE_PAGE)
       } else {
         console.log('no JWT cookie present');
       }
@@ -56,6 +62,10 @@ export default function LoginPage({ isValidUser }) {
       console.error('Error verifying JWT cookie:', error);
     }
   };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -75,7 +85,7 @@ export default function LoginPage({ isValidUser }) {
     try {
       const res = await user_service.login(user.un, user.password)
       if (res.data.valid === true) {
-        navigate('/profile');
+        navigate(ANALYZE_PAGE);
         utils_service.refreshPage()
         notify(`conncted going to "/home"`, NOTIFY_TYPES.success)
       } else {
@@ -90,9 +100,14 @@ export default function LoginPage({ isValidUser }) {
       else notify("server error", NOTIFY_TYPES.error)
     }
   }
-  window.onload = () => {
-    verifyCookieOnLoad()
-  }
+  // window.onload = () => {
+  //   verifyCookieOnLoad()
+  // }
+
+  React.useEffect(() => {
+    document.title = "Login page"
+  }, []);
+
   if (!isValidUser)
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '85vh' }} >
@@ -100,10 +115,10 @@ export default function LoginPage({ isValidUser }) {
           <Container component="main" maxWidth="xs" style={{ justifyContent: 'center' }} className={LoginPageStyle.body}>
             <CssBaseline />
             <Box sx={{ margin: -10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backdropFilter: "blur(10000px)", borderRadius: "4%", borderStyle: 'dashed', borderColor: "white" }}>
-              <Avatar sx={{ m: 1, bgcolor: '#1976d2' }}>
+              <Avatar sx={{ m: 2, bgcolor: '#1976d2' }}>
                 <UserIcon />
               </Avatar>
-              <Typography component="h1" variant="h5" color={"white"}>
+              <Typography component="h1" variant="h5" color={"black"}>
                 Login to your account
               </Typography>
               <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, px: 4 }}>
@@ -129,7 +144,7 @@ export default function LoginPage({ isValidUser }) {
                       fullWidth
                       name="password"
                       label="Password"
-                      type="password"
+                      type={showPassword ? 'text' : 'password'}
                       id="password"
                       autoComplete="new-password"
                       value={password_value}
@@ -137,6 +152,13 @@ export default function LoginPage({ isValidUser }) {
                       error={!!passwordError}
                       helperText={passwordError}
                       InputLabelProps={{ style: { color: "black"/* '#314852' */ } }}
+                      InputProps={{
+                        endAdornment: (
+                          <IconButton onClick={togglePasswordVisibility}>
+                            {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                          </IconButton>
+                        ),
+                      }}
                     />
                   </Grid>
                 </Grid>
@@ -144,7 +166,7 @@ export default function LoginPage({ isValidUser }) {
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
+                  sx={{ mt: 3, mb: 2, textTransform: "none" }}
                 >
                   Login
                 </Button>
@@ -162,6 +184,6 @@ export default function LoginPage({ isValidUser }) {
       </div>
     )
   return (
-    <Navigate to={'/analyze'}/>
+    <Navigate to={ANALYZE_PAGE}/>
   )
 }

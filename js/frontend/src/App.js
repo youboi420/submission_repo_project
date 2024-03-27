@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import UserManagePage from './pages/UserManagePage';
 import NoPage from './pages/NoPage';
-import AnaylzePage from './pages/AnaylzePage';
 import SignUpPage from './pages/SignUpPage';
 
 import LogoutPage from './pages/LogoutPage';
@@ -12,13 +11,13 @@ import NavbarComp from './components/NavbarComp';
 
 import * as user_service from './services/user_service';
 import { Box, LinearProgress } from '@mui/material';
-import LandingPage from './pages/LandingPage';
-import FilesPage from './pages/FilesPage';
+import ProfilePage from './pages/ProfilePage';
+import FilesAndAnalyzePage from './pages/FilesAndAnalyzePage';
 
 function App() {
-  const [isValidUser, setIsValidUser] = useState(false);
-  const [usersData, setIsValidData] = useState({})
-  const [isLoading, setIsLoading] = useState(true)
+  const [isValidUser, setIsValidUser] = React.useState(false);
+  const [usersData, setIsValidData] = React.useState({})
+  const [isLoading, setIsLoading] = React.useState(true)
   const title = "Analyze app © Y-E "
   const fetchValidUser = async () => {
     try {
@@ -32,7 +31,7 @@ function App() {
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     document.title = title
     fetchValidUser();
   }, []);
@@ -51,14 +50,14 @@ function App() {
       <NavbarComp isValidUser={isValidUser} userData={usersData}/>
       <Routes>
         {/* Routes protected by user validity */}
-        <Route path="/profile" element={<LandingPage    /> } />
+        <Route path="/profile" element={<ProfilePage    /> } />
         <Route path="/logout"  element={<LogoutPage     /> } />
         <Route path="/login"   element={<LoginPage      isValidUser={isValidUser}/> } />
-        <Route index           element={<HomePage       isValidUser={isValidUser}/> } />
+        <Route index           element={<HomePage       isValidUser={isValidUser} userData={usersData}/> } />
         <Route path="/users"   element={<UserManagePage isValidUser={isValidUser} userData={usersData} /> } />
         <Route path="/signup"  element={<SignUpPage     isValidUser={isValidUser}/> } />
-        <Route path="/analyze" element={<AnaylzePage    isValidUser={isValidUser} userData={usersData} /> } />
-        <Route path="/files"   element={<FilesPage      isValidUser={isValidUser} userData={usersData} /> } />
+        {/* <Route path="/analyze" element={<AnaylzePage    isValidUser={isValidUser} userData={usersData} /> } /> */}
+        <Route path="/analyzeandfiles"   element={<FilesAndAnalyzePage      isValidUser={isValidUser} userData={usersData} /> } />
         <Route path="*"        element={<NoPage         isValidUser={isValidUser}/> } />
       </Routes>
     </BrowserRouter>

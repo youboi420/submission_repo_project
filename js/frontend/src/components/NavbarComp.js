@@ -1,102 +1,147 @@
 import React from 'react'
-import { AppBar, Box, Button, Card, Chip, Divider, Stack, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Button, Card, Divider, Stack, Toolbar, Typography } from '@mui/material'
+import { styled } from '@mui/system'
+import { useLocation } from 'react-router-dom'
 
-import GroupIcon from '@mui/icons-material/Group';
-import AnalyzeIcon from '@mui/icons-material/FindInPage';
-import ProfileIcon from '@mui/icons-material/AccountBox';
-import LoginIcon from '@mui/icons-material/Login';
-import LogoutIcon from '@mui/icons-material/Logout';
-import FilesIcon from '@mui/icons-material/FolderCopy';
-import HomeIcon from '@mui/icons-material/Home';
+import GroupIcon from '@mui/icons-material/Group'
+import AnalyzeIcon from '@mui/icons-material/FindInPage'
+import ProfileIcon from '@mui/icons-material/AccountBox'
+import LoginIcon from '@mui/icons-material/Login'
+import LogoutIcon from '@mui/icons-material/Logout'
+import FilesIcon from '@mui/icons-material/FolderCopy'
+import HomeIcon from '@mui/icons-material/Home'
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+
+import logo from '../Images/applogo.png'
+
+const BTN_COLOR = "#0a236780"//"#0a238e"
+const BORDER_COLOR = "#73DFF1"
+
+const StyledNavButton = styled(Button)(({ theme }) => ({
+  textTransform: 'none',
+  fontWeight: 'normal',
+  textDecoration: 'none',
+  color: 'inherit',
+  transition: 'background-color 0.4s ease-in-out',
+  '&:hover': {
+    backgroundColor: BTN_COLOR,
+  },
+}))
+
 const NavbarComp = ({ isValidUser, userData }) => {
-  return (
-    <AppBar position="static" style={{ backgroundColor: '#1976d2'/* '#006093' */ }} px={2}>
-      <Toolbar>
-        <Box sx={{ flexGrow: 1, alignItems: 'baseline', justifyContent: 'center' }}>
-          <Typography variant="h6" component="div" >
-            Network Analyzer
-            <Typography variant="body1" >
-              © Yair Elad {new Date().getFullYear()} 
-            </Typography>
-          </Typography>
-        </Box>
-        <Stack direction={'row'} spacing={1}>
-          <Card
-            variant="elevation"
-            sx={{
-              display: 'flex',
-              backgroundColor: "transparent",
-              color: 'white',
-              '& svg': {
-                m: 1,
-              },
-              '& hr': {
-                mx: 0.5,
-              },
-            }}
-          >
-          {
-            isValidUser &&
-            <Button href="/" sx={{ textTransform: 'none' }} style={{ textDecoration: 'none', color: 'inherit' }} startIcon={<HomeIcon />}>
-              Home
-            </Button>
-          }
-          {
-            isValidUser &&
-            <Divider orientation="vertical" variant="middle" flexItem />
-          }
-          <Button href="/profile" sx={{ textTransform: 'none' }} style={{ textDecoration: 'none', color: 'inherit' }} startIcon={<ProfileIcon />}>
-            Profile
-          </Button>
-          <Divider orientation="vertical" variant="middle" flexItem />
-          {
-            !isValidUser && /* false */
-            <Button href="/login" sx={{ textTransform: 'none' }} style={{ textDecoration: 'none', color: 'inherit' }} startIcon={<LoginIcon />}>
-              Login
-            </Button>
-          }
-          {
-            isValidUser &&
-            <Button href="/analyze" sx={{ textTransform: 'none' }} style={{ textDecoration: 'none', color: 'inherit' }} startIcon={<AnalyzeIcon />}>
-              Analyze & Statistics
-            </Button>
-          }
-          {
-            isValidUser &&
-            <Divider orientation="vertical" variant="middle" flexItem />
-          }
-          {
-            isValidUser &&
-            <Button href="/files" sx={{ textTransform: 'none' }} style={{ textDecoration: 'none', color: 'inherit' }} startIcon={<FilesIcon />}>
-              Files
-            </Button>
-            
-          }
-          {
-            isValidUser &&
-            <Divider orientation="vertical" variant="middle" flexItem />
-          }
+  const location = useLocation()
+  const isActive = (path) => {
+    return location.pathname === path
+  }
 
-          {
-            isValidUser && userData.isadmin &&
-            <Button href="/users" sx={{ textTransform: 'none' }} style={{ textDecoration: 'none', color: 'inherit' }} startIcon={<GroupIcon />}>
-              Users
-            </Button>
-          }
-          {
-            userData.isadmin &&
-          <Divider orientation="vertical" variant="middle" flexItem />
-          }
-          {
-            isValidUser &&
-            <Button href="/logout" sx={{ textTransform: 'none' }} style={{ textDecoration: 'none', color: 'inherit' }} startIcon={<LogoutIcon />}>
-              Logout
-            </Button>
-          }
-          </Card>
-        </Stack>
-      </Toolbar>
-    </AppBar>
+  const svgStyles = {
+    width: '20px',
+    height: '20px',
+    marginRight: '5px',
+  };
+
+  const loggedInSVG = (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style={svgStyles}>
+      <circle cx="12" cy="12" r="10" fill="#77DD76" />
+    </svg>
+  );
+  
+  const guestSVG = (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style={svgStyles}>
+      <circle cx="12" cy="12" r="10" fill="#FF6962" />
+    </svg>
+  );
+  
+
+  return (
+    <>
+      <AppBar position="sticky" style={{ top: 0, zIndex: 1000, backgroundColor: 'rgba(25, 118, 210, 0.96)' }} px={2}>
+        <Toolbar>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <a href='/' style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+              <img style={{ marginLeft: "-10px", marginTop: "2px", marginBottom: "1px" }} src={logo} alt='logo...' width={180} height={70} />
+            </Box>
+          </a>
+          </Box>
+          <div style={{ display: 'flex', alignItems: 'center', marginLeft: "calc(35%)", flexGrow: 1 }}>
+            <Typography variant="h6">
+              {isValidUser ?  "logged as: " +userData.username : 'please log in'}
+            </Typography>
+            <div style={{marginLeft: "4px"}}>
+              {isValidUser ? loggedInSVG : guestSVG}
+            </div>
+          </div>
+          <Stack direction={'row'} spacing={2} >
+            <Card
+              variant="elevation"
+              sx={{
+                display: 'flex',
+                backgroundColor: "transparent",
+                color: 'white',
+                '& svg': {
+                  m: 1.5,
+                },
+                '& hr': {
+                  mx: 0.5,
+                },
+              }}
+            >
+              <StyledNavButton href="/" sx={{ fontWeight: isActive('/') ? 'bold' : 'normal', backgroundColor: isActive("/") ? BTN_COLOR : "inherit" }} startIcon={<HomeIcon />} >
+                Home
+              </StyledNavButton>
+              <Divider orientation="vertical" variant="middle" sx={{ borderWidth: 2, bgcolor: BORDER_COLOR }} flexItem />
+              {
+                isValidUser &&
+                <StyledNavButton href="/analyzeandfiles" sx={{ textTransform: 'none', fontWeight: isActive('/analyzeandfiles') ? 'bold' : 'normal', backgroundColor: isActive("/analyzeandfiles") ? BTN_COLOR : "inherit" }} >
+                  <AnalyzeIcon /> Analyze  && <FilesIcon /> Files
+                </StyledNavButton>
+              }
+              {
+                isValidUser &&
+                <Divider orientation="vertical" variant="middle" sx={{ borderWidth: 2, bgcolor: BORDER_COLOR }} flexItem />
+              }
+              {
+                isValidUser && userData.isadmin &&
+                <StyledNavButton href="/users" sx={{ textTransform: 'none', fontWeight: isActive('/users') ? 'bold' : 'normal', backgroundColor: isActive("/users") ? BTN_COLOR : "inherit" }}  startIcon={<GroupIcon />}>
+                  Users
+                </StyledNavButton>
+              }
+              {
+                userData.isadmin &&
+                <Divider orientation="vertical" variant="middle" sx={{ borderWidth: 2, bgcolor: BORDER_COLOR }} flexItem />
+              }
+              <StyledNavButton href="/profile" sx={{ textTransform: 'none', fontWeight: isActive('/profile') ? 'bold' : 'normal', backgroundColor: isActive("/profile") ? BTN_COLOR : "inherit"}}  startIcon={<ProfileIcon />}>
+                Profile
+              </StyledNavButton>
+              <Divider orientation="vertical" variant="middle" sx={{ borderWidth: 2, bgcolor: BORDER_COLOR }} flexItem />
+              {
+                !isValidUser && /* false */
+                <StyledNavButton href="/signup" sx={{ textTransform: 'none', fontWeight: isActive('/signup') ? 'bold' : 'normal', backgroundColor: isActive("/signup") ? BTN_COLOR : "inherit"}} startIcon={<PersonAddIcon />}>
+                  Signup
+                </StyledNavButton>
+              }
+              {
+                !isValidUser && /* false */
+                <Divider orientation="vertical" variant="middle" sx={{ borderWidth: 2, bgcolor: BORDER_COLOR }} flexItem />
+              }
+              {
+                !isValidUser && /* false */
+                <StyledNavButton href="/login" sx={{ textTransform: 'none', fontWeight: isActive('/login') ? 'bold' : 'normal', backgroundColor: isActive("/login") ? BTN_COLOR : "inherit"}} startIcon={<LoginIcon />}>
+                  Login
+                </StyledNavButton>
+              }
+              {
+                isValidUser &&
+                <StyledNavButton color="error"  href="/logout" sx={{ textTransform: 'none', fontWeight: isActive('/logout') ? 'bold' : 'normal', backgroundColor: isActive("/logout") ? BTN_COLOR : "#b22222" }} startIcon={<LogoutIcon />}>
+                  Logout
+                </StyledNavButton>
+              }
+            </Card>
+          </Stack>
+        </Toolbar>
+      </AppBar>
+    </>
   )
 }
 

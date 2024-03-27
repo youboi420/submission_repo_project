@@ -1,10 +1,11 @@
 import React from 'react';
 import "../Style/InfoCard.css"
 import { Dialog, DialogTitle, IconButton, Paper } from '@mui/material';
-import UserCreateDialog from '../components/UserCreateDialog'
 import CloseIcon from '@mui/icons-material/Close'
+import HomePageStyle from '../Style/HomePage.module.css'
 
-const InfoCard = ({ src, title, description, link, target }) => {
+
+const InfoCard = ({ src, title, description, target }) => {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false)
 
   const openDialog = () => {
@@ -25,8 +26,8 @@ const InfoCard = ({ src, title, description, link, target }) => {
           </div>
         </div>
       </div>
-      <Dialog open={isDialogOpen} onClose={closeDialog} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center' }}>
+      <Dialog open={isDialogOpen} onClose={closeDialog} style={{display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: "blur(0.6px)"}} PaperProps={{sx: {borderRadius: "20px"}}}>
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center' }} className={HomePageStyle.desc}>
           {title}
           <IconButton sx={{ ml: 'auto', mb: 0.5 }} onClick={closeDialog}>
             <CloseIcon />

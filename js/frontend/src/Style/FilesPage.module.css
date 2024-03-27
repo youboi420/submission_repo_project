@@ -28,5 +28,27 @@
     font-family: "Adamina", serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 40px;
+    font-size: 32px;
+}
+
+.files_grid_button {
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: transparent;
+    border: 0px solid transparent;
+    cursor: pointer;
+    border-radius: 12px;
+    border-style: solid;
+    background-color: #1976d2;
+    width: 60%;
+    font-size: 18px;
+    transition: background-color 0.4s ease-in-out;
+    padding: 3px;
+}
+
+.files_grid_button:hover {
+    background-color: #0a236780;
 }

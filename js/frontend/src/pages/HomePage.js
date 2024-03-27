@@ -1,81 +1,99 @@
 import React from 'react'
-import HomeStyle from '../Style/HomePage.module.css'
-import { Box, Button, Grid, Stack, Typography } from '@mui/material'
-import * as user_service from '../services/user_service'
-import { NOTIFY_TYPES, notify } from '../services/notify_service'
-import { Navigate } from 'react-router-dom'
+import { Box, Stack, Typography } from '@mui/material'
 import WbSunnyIcon from '@mui/icons-material/WbSunny'
 import WbTwilightIcon from '@mui/icons-material/WbTwilight'
 import WbNightIcon from '@mui/icons-material/Bedtime'
 import HomePageStyle from '../Style/HomePage.module.css'
 import InfoCard from '../components/InfoCard'
 
-import L2InfoCover from "../Images/netSwitch.png"
-import L4InfoCover from "../Images/netLayer.png"
-import DDOSInfoCover from "../Images/ddosIllustration.png"
-import MITMInfoCover from "../Images/mitmIllustration.png"
+import IAFLOGO from "../Images/iaflogo.png"
+import BA108LOGO from "../Images/logo1.png"
+import KNOARLOGO from "../Images/knoarlogo.jpg"
+
+import actionsCover from "../Images/actionsCover.jpeg"
+import developmentCover from "../Images/devCover.jpg"
+import planningCover from "../Images/planningCover.jpg"
 
 const HomePage = ({ isValidUser, userData }) => {
-  const L4InfoTitle = "OSI - Layer 4"
-  const L2InfoTitle = "OSI - Layer 2"
-  const DDOSInfoTitle = "DDOS - distributed denail of service attack"
-  const MITMInfoTitle = "MITM - man in the middle attack"
-
-  const L2InfoDesc = (
-    <div>
-      <h1 style={{ marginTop: -10 }}>Layer 2 - Data Link</h1>
-      <p style={{ marginTop: -15 }}>
-        Layer 2, also known as the Data Link layer, is the second layer of the OSI model. It is responsible for the reliable transmission of data between adjacent network nodes over a physical link. This layer provides error detection and correction mechanisms, as well as addressing and framing of data packets.
-      </p>
-      <h2 style={{ marginTop: -10 }}>ARP</h2>
-      <p style={{ marginTop: -15 }}>
-        ARP (Address Resolution Protocol) is a protocol used for mapping IP addresses to MAC addresses within a local network. When a device wants to communicate with another device on the same network, it uses ARP to discover the MAC address associated with the destination IP address. ARP broadcasts a request message to all devices on the network, and the device with the matching IP address responds with its MAC address. This mapping information is then cached by devices to facilitate future communication.
-      </p>
+  const heroTitle = "About the project "
+  const developTitle = "Dev - Goal's"
+  const actionTitle = "User action's"
+  
+  const actionDesc = (
+    <div className={HomePageStyle.desc}>
+      <h1 style={{ marginTop: -25, display: 'flex', alignItems: 'center', textAlign: "center", justifyContent: "center" }} >User action's</h1>
+      <h3>A quick start on the Network Analyzer</h3>
+      <br/>
+      <div style={{ marginTop: -30 }}>
+        As a user you can go to the analyze and files page (in the navbar) and you can:
+        <ul>
+          <li style={{marginTop: "-10px"}} >Upload a network record</li>
+          <li style={{marginTop: "4px"}} >Download an existing network record <br/>(also from another device)</li>
+          <li style={{marginTop: "4px"}} >Delete an existing network record <br/>(also from another device)</li>
+          <li style={{marginTop: "4px"}} >Analyze a file</li>
+          <li style={{marginTop: "4px"}} >Get report of a file</li>
+          <li style={{marginTop: "4px"}} >Get visual report of a file</li>
+        </ul>
+      </div>
+      <div style={{ marginTop: -15 }}>
+        {
+          isValidUser && userData?.isadmin &&
+          <div>
+            <h3 style={{ marginTop: "30px", marginBottom: "-10px" }} >As an admin you can also go to the user's page (in the navbar) and: </h3>
+            <ul>
+              <li style={{marginTop: "4px"}} >Create a user</li>
+              <li style={{marginTop: "4px"}} >Delete a user</li>
+              <li style={{marginTop: "4px"}} >Update a user</li>
+              <li style={{marginTop: "4px"}} >Get a list of all the user's </li>
+            </ul>
+          </div>
+        }
+      </div>
     </div>
   )
   
 
-  const L4InfoDesc = (
-    <div>
-      <h1 style={{ marginTop: -10 }}>Layer 4 - Transport</h1>
-      <p style={{ marginTop: -15 }}>
-        Layer 4, also known as the Transport layer, is the fourth layer of the OSI model. It is responsible for managing end-to-end communication between devices across a network. This layer ensures that data is reliably transmitted between the sender and receiver, handling issues such as data integrity, sequencing, and flow control.
-      </p>
-      <h2 style={{ marginTop: -10 }}>TCP</h2>
-      <p style={{ marginTop: -15 }}>
-        TCP (Transmission Control Protocol) is a communication protocol operating at the Transport layer. It facilitates reliable and ordered transmission of data between devices. TCP establishes a connection between the sender and receiver before data transfer, ensuring that data is delivered in the correct order and retransmitting any lost packets. This connection-oriented approach makes TCP suitable for applications that require guaranteed delivery and sequencing of data, such as web browsing, email, and file transfer.
-      </p>
-      <h2 style={{ marginTop: -10 }}>UDP</h2>
-      <p style={{ marginTop: -15 }}>
-        UDP (User Datagram Protocol) is a communication protocol operating at the Transport layer. Unlike TCP, UDP provides connectionless transmission with minimal overhead. It sends datagrams to the recipient without establishing a connection, making it faster but less reliable than TCP. UDP is commonly used for applications where speed is prioritized over reliability, such as real-time communication, video streaming, and online gaming.
-      </p>
+  const developDesc = (
+    <div className={HomePageStyle.desc}>
+      <h1 style={{ marginTop: -25, display: 'flex', alignItems: 'center', textAlign: "center", justifyContent: "center" }}>Development & Goal's</h1>
+      <br/>
+      <div style={{ marginTop: -15 }}>
+        Developing the project was a great experience from going to the base to learn with my army moderator, to learning in class how to use react and so on. i had a very positive and maturing experience, and i am very grateful for what i have achieved in the given development time period.
+        <br/>
+        <br/>
+        The development process itself was a blast. i had a real good time learning new coding techniques, new tools, and new technologies. i really got aspired by my moderator's and surroundings. 
+        <br/>
+        <br/>
+        Before starting the project i've set up some goals for myself and the project itself.
+        <br/>
+        <h4 style={{marginBottom: -10, marginTop: 8}}>My goal's were: </h4>
+        <ul>
+          <li style={{marginTop: "4px"}} >Create a clean and expandable codebase</li>
+          <li style={{marginTop: "4px"}} >Integrate the system to the unit</li>
+          <li style={{marginTop: "4px"}} >Achieve a great user experience and friendly interface</li>
+        </ul>
+        <br/>
+      </div>
+
     </div>
   )
   
-  const DDOSInfoDesc = (
-    <div>
-      <h2 style={{ marginTop: -10 }}>DDoS - Distributed Denial of Service</h2>
-      <p style={{ marginTop: -10 }}>
-        DDoS (Distributed Denial of Service) is a type of cyber attack aimed at disrupting the normal functioning of a targeted server, service, or network by overwhelming it with a flood of internet traffic. Unlike traditional DoS attacks, which are launched from a single source, DDoS attacks harness the power of multiple compromised devices distributed across different networks, forming a botnet.
+  const planDesc = (
+    <div className={HomePageStyle.desc}>
+      <h1 style={{ marginTop: -25, display: 'flex', alignItems: 'center', textAlign: "center", justifyContent: "center" }}>About</h1>
+      <p>
+        This is the a network analyzer web application which it's all target is to automate/shorten the job's of those who really care about their time and effort, it is designed to be user friendly and easy to use.
+        it is a very capable piece of software with a lot of great analyzing techniques and features. following strict RFC rules, uses wildly common design patterns and so on.
+        <br/>
+        it is build in the react framework {/* logo */} and uses node.js runtime
+        <br/>
+        <br/>
+        The main idea is to connect all the manual analyzing process into one big web application. that organized both the network recording files and it's corresponding report's.
+        <br/>
+        <br/>
+        Network analyzer web app has a lot to offer and it's a great interface for investigation team's to handle all the research automatically and with a lot of features, both verbal and visual report's.
       </p>
-      <p style={{ marginTop: -5 }}>
-        The basic principle behind a DDoS attack is to flood the target with an excessive volume of traffic, such as requests for information or connection attempts, rendering it unable to respond to legitimate requests from users. This can result in downtime, slow performance, or complete unavailability of the targeted service, causing disruption to businesses and organizations.
-      </p>
-    </div>
-  )
-
-  const MITMInfoDesc = (
-    <div>
-      <h2 style={{ marginTop: -10 }}>MITM - man in the middle attack</h2>
-      <p style={{ marginTop: -10 }}>
-        MITM (man in the middle) attack is a form of cyber attack where an attacker secretly intercepts and relays communication between two parties without their knowledge. The attacker positions themselves between the communicating parties, allowing them to eavesdrop on sensitive information or manipulate the communication.
-      </p>
-      <p style={{ marginTop: -5 }}>
-        In a MITM attack, the attacker can intercept data transmitted between the parties, modify the content of the communication, or even impersonate one of the parties involved. This type of attack is often used to steal confidential information such as login credentials, financial data, or personal information.
-      </p>
-      <p style={{ marginTop: -5 }}>
-        MITM attacks can occur in various scenarios, including insecure Wi-Fi networks, compromised network devices, or through malicious software installed on a user's device. To mitigate MITM attacks, encryption protocols such as SSL/TLS are commonly used to secure communication channels and prevent unauthorized interception.
-      </p>
+      
     </div>
   )
   
@@ -83,21 +101,21 @@ const HomePage = ({ isValidUser, userData }) => {
     const timeHours = new Date().getHours()
     let greeting
 
-    if (timeHours < 12) {
+    if (timeHours < 12 && timeHours >= 5) {
       greeting = (
-        <Typography style={{ display: 'flex', alignItems: 'center', fontSize: "35px", fontFamily: "inherit" }}> <span>Good morning</span> <WbSunnyIcon style={{ marginLeft: "10px" }} /> </Typography>
+        <Typography style={{ display: 'flex', alignItems: 'center', fontSize: "35px", fontFamily: "inherit" }}> <span className={HomePageStyle.hero3} >Good morning</span> <WbSunnyIcon style={{ marginLeft: "10px", marginTop: "4px" }} /> </Typography>
       )
-    } else if (timeHours < 16) {
+    } else if (timeHours < 18 && timeHours >= 12) {
       greeting = (
-        <Typography style={{ display: 'flex', alignItems: 'center', fontSize: "35px", fontFamily: "inherit" }}> <span>Good afternoon</span> <WbTwilightIcon style={{ marginLeft: "10px" }} /> </Typography>
+        <Typography style={{ display: 'flex', alignItems: 'center', fontSize: "35px", fontFamily: "inherit" }}> <span className={HomePageStyle.hero3} >Good afternoon</span> <WbTwilightIcon style={{ marginLeft: "10px", marginTop: "4px" }} /> </Typography>
       )
-    } else if (timeHours < 20) {
+    } else if (timeHours < 20 && timeHours >= 18) {
       greeting = (
-        <Typography style={{ display: 'flex', alignItems: 'center', fontSize: "35px", fontFamily: "inherit" }}> <span>Good evening</span> <WbTwilightIcon style={{ marginLeft: "10px" }} /> </Typography>
+        <Typography style={{ display: 'flex', alignItems: 'center', fontSize: "35px", fontFamily: "inherit" }}> <span className={HomePageStyle.hero3} >Good evening</span> <WbTwilightIcon style={{ marginLeft: "10px", marginTop: "4px" }} /> </Typography>
       )
     } else {
       greeting = (
-        <Typography style={{ display: 'flex', alignItems: 'center', fontSize: "35px", fontFamily: "inherit" }}> <span>Good night</span> <WbNightIcon style={{ marginLeft: "10px" }} /> </Typography>
+        <Typography style={{ display: 'flex', alignItems: 'center', fontSize: "35px", fontFamily: "inherit" }}> <span className={HomePageStyle.hero3} >Good night</span> <WbNightIcon style={{ marginLeft: "10px", marginTop: "4px" }} /> </Typography>
       )
     }
     return greeting
@@ -109,21 +127,37 @@ const HomePage = ({ isValidUser, userData }) => {
   
   return (
     <div >
-      <Box sx={{ boxShadow: '0.2px 2px 9px white', marginTop: 2}} width="40%" mx="auto" boxShadow={3} style={{ backdropFilter: 'blur(20px)', borderRadius: '10px', padding: '20px' }}>
-        <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginBottom: -10, paddingTop: 10, fontSize: "40px" }} className={HomePageStyle.title} > Welcome to my network analyzer home page</h1>
+      <Box sx={{ boxShadow: '0.2px 2px 9px white', marginTop: 3}} width="70%" mx="auto" boxShadow={3} style={{ backdropFilter: 'blur(25px)', borderRadius: '10px', padding: '20px' }}>
+        <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginBottom: -20, marginTop: "-10px", fontSize: "40px" }} className={HomePageStyle.title} > Welcome to<div className={HomePageStyle.hero} style={{marginLeft: "10px"}}> Network Analyzer</div></h1>
         <h2 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }} className={HomePageStyle.title}> {getTimeGreet()}  </h2>
-      </Box>
-      <Box sx={{ boxShadow: '0.2px 2px 9px white', marginTop: 8 }} width="40%" mx="auto" style={{ backdropFilter: 'blur(40px)', borderRadius: '10px', padding: '20px' }}>
-        <Stack spacing={2} direction={"row"} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Stack spacing={2}>
-            <InfoCard src={L4InfoCover} title={L4InfoTitle} description={L4InfoDesc} />
-            <InfoCard src={DDOSInfoCover} title={DDOSInfoTitle} description={DDOSInfoDesc} />
-          </Stack>
-          <Stack spacing={2}>
-            <InfoCard src={L2InfoCover} title={L2InfoTitle} description={L2InfoDesc} />
-            <InfoCard src={MITMInfoCover} title={MITMInfoTitle} description={MITMInfoDesc} />
+        <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginTop: 40 }} className={HomePageStyle.title}> In cooperation with:</h1>
+
+        <Stack spacing={17} direction={"row"} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+          <a href='https://www.iaf.org.il/' target='_blank' rel="noreferrer" >
+            <img src={IAFLOGO} alt='hero1logo'   height={150} width={150} />
+          </a>
+          <a href='https://he.wikipedia.org/wiki/%D7%99%D7%97%D7%99%D7%93%D7%94_108' target='_blank' rel="noreferrer" >
+            <img src={BA108LOGO} alt='hero2logo' height={150} width={150} />
+          </a>
+          <a href='https://knoar.org/' target='_blank' rel="noreferrer" >
+            <img src={KNOARLOGO} alt='hero3logo' height={150} width={150} />
+          </a>
+        </Stack>
+        <Box sx={{ marginTop: 15, marginBottom: "calc(17%)" }} width="100%" mx="auto">
+        <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginTop: -80 }} className={HomePageStyle.title}>A little bit about the <div className={HomePageStyle.hero2} style={{marginLeft: "10px"}}>Project</div></h1>
+        <Stack direction={"row"} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 10, marginBottom: -170  }}>
+          <Stack spacing={10} direction={"row"}>
+            <InfoCard src={planningCover} title={heroTitle} description={planDesc} />
+            <InfoCard src={developmentCover} title={developTitle} description={developDesc} />
+            <InfoCard src={actionsCover} title={actionTitle} description={actionDesc} />
           </Stack>
         </Stack>
+      </Box>
+        <div style={{ marginTop: "8px", marginBottom: "-10px" }}>
+          <Typography  >
+            Network Analyzer - Coded by Yair Elad © {new Date().getFullYear()}
+          </Typography>
+        </div>
       </Box>
     </div>
   )

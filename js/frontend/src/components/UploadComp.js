@@ -5,8 +5,13 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import React from 'react';
 import { NOTIFY_TYPES, notify } from '../services/notify_service';
 import axios from 'axios';
+import FilesPageStyle from '../Style/FilesPage.module.css'
+
 
 import * as files_service from '../services/files_service'
+
+const MAX_FILE_SIZE_MB = 16
+const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 const UploadComp = ( {userAnalyzeDataCallback, fallBack} ) => {
   const [file, setFile] = React.useState(null);
@@ -14,7 +19,7 @@ const UploadComp = ( {userAnalyzeDataCallback, fallBack} ) => {
   const PADDING_C = 25;
   
   const fileNotSelected = (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', fontSize: "28px" }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', fontSize: "24px" }}>
       <span>Please select a file!</span>
       <PicktFileIcon style={{ marginLeft: '5px' }} />
     </div>    
@@ -30,8 +35,12 @@ const UploadComp = ( {userAnalyzeDataCallback, fallBack} ) => {
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const selectedFile = e.target.files[0];
+      if (selectedFile.size > MAX_FILE_SIZE) {
+        notify(`File size exceeds size limit`, NOTIFY_TYPES.error);
+        setFile(null);
+        return;
+      }
       setFile(selectedFile);
-
       const fileExtension = selectedFile.name.split('.').pop();
       if (fileExtension.toLowerCase() !== 'pcap') {
         notify('Please select a .pcap file', NOTIFY_TYPES.error);
@@ -54,7 +63,7 @@ const UploadComp = ( {userAnalyzeDataCallback, fallBack} ) => {
       if (response?.status === 200) {
         notify("File uploaded successfully", NOTIFY_TYPES.success);
       } else if (response?.status === 409) {
-        notify("Duplicate file", NOTIFY_TYPES.warn);
+        notify("File already uploaded", NOTIFY_TYPES.warn);
         setFile(null)
       } else {
         notify("Failed to upload file", NOTIFY_TYPES.error);
@@ -63,7 +72,7 @@ const UploadComp = ( {userAnalyzeDataCallback, fallBack} ) => {
       userAnalyzeDataCallback()
     } catch (error) {
       if (String(error.response.data).indexOf("-duplicate") !== -1) {
-        notify("Duplicate file", NOTIFY_TYPES.warn);
+        notify("File already uploaded", NOTIFY_TYPES.warn);
         setFile(null)
       } else {
         if (error.response?.status === 400) {
@@ -86,15 +95,15 @@ const UploadComp = ( {userAnalyzeDataCallback, fallBack} ) => {
           !loading &&
           <label htmlFor="fileInput">
             <Input type='file' name='file' color='primary' inputProps={{ accept: '.pcap' }} onChange={handleFileChange} id="fileInput" style={{ position: 'absolute', top: 0, left: 0, opacity: 0, zIndex: -1 }} />
-            <div style={{ color: 'white', backgroundColor: '#1976d2', borderColor: 'transparent', borderRadius: '8px', borderStyle: 'solid', paddingTop: PADDING_C, paddingBottom: PADDING_C, paddingRight: PADDING_C, paddingLeft: PADDING_C, cursor: 'pointer', fontFamily: 'inherit', fontSize: '20px', boxShadow: '0px 2px 1px rgba(0, 0, 0, 0.25)', width: "400px" }}>
+            <div style={{ color: 'white', backgroundColor: '#1976d2', borderColor: 'transparent', borderRadius: '8px', borderStyle: 'solid', paddingTop: PADDING_C, paddingBottom: PADDING_C, paddingRight: PADDING_C, paddingLeft: PADDING_C, cursor: 'pointer', fontFamily: 'inherit', fontSize: '1px', boxShadow: '0px 2px 1px rgba(0, 0, 0, 0.25)', width: "600px" }}>
               {file?.name === undefined ? fileNotSelected : fileSelected}
             </div>
           </label>
         }
         {
           !loading &&
-          <Button size='large' sx={{ width: "100%", mt:  2, textTransform: 'none' }} style={{ textDecoration: 'none', color: 'white' }} onClick={handleUpload} color='primary' variant='contained' startIcon={<FileUploadIcon style={{fontSize: "28px"}} />}>
-              <Typography style={{fontSize: "28px", marginTop: 8}}>Upload</Typography>
+          <Button size='large' disabled={!file} sx={{ width: "100%", mt:  "calc(3%)", textTransform: 'none' }} style={{ textDecoration: 'none', color: 'white' }} onClick={handleUpload} color='primary' variant='contained' endIcon={<FileUploadIcon style={{fontSize: "28px"}} />}>
+              <Typography className={FilesPageStyle.info_panel} style={{fontSize: "24px", marginTop: 8}} >Upload</Typography>
           </Button>
         }
       </Box>

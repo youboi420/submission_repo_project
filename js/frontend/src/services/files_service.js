@@ -19,7 +19,6 @@ const get_my_files = async () => {
 const delete_file = async (file_id) => {
   try {
     const response = await axios.delete(DELETE_FILE_URL + "/" + file_id)
-    console.log(response);
   } catch (error) {
     console.log("Error", error);
   }

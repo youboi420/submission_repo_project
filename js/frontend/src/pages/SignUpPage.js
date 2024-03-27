@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, Container, Grid, TextField, Link, Typography, Alert } from '@mui/material'
+import { Avatar, Box, Button, Container, Grid, TextField, Link, Typography, Alert, IconButton } from '@mui/material'
 import React from 'react'
 import RegisterPageStyle from '../Style/LoginPage.module.css'
 import UserIcon from '@mui/icons-material/Person'
@@ -8,11 +8,17 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import * as user_service from '../services/user_service'
 import * as utils_service from '../services/utils_service'
 
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
+
+const ANALYZE_PAGE = '/analyzeandfiles'
 
 function SignUpPage({ isValidUser }) {
   const [username, setUsername] = React.useState('')
   const [password, setPassword] = React.useState('')
-  const [repeat_password, setRepeatPasseword] = React.useState('')
+  const [repeat_password, setRepeatPassword] = React.useState('')
+  const [showPassword, setShowPassword] = React.useState(false)
+  const [showPasswordRepeat, setShowPasswordRepeat] = React.useState(false)
   const [usernameError, setUsernameError] = React.useState('')
   const [passwordError, setPasswordError] = React.useState('')
   const [passwordErrorMiss, setPasswordErrorMiss] = React.useState('')
@@ -36,9 +42,17 @@ function SignUpPage({ isValidUser }) {
     setPasswordErrorMiss(isPasswordMatch(value, repeat_password) ? '' : "Password's do not match")
   }
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
+  }
+
+  const togglePasswordRepeatVisibility = () => {
+    setShowPasswordRepeat(!showPasswordRepeat)
+  }
+
   const handleRepPasswordChange = (event) => {
     const value = event.target.value
-    setRepeatPasseword(value)
+    setRepeatPassword(value)
     setPasswordErrorMiss(isPasswordMatch(value, password) ? '' : "Password's do not match")
   }
 
@@ -67,9 +81,8 @@ function SignUpPage({ isValidUser }) {
     try {
       const res = await user_service.signup(username, hashed_pass)
       if (res.data.valid === true) {
-        navigate('/profile');
+        navigate(ANALYZE_PAGE);
         utils_service.refreshPage()
-        notify(`conncted going to "/home"`, NOTIFY_TYPES.success)
       } else {
         notify("What?" + res, NOTIFY_TYPES.info)
       }
@@ -84,14 +97,19 @@ function SignUpPage({ isValidUser }) {
     }
   
   }
+
+  React.useEffect(() => {
+    document.title = "Signup page"
+  }, []);
+  
   if (!isValidUser)
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '85vh' }} className={RegisterPageStyle.body}>
         <Container component="main" maxWidth='xs' style={{ justifyContent: 'center' }} >
           <Box >
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backdropFilter: "blur(10000px)", borderRadius: "4%", borderStyle: 'dashed' , borderColor: "white" }}>
-              <Avatar sx={{ m: 1, bgcolor: '#1976d2' }}><UserIcon /></Avatar>
-              <Typography component="h1" variant="h5" color={"white"}>
+              <Avatar sx={{ m: 2, bgcolor: '#1976d2' }}><UserIcon /></Avatar>
+              <Typography component="h1" variant="h5" color={"black"}>
                 Create your account
               </Typography>
               <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, px: 4 }}>
@@ -118,14 +136,21 @@ function SignUpPage({ isValidUser }) {
                       fullWidth
                       id='password'
                       label='Password'
-                      type="password"
+                      type={showPassword ? 'text' : 'password'}
                       name='Password'
                       autoComplete='password'
                       value={password}
                       onChange={handlePasswordChange}
                       error={!!passwordError}
                       helperText={passwordError}
-                      InputLabelProps={{ style: { color: "black"/* '#314852' */ } }}
+                      InputProps={{
+                        style: { color: "black" },
+                        endAdornment: (
+                          <IconButton onClick={togglePasswordVisibility}>
+                            {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                          </IconButton>
+                        ),
+                      }}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -134,14 +159,21 @@ function SignUpPage({ isValidUser }) {
                       fullWidth
                       id='rep_password'
                       label='Repeat password'
-                      type="password"
+                      type={showPasswordRepeat ? 'text' : 'password'}
                       name='rep_Password'
                       autoComplete='password'
                       value={repeat_password}
                       onChange={handleRepPasswordChange}
                       error={!!passwordErrorMiss}
                       helperText={passwordErrorMiss}
-                      InputLabelProps={{ style: { color: "black"/* '#314852' */ } }}
+                      InputProps={{
+                        style: { color: "black" },
+                        endAdornment: (
+                          <IconButton onClick={togglePasswordRepeatVisibility}>
+                            {showPasswordRepeat ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                          </IconButton>
+                        ),
+                      }}
                     />
                   </Grid>
                 </Grid>
@@ -149,9 +181,9 @@ function SignUpPage({ isValidUser }) {
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
+                  sx={{ mt: 3, mb: 2, textTransform: "none" }}
                 >
-                  Sign up
+                  Sign Up
                 </Button>
             {formError && (
               <Alert severity="error" sx={{ marginTop: 2 }}>
@@ -173,7 +205,7 @@ function SignUpPage({ isValidUser }) {
     )
 
   return (
-    <Navigate to={'/analyze'}/>
+    <Navigate to={ANALYZE_PAGE}/>
   )
 }
 

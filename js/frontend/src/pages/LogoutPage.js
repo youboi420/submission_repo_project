@@ -1,15 +1,17 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import * as user_service from '../services/user_service'
 import { useNavigate } from 'react-router-dom';
 import * as utils_service from '../services/utils_service'
+import { NOTIFY_TYPES, notify } from '../services/notify_service';
 
 const LogoutPage = () => {
   let navigate = useNavigate()
-  useEffect(() => {
+  
+  React.useEffect(() => {
     const logout = async () => {
       try {
-        const res = await user_service.clearCookie();
-        navigate('/profile')
+        await user_service.clearCookie();
+        navigate('/')
         utils_service.refreshPage()
       } catch (error) {
         console.error('Error loggin-out:', error);
