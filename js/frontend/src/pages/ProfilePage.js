@@ -1,12 +1,10 @@
 import React from 'react';
-import { getUserData } from '../services/user_service';
-import LandingStyle from '../Style/LandingPage.module.css';
 import { Box, Button, Divider, Stack, Typography } from '@mui/material';
 
-import HomePageStyle from '../Style/HomePage.module.css'
+import { getUserData } from '../services/user_service';
 import InfoCard from '../components/InfoCard'
-
-
+import HomePageStyle from '../Style/HomePage.module.css'
+import LandingStyle from '../Style/LandingPage.module.css';
 import L2InfoCover from "../Images/netSwitch.png"
 import L4InfoCover from "../Images/netLayer.png"
 import DDOSInfoCover from "../Images/ddosIllustration.png"

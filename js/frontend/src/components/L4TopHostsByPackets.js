@@ -27,6 +27,9 @@ class L4TopHosts extends React.Component {
         title: {
           text: 'Number of packets sent in the record',
           align: 'center',
+          style: {
+            fontSize: "16px",
+          }
         }, 
         xaxis: {
           categories: [],

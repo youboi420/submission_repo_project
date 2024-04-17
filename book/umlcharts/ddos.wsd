@@ -1,0 +1,37 @@
+@startuml
+
+class ddos_header {
+    +DDOS_MIN_TIME: int = 0
+    +DDOS_MAX_TIME: double = 100000000.0
+    +DDOS_PACKET_LIMIT: int = 3
+    +DDOS_UDP_LIMIT_MULT: int = 2
+    +DDOS_UDP_LIMIT: int = 1000
+    +GLOBAL_DDOS_EXT: string = "_ddos.json"
+    +calculate_avg_packets_per_time(conv: conv_s, start_time: double, end_time: double): double
+    +calculate_ema(current_value: double, previous_ema: double, alpha: double): double
+    +analyze_ddos(conversations: conv_s[MAX_L4_CONVERSATIONS], filename: char*, conv_count: uint32_t, MAIN_RET_VAL: ret_val*): void
+    +detect_flood(convo: conv_s): int
+    +add_to_ddos_ll(root: ddos_addr_ll**, atkr_addr: struct in_addr, src_port: uint32_t, dest_port: uint32_t): int
+    +free_ddos_list(root: ddos_addr_ll**): void
+}
+
+struct ddos_info {
+    - victim: struct in_addr
+    - attackers: struct ddos_addr_ll*
+    - dst_port: uint32_t
+}
+
+struct ddos_addr_ll {
+    - id: uint32_t
+    - addr: struct in_addr
+    - src_port: uint32_t
+    - dest_port: uint32_t
+    - next: struct ddos_addr_ll*
+}
+
+
+
+ddos_header -- ddos_info
+ddos_header -- ddos_addr_ll
+
+@enduml

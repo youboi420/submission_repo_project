@@ -12,15 +12,17 @@ import Container from '@mui/material/Container'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import LoginPageStyle from '../Style/LoginPage.module.css'
 
+import KeyIcon from '@mui/icons-material/VpnKey'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 
+import SignupIcon from '@mui/icons-material/PersonAdd';
 import { notify, NOTIFY_TYPES } from '../services/notify_service'
 import * as user_service from '../services/user_service'
 import { hashPassword } from '../services/hashPassword'
 import { Navigate, useNavigate } from 'react-router-dom'
 import * as utils_service from '../services/utils_service'
-import { IconButton } from '@mui/material'
+import { IconButton, InputAdornment } from '@mui/material'
 
 
 const defaultTheme = createTheme()
@@ -48,21 +50,6 @@ export default function LoginPage({ isValidUser }) {
 
   const isUsernameValid = (username) => /^[a-zA-Z][a-zA-Z0-9]{0,250}$/.test(username)
   const isPasswordValid = (password) => password.length >= 6 && /^.{0,250}$/.test(password)
-
-  const verifyCookieOnLoad = async () => {
-    try {
-      const verificationResult = await user_service.verifyUserCookie();
-      if (verificationResult.valid === true) {
-        notify("Youre already logged in...", NOTIFY_TYPES.success)
-        navigate(ANALYZE_PAGE)
-      } else {
-        console.log('no JWT cookie present');
-      }
-    } catch (error) {
-      console.error('Error verifying JWT cookie:', error);
-    }
-  };
-
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
   }
@@ -89,7 +76,7 @@ export default function LoginPage({ isValidUser }) {
         utils_service.refreshPage()
         notify(`conncted going to "/home"`, NOTIFY_TYPES.success)
       } else {
-        notify("Incorrect password", NOTIFY_TYPES.error)
+        notify("Incorrect user name or password", NOTIFY_TYPES.error)
         setPasswordError("Incorrect password")
       }
     } catch (error) {
@@ -118,7 +105,7 @@ export default function LoginPage({ isValidUser }) {
               <Avatar sx={{ m: 2, bgcolor: '#1976d2' }}>
                 <UserIcon />
               </Avatar>
-              <Typography component="h1" variant="h5" color={"black"}>
+              <Typography component="h1" variant="h5" color={"white"}>
                 Login to your account
               </Typography>
               <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, px: 4 }}>
@@ -134,8 +121,14 @@ export default function LoginPage({ isValidUser }) {
                       value={username}
                       onChange={handleUsernameChange}
                       error={!!usernameError}
-                      helperText={usernameError}
-                      InputLabelProps={{ style: { color: "black"/* '#314852' */ } }}
+                      helperText={<Typography sx={{fontSize: "14px", fontWeight: "bold"}}>{usernameError}</Typography>}
+                      InputLabelProps={{ style: { 
+                        color: "black", 
+                        fontSize: "18px"
+                      }}}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start"><UserIcon sx={{ color: "black" }}/></InputAdornment>,
+                      }}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -150,12 +143,13 @@ export default function LoginPage({ isValidUser }) {
                       value={password_value}
                       onChange={handlePasswordChange}
                       error={!!passwordError}
-                      helperText={passwordError}
-                      InputLabelProps={{ style: { color: "black"/* '#314852' */ } }}
+                      helperText={<Typography sx={{fontSize: "14px", fontWeight: "bold"}}>{passwordError}</Typography>}
+                      InputLabelProps={{ style: { color: "black", fontSize: "18px" } }}
                       InputProps={{
+                        startAdornment: <InputAdornment position="start"><KeyIcon sx={{ color: "black" }}/></InputAdornment>,
                         endAdornment: (
                           <IconButton onClick={togglePasswordVisibility}>
-                            {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                            {showPassword ? <VisibilityIcon sx={{ color: "black" }}/> : <VisibilityOffIcon sx={{ color: "black" }}/>}
                           </IconButton>
                         ),
                       }}
@@ -168,12 +162,15 @@ export default function LoginPage({ isValidUser }) {
                   variant="contained"
                   sx={{ mt: 3, mb: 2, textTransform: "none" }}
                 >
+                  <Typography sx={{ color: "white", fontSize: "22px" }} >
                   Login
+                  </Typography>
+                  <SignupIcon sx={{ color: "white", fontSize: "22px", marginBottom: "3px", ml: "10px" }}/>
                 </Button>
                 <Grid container justifyContent="center">
-                  <Grid item>
-                    <Link href="/signup" variant="body2" style={{ color: '#314852', padding: '1px' }}>
-                      <Typography style={{ font: 'message-box' }}>Don't have an account? - Sign up here</Typography>
+                  <Grid item style={{ padding: '10px' }}>
+                    <Link href="/signup"  variant="body1" style={{ color: '#314852', paddingBottom: '10px'}}>
+                    Don't have an account? - Sign up here
                     </Link>
                   </Grid>
                 </Grid>

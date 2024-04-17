@@ -71,3 +71,23 @@
     font-weight: 400;
     font-style: normal;
 }
+
+.imageContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.imageContainer img {
+    --s: 150px;
+    width: var(--s);
+    height: var(--s); 
+    box-sizing: border-box;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.35s;
+}
+
+.imageContainer img:hover {
+    transform: scale(1.15);
+}

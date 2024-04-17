@@ -60,11 +60,11 @@ const NavbarComp = ({ isValidUser, userData }) => {
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <a href='/' style={{ textDecoration: 'none', color: 'inherit' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-              <img style={{ marginLeft: "-10px", marginTop: "2px", marginBottom: "1px" }} src={logo} alt='logo...' width={180} height={70} />
+              <img style={{ marginLeft: "-5px", marginTop: "2px", marginBottom: "1px" }} src={logo} alt='logo...' width={180} height={70} />
             </Box>
           </a>
           </Box>
-          <div style={{ display: 'flex', alignItems: 'center', marginLeft: "calc(35%)", flexGrow: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginLeft: "calc(35%)", flexGrow: 1, marginTop: "4px" }}>
             <Typography variant="h6">
               {isValidUser ?  "logged as: " +userData.username : 'please log in'}
             </Typography>
@@ -80,7 +80,7 @@ const NavbarComp = ({ isValidUser, userData }) => {
                 backgroundColor: "transparent",
                 color: 'white',
                 '& svg': {
-                  m: 1.5,
+                  m: 1.2,
                 },
                 '& hr': {
                   mx: 0.5,
@@ -88,13 +88,22 @@ const NavbarComp = ({ isValidUser, userData }) => {
               }}
             >
               <StyledNavButton href="/" sx={{ fontWeight: isActive('/') ? 'bold' : 'normal', backgroundColor: isActive("/") ? BTN_COLOR : "inherit" }} startIcon={<HomeIcon />} >
+                <div style={{marginTop: "5px", marginLeft: "-7px"}} >
                 Home
+                </div>
               </StyledNavButton>
               <Divider orientation="vertical" variant="middle" sx={{ borderWidth: 2, bgcolor: BORDER_COLOR }} flexItem />
               {
                 isValidUser &&
                 <StyledNavButton href="/analyzeandfiles" sx={{ textTransform: 'none', fontWeight: isActive('/analyzeandfiles') ? 'bold' : 'normal', backgroundColor: isActive("/analyzeandfiles") ? BTN_COLOR : "inherit" }} >
-                  <AnalyzeIcon /> Analyze  && <FilesIcon /> Files
+                  <AnalyzeIcon /> 
+                  <div style={{marginTop: "5px", marginLeft: "-7px"}} >
+                  Analyze  && 
+                  </div>
+                  <FilesIcon />
+                  <div style={{marginTop: "5px", marginLeft: "-7px"}} >
+                    Files
+                  </div>
                 </StyledNavButton>
               }
               {
@@ -104,7 +113,9 @@ const NavbarComp = ({ isValidUser, userData }) => {
               {
                 isValidUser && userData.isadmin &&
                 <StyledNavButton href="/users" sx={{ textTransform: 'none', fontWeight: isActive('/users') ? 'bold' : 'normal', backgroundColor: isActive("/users") ? BTN_COLOR : "inherit" }}  startIcon={<GroupIcon />}>
+                  <div style={{marginTop: "5px", marginLeft: "-7px"}} >
                   Users
+                  </div>
                 </StyledNavButton>
               }
               {
@@ -112,13 +123,17 @@ const NavbarComp = ({ isValidUser, userData }) => {
                 <Divider orientation="vertical" variant="middle" sx={{ borderWidth: 2, bgcolor: BORDER_COLOR }} flexItem />
               }
               <StyledNavButton href="/profile" sx={{ textTransform: 'none', fontWeight: isActive('/profile') ? 'bold' : 'normal', backgroundColor: isActive("/profile") ? BTN_COLOR : "inherit"}}  startIcon={<ProfileIcon />}>
+                <div style={{marginTop: "5px", marginLeft: "-7px"}} >
                 Profile
+                </div>
               </StyledNavButton>
               <Divider orientation="vertical" variant="middle" sx={{ borderWidth: 2, bgcolor: BORDER_COLOR }} flexItem />
               {
                 !isValidUser && /* false */
                 <StyledNavButton href="/signup" sx={{ textTransform: 'none', fontWeight: isActive('/signup') ? 'bold' : 'normal', backgroundColor: isActive("/signup") ? BTN_COLOR : "inherit"}} startIcon={<PersonAddIcon />}>
+                  <div style={{marginTop: "5px", marginLeft: "-7px"}} >
                   Signup
+                  </div>
                 </StyledNavButton>
               }
               {
@@ -128,13 +143,17 @@ const NavbarComp = ({ isValidUser, userData }) => {
               {
                 !isValidUser && /* false */
                 <StyledNavButton href="/login" sx={{ textTransform: 'none', fontWeight: isActive('/login') ? 'bold' : 'normal', backgroundColor: isActive("/login") ? BTN_COLOR : "inherit"}} startIcon={<LoginIcon />}>
+                  <div style={{marginTop: "5px", marginLeft: "-7px"}} >
                   Login
+                  </div>
                 </StyledNavButton>
               }
               {
                 isValidUser &&
                 <StyledNavButton color="error"  href="/logout" sx={{ textTransform: 'none', fontWeight: isActive('/logout') ? 'bold' : 'normal', backgroundColor: isActive("/logout") ? BTN_COLOR : "#b22222" }} startIcon={<LogoutIcon />}>
+                  <div style={{marginTop: "5px", marginLeft: "-7px"}} >
                   Logout
+                  </div>
                 </StyledNavButton>
               }
             </Card>

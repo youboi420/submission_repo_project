@@ -1,0 +1,68 @@
+@startuml
+
+class mitm_header {
+    +MAX_L2_CONVERSATIONS: int = 50
+    +HASH_L2_CONST: int = 5381
+    +GLOBAL_MITM_EXT: string = "_mitm.json"
+    +GLOBAL_L2_EXT: string = "_L2.json"
+    +add_to_mitm(root: mitm_node_s**, vict: struct in_addr*): int
+    +get_arp_hash(mac_a: struct ether_addr, mac_b: struct ether_addr): unsigned int
+    +add_packet_to_arp_list(root: arp_packet_node_s**, original_packet: u_char*, packet_size: size_t, id: uint32_t, src_ip: struct in_addr, dest_ip: struct in_addr, src_mac: struct ether_addr, dest_mac: struct ether_addr, timestamp: struct timeval, relative_time: double, op: arp_type): int
+    +init_arp_list(root: arp_packet_node_s**): void
+    +free_l2_list(root: arp_packet_node_s**): void
+    +free_all_l2_convs(convos: arp_conv[MAX_L2_CONVERSATIONS]): void
+    +compare_macs(a: struct ether_addr, b: struct ether_addr): int
+    +save_L2_convs_to_json(convs: arp_conv[MAX_L2_CONVERSATIONS], filename: const char*): void
+    +analyze_mitm(l2_convs: arp_conv[MAX_L2_CONVERSATIONS], filename: char*, conv_count: uint32_t, MAIN_RET_VAL: ret_val*): void
+    +compare_L2_conversations(a: void*, b: void*): int
+}
+
+enum arp_type {
+    ARP_TYPE_REQUEST
+    ARP_TYPE_REPLAY
+}
+
+struct arp_packet_node_s {
+    - arp_packet_data: u_char*
+    - p_type: arp_type
+    - p_size: size_t
+    - p_id: uint32_t
+    - src_mac: struct ether_addr
+    - dest_mac: struct ether_addr
+    - src_ip: struct in_addr
+    - dest_ip: struct in_addr
+    - next: arp_packet_node_s*
+    - time_stamp: struct timeval
+    - time_stamp_rltv: double
+}
+
+struct arp_conv {
+    - cid: uint32_t
+    - src_ip: struct in_addr
+    - dest_ip: struct in_addr
+    - src_mac: struct ether_addr
+    - dest_mac: struct ether_addr
+    - num_atob: int
+    - num_btoa: int
+    - num_p: int
+    - p_list: arp_packet_node_s*
+}
+
+struct mitm_node_s {
+    - vict_ip_addr: struct in_addr
+    - next: mitm_node_s*
+}
+
+struct mitm_ll_s {
+    - attacker: struct ether_addr
+    - list: mitm_node_s*
+}
+
+
+mitm_header -- arp_packet_node_s
+mitm_header -- arp_conv
+mitm_header -- mitm_node_s
+mitm_header -- mitm_ll_s
+mitm_header -- arp_type
+
+@enduml

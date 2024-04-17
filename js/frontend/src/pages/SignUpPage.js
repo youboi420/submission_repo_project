@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, Container, Grid, TextField, Link, Typography, Alert, IconButton } from '@mui/material'
+import { Avatar, Box, Button, Container, Grid, TextField, Link, Typography, Alert, IconButton, InputAdornment } from '@mui/material'
 import React from 'react'
 import RegisterPageStyle from '../Style/LoginPage.module.css'
 import UserIcon from '@mui/icons-material/Person'
@@ -8,6 +8,8 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import * as user_service from '../services/user_service'
 import * as utils_service from '../services/utils_service'
 
+import LoginIcon from '@mui/icons-material/Login'
+import KeyIcon from '@mui/icons-material/VpnKey'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 
@@ -84,10 +86,10 @@ function SignUpPage({ isValidUser }) {
         navigate(ANALYZE_PAGE);
         utils_service.refreshPage()
       } else {
-        notify("What?" + res, NOTIFY_TYPES.info)
+        
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       if (error.message === user_service.DB_ERROR_CODES.dup) {
         setFormError("Username is taken")
         notify("USERNAME TAKEN", NOTIFY_TYPES.short_error)
@@ -105,11 +107,11 @@ function SignUpPage({ isValidUser }) {
   if (!isValidUser)
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '85vh' }} className={RegisterPageStyle.body}>
-        <Container component="main" maxWidth='xs' style={{ justifyContent: 'center' }} >
-          <Box >
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backdropFilter: "blur(10000px)", borderRadius: "4%", borderStyle: 'dashed' , borderColor: "white" }}>
+        <Container component="main" maxWidth='sm' style={{ justifyContent: 'center' }} >
+          <Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backdropFilter: "blur(50px)", borderRadius: "4%", borderStyle: 'dashed' , borderColor: "white" }}>
               <Avatar sx={{ m: 2, bgcolor: '#1976d2' }}><UserIcon /></Avatar>
-              <Typography component="h1" variant="h5" color={"black"}>
+              <Typography component="h1" variant="h5" color={"white"}>
                 Create your account
               </Typography>
               <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, px: 4 }}>
@@ -126,8 +128,12 @@ function SignUpPage({ isValidUser }) {
                       value={username}
                       onChange={handleUsernameChange}
                       error={!!usernameError}
-                      helperText={usernameError}
-                      InputLabelProps={{ style: { color: "black"/* '#314852' */ } }}
+                      helperText={<Typography sx={{fontSize: "16px", fontWeight: "bold"}}>{usernameError}</Typography>}
+                      InputProps={{
+                        style: { color: "black" },
+                        startAdornment: <InputAdornment position="start"><UserIcon sx={{ color: "black" }}/></InputAdornment>,
+                      }}
+                      InputLabelProps={{ style: { color: "black", fontSize: "18px" } }}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -142,12 +148,14 @@ function SignUpPage({ isValidUser }) {
                       value={password}
                       onChange={handlePasswordChange}
                       error={!!passwordError}
-                      helperText={passwordError}
+                      helperText={<Typography sx={{fontSize: "16px", fontWeight: "bold"}}>{passwordError}</Typography>}
+                      InputLabelProps={{ style: { color: "black", fontSize: "18px" } }}
                       InputProps={{
                         style: { color: "black" },
+                        startAdornment: <InputAdornment position="start"><KeyIcon sx={{ color: "black" }}/></InputAdornment>,
                         endAdornment: (
                           <IconButton onClick={togglePasswordVisibility}>
-                            {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                            {showPassword ? <VisibilityIcon sx={{ color: "black" }}/> : <VisibilityOffIcon sx={{ color: "black" }}/>}
                           </IconButton>
                         ),
                       }}
@@ -165,12 +173,14 @@ function SignUpPage({ isValidUser }) {
                       value={repeat_password}
                       onChange={handleRepPasswordChange}
                       error={!!passwordErrorMiss}
-                      helperText={passwordErrorMiss}
+                      helperText={<Typography sx={{fontSize: "16px", fontWeight: "bold"}}>{passwordErrorMiss}</Typography>}
+                      InputLabelProps={{ style: { color: "black", fontSize: "17px" } }}
                       InputProps={{
                         style: { color: "black" },
+                        startAdornment: <InputAdornment position="start"><KeyIcon sx={{ color: "black" }}/></InputAdornment>,
                         endAdornment: (
                           <IconButton onClick={togglePasswordRepeatVisibility}>
-                            {showPasswordRepeat ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                            {showPasswordRepeat ? <VisibilityIcon sx={{ color: "black" }}/> : <VisibilityOffIcon sx={{ color: "black" }}/>}
                           </IconButton>
                         ),
                       }}
@@ -183,16 +193,14 @@ function SignUpPage({ isValidUser }) {
                   variant="contained"
                   sx={{ mt: 3, mb: 2, textTransform: "none" }}
                 >
+                  <Typography sx={{ color: "white", fontSize: "22px" }} >
                   Sign Up
+                  </Typography>
+                  <LoginIcon sx={{ color: "white", fontSize: "22px", marginBottom: "3px", ml: "10px" }}/>
                 </Button>
-            {formError && (
-              <Alert severity="error" sx={{ marginTop: 2 }}>
-                {formError}
-              </Alert>
-            )}
                 <Grid container justifyContent="center">
                   <Grid item style={{ padding: '10px' }}>
-                    <Link href="/login"  variant="body2" style={{ color: '#314852', paddingBottom: '10px'}}>
+                    <Link href="/login"  variant="body1" style={{ color: '#314852', paddingBottom: '10px'}}>
                       Already have an account? - Sign in here
                     </Link>
                   </Grid>

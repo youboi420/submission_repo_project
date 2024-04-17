@@ -272,7 +272,7 @@ const get_all_users = () => {
         console.log("getting all users failed...\n" + err)
         reject(err)
       } else {
-        console.log(`${new Date(Date.now())} => got all users`)
+        console.info(`${new Date(Date.now())} => got all users`)
         resolve(res)
       }
     })

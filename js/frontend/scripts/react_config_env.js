@@ -21,7 +21,7 @@ const SQL_API_PATH = "/sql_api"
 const SALT = '$2a$10$EJ46JvKZfl4omzio9k5Z9.'
 const env_content = `############# ENV FILE #############
 REACT_APP_LOCAL_IP_ADDRESS=${local_ip}
-REACT_APP_REACT_PORT=${REACT_PORT}
+PORT=${REACT_PORT}
 REACT_APP_SER_PORT=${SER_PORT}
 REACT_APP_SQL_API_PATH=${SQL_API_PATH}
 ############# END ENV FILE #############`

@@ -190,8 +190,10 @@ int add_packet_to_list(packet_node_s **root, const u_char * original_packet, siz
         if (ip_header->ip_p == IPPROTO_TCP)
         {
             tcp_header = (struct tcphdr *) (original_packet + ETH_HEADER_SIZE + (ip_header->ip_hl << 2));
-            node->num_seq = tcp_header->th_seq;
-            node->num_ack = tcp_header->th_ack;
+            node->num_seq  = tcp_header->th_seq;
+            node->num_ack  = tcp_header->th_ack;
+            node->flags    = tcp_header->th_flags;
+            node->win_size = tcp_header->th_win;
         } else {
             node->num_seq = -1;
             node->num_ack = -1;
@@ -371,9 +373,6 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *pkthdr, const u_char
             arp_conversations_table_g[arp_hash].dest_mac = *dest_mac;
             arp_conversations_table_g[arp_hash].num_atob++;
             init_arp_list(&arp_conversations_table_g[arp_hash].p_list);
-            /* 
-                ! the add to arp list causes a somewhat constant size of 114 bytes (2 records...) leak please fix :|
-            */
             add_packet_to_arp_list(&arp_conversations_table_g[arp_hash].p_list, packet, pkthdr->caplen,arp_conversations_table_g[arp_hash].num_p, src_ip, dest_ip, *src_mac, *dest_mac, pkthdr->ts, relative_time, type_arp_op);
             arp_conversations_table_g[arp_hash].num_p++;
         }
@@ -580,9 +579,14 @@ void save_L4_convs_to_json(const char *filename)
             temp = conversations_table_g[i].packet_list;
             while(temp != NULL)
             {
+                packet_info = json_object_new_object();
+                if (conversations_table_g[i].proto_type == IPPROTO_TCP)
+                {
+                    json_object_object_add(packet_info, "tcp_flags", json_object_new_uint64(temp->flags));
+                    json_object_object_add(packet_info, "win_size", json_object_new_uint64(temp->win_size));
+                }
                 if (temp->time_stamp.tv_sec != 0 && temp->time_stamp.tv_usec != 0)
                 {
-                    packet_info = json_object_new_object();
                     ts_date = get_packet_time_stamp_mt(&(temp->time_stamp));
                     if (ts_date != NULL)
                     {

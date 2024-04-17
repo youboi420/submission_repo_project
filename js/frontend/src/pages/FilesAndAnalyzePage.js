@@ -15,7 +15,7 @@ import { NOTIFY_TYPES, notify } from '../services/notify_service';
 import FilesPageStyle from '../Style/FilesPage.module.css'
 import * as files_service from '../services/files_service'
 import * as analyze_service from '../services/analyze_service';
-import AnalyzePanelComp from '../components/AnalyzePanelComp';
+import AnalyzePanelComp from '../components/Panels/AnalyzePanelComp';
 
 const sleep = (milliseconds) => {
   return new Promise(resolve => {
@@ -183,7 +183,7 @@ const FilesAndAnalyzePage = ({ isValidUser, userData }) => {
 
   if (isValidUser) {
     return (
-      <div style={{ display: 'flex', height: '100%', marginTop: "-5px" }} className={FilesPageStyle.info_panel}>
+      <div style={{ display: 'flex', height: '900%', marginTop: "-5px" }} className={FilesPageStyle.info_panel}>
         {
           isAnalyzeLoading &&
           <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isAnalyzeLoading} onClick={() => {setIsAnalyzeLoading(false)}} >
@@ -192,7 +192,7 @@ const FilesAndAnalyzePage = ({ isValidUser, userData }) => {
         }
         <Box style={{ width: '100%' }} sx={{ mr: -1, color: 'black' }}>
           <Stack direction={'column'}>
-            <Box sx={{ mt: "10px", mx: "10px", p: 2, height: "calc(4%)",backdropFilter: "blur(100px)", borderRadius: "12px", fontSize: "20px", borderStyle: 'solid', borderWidth: '5px', borderColor: BORDER_COLOR, textAlign: "center", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Box sx={{ mt: "10px", mx: "10px", p: 1.5, height: "calc(4%)",backdropFilter: "blur(100px)", borderRadius: "12px", fontSize: "20px", borderStyle: 'solid', borderWidth: '5px', borderColor: BORDER_COLOR, textAlign: "center", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <Stack direction={'row'} spacing={4} justifyContent="center" alignItems="center" /* sx={{marginRight: "calc(4%)"}} */>
                 <h1 className={FilesPageStyle.info_panel} > Hello again, {userAnalyzeData.username} </h1>
                 <Divider orientation='vertical' flexItem sx={{ bgcolor: "black", borderWidth: 1.5 }}/>
@@ -239,7 +239,7 @@ const FilesAndAnalyzePage = ({ isValidUser, userData }) => {
             </Box>
               {
                 selectedRow.file_id &&
-                <Box id="analyze_panel_container" sx={{ color: 'black', mt: "5px", mx: "10px", mb: "5px",p: 2, backdropFilter: "blur(100px)", borderRadius: "12px", borderStyle: 'solid', borderWidth: '5px', borderColor: BORDER_COLOR }} style={{ flex: 1, backdropFilter: "blur(100px)" }}>
+                <Box id="analyze_panel_container" sx={{ color: 'black', mt: "5px", mx: "10px", mb: "5px",p: 2, backdropFilter: "blur(100px)", borderRadius: "12px", borderStyle: 'solid', borderWidth: '5px', borderColor: BORDER_COLOR }} style={{ flex: 1 }}>
                   <AnalyzePanelComp fileData={selectedRow} fetchDataCallBack={fetchDataCallBack} resetDataFallBack={fallBack} analyzeLoading={analyzeLoading} analyzeEndError={analyzeEndError} openViewPanel={openViewPanel} deselectCallback={deselectCallback} scrollToTop={scrollToTop} />
                 </Box>
               }

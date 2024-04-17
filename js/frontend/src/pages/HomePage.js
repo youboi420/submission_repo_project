@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Stack, Typography } from '@mui/material'
+import { Box, Divider, Stack, Typography } from '@mui/material'
 import WbSunnyIcon from '@mui/icons-material/WbSunny'
 import WbTwilightIcon from '@mui/icons-material/WbTwilight'
 import WbNightIcon from '@mui/icons-material/Bedtime'
@@ -128,21 +128,25 @@ const HomePage = ({ isValidUser, userData }) => {
   return (
     <div >
       <Box sx={{ boxShadow: '0.2px 2px 9px white', marginTop: 3}} width="70%" mx="auto" boxShadow={3} style={{ backdropFilter: 'blur(25px)', borderRadius: '10px', padding: '20px' }}>
+        {/* i want the div below to be in the top left of the screen and in the highest z index */}
         <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginBottom: -20, marginTop: "-10px", fontSize: "40px" }} className={HomePageStyle.title} > Welcome to<div className={HomePageStyle.hero} style={{marginLeft: "10px"}}> Network Analyzer</div></h1>
         <h2 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }} className={HomePageStyle.title}> {getTimeGreet()}  </h2>
         <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginTop: 40 }} className={HomePageStyle.title}> In cooperation with:</h1>
-
-        <Stack spacing={17} direction={"row"} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <div className={HomePageStyle.imageContainer}>
+        <Stack spacing={8} direction={"row"} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
           <a href='https://www.iaf.org.il/' target='_blank' rel="noreferrer" >
             <img src={IAFLOGO} alt='hero1logo'   height={150} width={150} />
           </a>
+          <Divider orientation="vertical" sx={{ bgcolor: 'white', borderWidth: 2}} />
           <a href='https://he.wikipedia.org/wiki/%D7%99%D7%97%D7%99%D7%93%D7%94_108' target='_blank' rel="noreferrer" >
             <img src={BA108LOGO} alt='hero2logo' height={150} width={150} />
           </a>
+          <Divider orientation="vertical" sx={{ bgcolor: 'white', borderWidth: 2}} />
           <a href='https://knoar.org/' target='_blank' rel="noreferrer" >
             <img src={KNOARLOGO} alt='hero3logo' height={150} width={150} />
           </a>
         </Stack>
+        </div>
         <Box sx={{ marginTop: 15, marginBottom: "calc(17%)" }} width="100%" mx="auto">
         <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginTop: -80 }} className={HomePageStyle.title}>A little bit about the <div className={HomePageStyle.hero2} style={{marginLeft: "10px"}}>Project</div></h1>
         <Stack direction={"row"} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 10, marginBottom: -170  }}>
@@ -158,6 +162,7 @@ const HomePage = ({ isValidUser, userData }) => {
             Network Analyzer - Coded by Yair Elad © {new Date().getFullYear()}
           </Typography>
         </div>
+        <h4 style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end', textAlign: 'flex-end', marginTop: "-20px", marginBottom: "-3px",zIndex: 999 }} > server ip {process.env.REACT_APP_LOCAL_IP_ADDRESS}</h4>
       </Box>
     </div>
   )

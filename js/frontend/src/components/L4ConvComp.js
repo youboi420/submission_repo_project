@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Box, Stack, Divider, IconButton, Typography } from '@mui/material';
-import { hostsDataTable, L4_DATA_TYPES } from './L4Common';
+import { hostsDataTable, L4_DATA_TYPES } from './Common/L4Common';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import AnalyzePanelViewStyle from '../Style/AnalyzePanelViewStyle.module.css'

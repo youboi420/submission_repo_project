@@ -89,6 +89,8 @@ typedef struct packet_node_s
     size_t packet_exep;
     uint32_t num_seq;
     uint32_t num_ack;
+    uint8_t flags;
+    uint16_t win_size; 
     struct in_addr src_ip;
     struct in_addr dest_ip;
     struct timeval time_stamp;

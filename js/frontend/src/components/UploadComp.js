@@ -50,10 +50,10 @@ const UploadComp = ( {userAnalyzeDataCallback, fallBack} ) => {
   };
 
   const handleUpload = async () => {
-    if (!file) {
-      notify("No file selected", NOTIFY_TYPES.short_error);
-      return;
-    }
+    // if (!file) {
+    //   notify("No file selected", NOTIFY_TYPES.short_error);
+    //   return;
+    // }
     
     try {
       setLoading(true);
@@ -76,7 +76,7 @@ const UploadComp = ( {userAnalyzeDataCallback, fallBack} ) => {
         setFile(null)
       } else {
         if (error.response?.status === 400) {
-          notify("bad file uploaded. please upload a valid file.", NOTIFY_TYPES.error);
+          notify("bad file format uploaded. please upload a valid file.", NOTIFY_TYPES.error);
           setFile(null)
         } else {
           notify("Error uploading file", NOTIFY_TYPES.error);

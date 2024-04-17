@@ -10,11 +10,11 @@ import AnalyzePageStyle from '../Style/AnalyzePage.module.css';
 import AdminIcon from '@mui/icons-material/AdminPanelSettings';
 
 /* my comps */
-import UserUpdateDialog from '../components/UserUpdateDialog'
-import UserCreateDialog from '../components/UserCreateDialog'
+import UserUpdateDialog from '../components/Dialogs/UserUpdateDialog'
+import UserCreateDialog from '../components/Dialogs/UserCreateDialog'
 import { notify, NOTIFY_TYPES } from '../services/notify_service'
 import { Navigate } from 'react-router-dom'
-import GenereicDeleteDialog from '../components/GenereicDeleteDialog'
+import GenereicDeleteDialog from '../components/Dialogs/GenereicDeleteDialog'
 
 const UserManagePage = ({ isValidUser, userData }) => {
   const [time, setTime] = React.useState(30);
@@ -33,7 +33,7 @@ const UserManagePage = ({ isValidUser, userData }) => {
       if (userId !== undefined) {
         await deleteUser(userId)
         await fetchDataAndSetRows()
-        notify("deleted succesfully", NOTIFY_TYPES.success)
+        notify("user deleted succesfully", NOTIFY_TYPES.success)
       } else {
         notify("please select a user to delete", NOTIFY_TYPES.warn)
       }
@@ -79,8 +79,6 @@ const UserManagePage = ({ isValidUser, userData }) => {
     document.title = "Admin panel"
     if (userData.isadmin)
       fetchDataAndSetRows()
-    else
-      console.log("Youre not an admin")
   }, []);
 
   const handleDeleteClicked = (userId) => {
@@ -145,7 +143,7 @@ const UserManagePage = ({ isValidUser, userData }) => {
     return (
       <div>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
-          <Box className={AnalyzePageStyle.files_grid} sx={{ mt: "30px", mx: "10px", width: '100%' ,height: "88vh", display: 'flex', flexDirection: 'column', borderRadius: "12px", backdropFilter: "blur(100px)", borderStyle: 'solid', borderWidth: 'medium', borderColor: 'white', textAlign: 'center' }}>
+          <Box className={AnalyzePageStyle.files_grid} sx={{ mt: "20px", mx: "10px", width: '100%' ,height: "88vh", display: 'flex', flexDirection: 'column', borderRadius: "12px", backdropFilter: "blur(100px)", borderStyle: 'solid', borderWidth: 'medium', borderColor: 'white', textAlign: 'center' }}>
             <Box sx={{ fontSize: "10px", marginBottom: '-10px', justifyContent: 'center', textAlign: 'center', paddingTop: 1 }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}> <h1>Welcome Admin - {userData.username}</h1> <AdminIcon style={{ marginLeft: '5px' }} /> </Box>
             <div style={{ justifyContent: 'flex-end', textAlign: 'right', alignItems: "flex-end", marginRight: "calc(1%)"}}>
             <Button onClick={handleCreate} color='success' variant='contained' sx={{marginBottom: '10px',}} >
@@ -184,12 +182,12 @@ const UserManagePage = ({ isValidUser, userData }) => {
         </div>
         {
           editDialogOpen &&
-          <UserUpdateDialog isOpen={editDialogOpen} fetchDataAndSetRows={fetchDataAndSetRows} onClose={() => { setEditDialogOpen(false); setSelectedRow({}) }} userObj={editData} onSuccess={() => { notify("UPDATE: Success", NOTIFY_TYPES.success) }} onFailed={() => { notify("UPDATE: Failed", NOTIFY_TYPES.error) }} />
+          <UserUpdateDialog isOpen={editDialogOpen} fetchDataAndSetRows={fetchDataAndSetRows} onClose={() => { setEditDialogOpen(false); setSelectedRow({}) }} userObj={editData} onSuccess={() => { notify("UPDATE USER: Success", NOTIFY_TYPES.success) }} onFailed={() => { notify("UPDATE USER: Failed", NOTIFY_TYPES.error) }} />
         }
 
         {
           createDialogOpen &&
-          <UserCreateDialog isOpen={createDialogOpen} fetchDataAndSetRows={fetchDataAndSetRows} onClose={() => { setCreateDialogOpen(false); setSelectedRow({}) }} onSuccess={() => { notify("CREAT: Success", NOTIFY_TYPES.success) }} onFailed={() => { notify("CREAT: Failed", NOTIFY_TYPES.error) }} />
+          <UserCreateDialog isOpen={createDialogOpen} fetchDataAndSetRows={fetchDataAndSetRows} onClose={() => { setCreateDialogOpen(false); setSelectedRow({}) }} onSuccess={() => { notify("CREATE: Success", NOTIFY_TYPES.success) }} onFailed={() => { notify("CREATE: Failed", NOTIFY_TYPES.error) }} />
         }
 
         {

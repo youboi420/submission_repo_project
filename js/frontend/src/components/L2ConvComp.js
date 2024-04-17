@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Box, Stack, Divider, IconButton, Typography } from '@mui/material';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { arpDataTable } from './L2Common';
+import { arpDataTable } from './Common/L2Common';
 import AnalyzePanelViewStyle from '../Style/AnalyzePanelViewStyle.module.css'
 
 const L2ConvComp = ({ convsDataArray }) => {

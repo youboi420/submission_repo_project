@@ -57,7 +57,10 @@ class L4TimePacketChartComp extends React.Component {
         },
         title: {
           text: 'Packet size as a function of time.',
-          align: 'center'
+          align: 'center',
+          style: {
+            fontSize: "22px",
+          }
         },
         fill: {
           type: 'solid',
