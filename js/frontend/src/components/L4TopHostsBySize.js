@@ -32,9 +32,6 @@ class L4TopHostsBySize extends React.Component {
           categories: [],
         },
         yaxis: {
-          title: {
-            text: "Bytes count"
-          },
         },
         fill: {
           opacity: 1,
@@ -102,7 +99,7 @@ class L4TopHostsBySize extends React.Component {
     this.setState({
       series: [
         {
-          name: ' ',
+          name: 'Bytes',
           data: seriesData,
         },
       ],

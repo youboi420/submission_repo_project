@@ -11,7 +11,7 @@ const get_all_files_by_id_query = `SELECT * FROM pcap_files WHERE owner_id = ?`
 const check_file_exists_by_path_query = `SELECT * FROM pcap_files WHERE path = ?`
 const update_file_analyzed_by_id_query = `UPDATE pcap_files SET analyzed = 1 WHERE file_id = ?`
 const get_file_analyzed_query = `SELECT * FROM pcap_files WHERE file_id = ? and analyzed = 1`
-const get_path_by_fileid_query = `SELECT path FROM pcap_files where file_id = ?`
+const get_path_by_fileid_query = `SELECT path, owner_id FROM pcap_files where file_id = ?`
 const get_all_files_query = `SELECT * FROM pcap_files`
 const is_owner_query = `SELECT * FROM pcap_files WHERE file_id = ? and owner_id = ?`
 
@@ -44,10 +44,10 @@ const create_pcap_table = () => {
   return new Promise((resolve, reject) => {
     connection.query(create_pcap_files_table_query, (err, results) => {
       if (err) {
-        console.log("error creating json reports table: ", err)
+        console.log("(pcap_files_service)---------> error creating pcap files table: ", err)
         reject(err)
       } else {
-        console.log(results.affectedRows !== 0 ? "created table json reports" : "table json reports already exist's")
+        console.log(results.affectedRows !== 0 ? "created table pcap files" : "table pcap files already exist's")
         resolve()
       }
     })
@@ -127,14 +127,14 @@ const get_file_analyzed = (file_id) => {
     } else {
       connection.query(get_file_analyzed_query, [file_id], (err, res) => {
         if (err) {
-          console.log("Err", err)
+          console.log("(pcap_files_service)---------> Err", err)
           reject({success: false, message: err})
         } else {
           if (res.length > 0) {
-            console.log("got file pcap file -------> file: ", file_id)
+            console.log("(pcap_files_service)---------> got file pcap file -------> file: ", file_id)
             resolve({ success: true })
           } else {
-            console.log("didn't get file pcap file -------> not analyzed file: ", file_id)
+            console.log("(pcap_files_service)---------> didn't get file pcap file -------> not analyzed file: ", file_id)
             resolve({ success: false, message: no_file_msg})
           }
         }
@@ -165,7 +165,7 @@ const update_set_file_is_analyzed = (file_id) => {
             if (res.affectedRows > 0 || isAnalyzed.success) {
               resolve({ success: true, res: res })
             } else {
-              console.log("update to is analyzed ----------> updating record failed...")
+              console.log("(pcap_files_service)---------> update to is analyzed ----------> updating record failed...")
               resolve({ success: false, message: "updating record failed..."})
             }
           }
@@ -187,7 +187,7 @@ const delete_file_by_file_id = (file_id) => {
     } else {
       connection.query(delete_file_by_id_query, [file_id], (err, res) => {
         if (err) {
-          console.log("error querying by file id, delete file by id")
+          console.log("(pcap_files_service)---------> error querying by file id, delete file by id")
           reject({success: false, message: err})
         } else {
           if (res.affectedRows > 0) {
@@ -217,10 +217,10 @@ const delete_all_files_by_user_id = (user_id) => {
           reject({success: false, message: err})
         } else {
           if (res.affectedRows > 0) {
-            console.log("delete all pcap files -> user found: " + user_id)
+            console.log("(pcap_files_service)---------> delete all pcap files -> user found: " + user_id)
             resolve({success: true})
           } else {
-            console.log("delete all pcap files -> user not found: " + user_id)
+            console.log("(pcap_files_service)---------> delete all pcap files -> user not found: " + user_id)
             resolve({ success: false, message: "no files" })
           }
         }
@@ -261,15 +261,15 @@ const get_file_by_fileid = (file_id) => {
     } else {
       connection.query(get_file_by_id_query, [file_id], (err, res) => {
         if (err) {
-          console.log("Err", err)
+          console.log("(pcap_files_service)---------> Err", err)
           reject({success: false, message: err})
         } else {
           if (res.length > 0) {
-            console.log("got file pcap file -------> file: ", file_id)
+            console.log("(pcap_files_service)---------> got file pcap file -------> file: ", file_id)
             resolve({ success: true, file: res[0] })
           } else {
             console.log(res)
-            console.log("didn't get file pcap file -------> file: ", file_id)
+            console.log("(pcap_files_service)---------> didn't get file pcap file -------> file: ", file_id)
             resolve({ success: false, message: no_file_msg + " file by file id"})
           }
         }
@@ -294,10 +294,10 @@ const get_all_files_by_userid = (user_id) => {
           reject({success: false, message: err})
         } else {
           if (res.length > 0) {
-            console.log("get all pcap files -> user found: " + user_id)
+            console.log("(pcap_files_service)---------> get all pcap files -> user found: " + user_id)
             resolve({ success: true, files: res })
           } else {
-            console.log("get all pcap files -> user not found: " + user_id)
+            console.log("(pcap_files_service)---------> get all pcap files -> user not found: " + user_id)
             resolve({ success: false })
           }
         }
@@ -354,7 +354,7 @@ const is_owner = (file_id, user_id) => {
   return new Promise((resolve, reject) => {
     connection.query(is_owner_query, [file_id, user_id], (err, res) => {
       if (err) {
-        console.log("file: ", file_id, "user: ", user_id);
+        console.log("(pcap_files_service)---------> file: ", file_id, "user: ", user_id);
         console.log(err);
         reject({success: false})
       } else {

@@ -1,7 +1,7 @@
 import React from 'react';
-import { Box, Button, Divider, Stack, Typography } from '@mui/material';
+import { Box, Button, Divider, Stack, Menu, MenuItem, Typography, Avatar } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
-import { getUserData } from '../services/user_service';
 import InfoCard from '../components/InfoCard'
 import HomePageStyle from '../Style/HomePage.module.css'
 import LandingStyle from '../Style/LandingPage.module.css';
@@ -9,10 +9,27 @@ import L2InfoCover from "../Images/netSwitch.png"
 import L4InfoCover from "../Images/netLayer.png"
 import DDOSInfoCover from "../Images/ddosIllustration.png"
 import MITMInfoCover from "../Images/mitmIllustration.png"
+import Avvvatars from 'avvvatars-react'
+
+import * as websocket_service from '../services/websocket_service';
+import * as user_service from '../services/user_service'
+import * as utils_service from '../services/utils_service'
+import GenericDeleteDialog from '../components/Dialogs/GenereicDeleteDialog';
+
+import FilesLoader from '../components/Loaders/FilesLoaderComp';
+import MenuIcon from '@mui/icons-material/Menu';
+import WarningIcon from '@mui/icons-material/Warning';
+import DangerousIcon from '@mui/icons-material/Dangerous';
+import { NOTIFY_TYPES, notify } from '../services/notify_service';
+
+import EditNote from '@mui/icons-material/EditNote';
+import PasswordUpdate from '../components/Dialogs/PasswordUpdate';
+import DevicesLoader from '../components/Loaders/DevicesLoader';
+import ContactBtn from '../components/ContactBtn';
 
 const L4InfoTitle = "OSI - Layer 4"
 const L2InfoTitle = "OSI - Layer 2"
-const DDOSInfoTitle = "DDOS - distributed denail of service attack"
+const DDOSInfoTitle = "DDOS - distributed denial of service attack"
 const MITMInfoTitle = "MITM - man in the middle attack"
 
 const L2InfoDesc = (
@@ -76,13 +93,20 @@ const MITMInfoDesc = (
 const ProfilePage = ({ isValidUser }) => {
   const guest_place_holder = 'Guest  -  user'
   const [userObj, setUserObj] = React.useState({ username: guest_place_holder });
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [deleteAccDiag, setDeleteAccDiag] = React.useState(false)
+  const [deleteFilesDiag, setDeleteFilesDiag] = React.useState(false)
+  const [updatePass, setUpdatePass] = React.useState(false)
+
   const username_text = userObj.username
+  let navigate = useNavigate()
+
 
   React.useEffect(() => {
     document.title = "Profile page"
     const getUsernameCall = async () => {
       try {
-        const res = await getUserData();
+        const res = await user_service.getUserData();
         if (res.valid === true) {
           setUserObj(res.user);
         }
@@ -93,12 +117,113 @@ const ProfilePage = ({ isValidUser }) => {
     getUsernameCall();
   }, []);
 
+  const handleMenuOpen = (event) => {
+    if (guest_place_holder !== username_text)
+      setAnchorEl(event.currentTarget);
+    else {
+      notify("you are not logged in", NOTIFY_TYPES.warn)
+    }
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  // handleDeleteFiles
+  const handleDeleteFiles = async () => {
+    const res = await user_service.deleteAllFiles()
+    handleMenuClose();
+    if (res.valid) {
+      websocket_service.update(websocket_service.signal_codes.FILEDEL, "deleted_all_files")
+      notify("deleted files successfully", NOTIFY_TYPES.success)
+    } else {
+      notify("files didn't delete", NOTIFY_TYPES.error)
+    }
+  };
+
+  
+  const handleDeleteAccount = async () => {
+    const res = await user_service.deleteAccount()
+    handleMenuClose();
+    if (res.valid) {
+      websocket_service.update(websocket_service.signal_codes.DELETE, "deleted_account")
+      notify("account deleted successfully", NOTIFY_TYPES.success)
+      navigate('/')
+      utils_service.refreshPage()
+    } else {
+      notify("account didn't delete", NOTIFY_TYPES.error)
+    }
+  };
+
+  const handleLogout = () => {
+    navigate('/logout')
+    handleMenuClose();
+  };
+
   return (
-    <div className={LandingStyle.container} style={{marginTop: 65, marginLeft: "calc(15%)", marginRight: "calc(15%)"}}>
+    <div className={LandingStyle.container} style={{ marginTop: 65, marginLeft: "calc(15%)", marginRight: "calc(15%)" }}>
+      
+      
+      {/* {
+        guest_place_holder !== username_text &&
+        <Typography variant="div" style={{ borderColor: userObj.isadmin ? "#7fb4c6" : "#c4c4c4", backgroundColor: userObj.isadmin ? "#0f565d" : "#305e8f", color: 'white', borderStyle: "solid", borderWidth: "2px", borderRadius: "6px", padding: "2px", fontSize: "12px", position: 'absolute', top: "calc(24%)", left: "calc(25%)", zIndex: 2 }}>
+          {userObj.isadmin ? <div>admin <StarIcon sx={{ fontSize: "14px", marginBottom: "-3px", color: "#dcdb69" }} /> </div> : <div>user <ManIcon sx={{ fontSize: "14px", marginBottom: "-3px", color: "#00b6e6" }} /> </div>}
+        </Typography>
+      } */}
+      {
+        updatePass &&
+        <PasswordUpdate isOpen={updatePass} onClose={() => { setUpdatePass(false) }} onFailed={() => { setUpdatePass(false); notify("Changing password failed", NOTIFY_TYPES.error) }} onSuccess={() => {notify("Changed password successfully", NOTIFY_TYPES.success)}}/>
+      }
+      {
+        deleteFilesDiag &&
+        <GenericDeleteDialog isOpen={deleteFilesDiag} callBackFunction={handleDeleteFiles} onClose={() => { setDeleteFilesDiag(false) }} deletionType={"all your files"} />
+      }
+      {
+        deleteAccDiag &&
+        <GenericDeleteDialog isOpen={deleteAccDiag} callBackFunction={handleDeleteAccount} onClose={() => { setDeleteAccDiag(false) }} deletionType={"account"} />
+      }
       <div className={LandingStyle.centered}>
-        <h1 className={LandingStyle.title} style={{marginTop: "-15px", marginBottom: "-15px"}} >Welcome</h1>
+        <h1 className={LandingStyle.title} style={{ marginTop: "-15px", marginBottom: "-15px" }} >Welcome</h1>
         <div className={LandingStyle.username}>{username_text}</div>
-        {guest_place_holder === username_text && (
+        <div style={{ zIndex: 1000, position: "absolute", top: "calc(2.5%)" }}>
+          <div>
+          {/* <div>
+          <label className={LandingStyle.hamburger} style={{position: 'relative', zIndex: 1000}}>
+              <input  type="checkbox" onClick={handleMenuOpen}/>
+                <svg viewBox="0 0 32 32">
+                  <path className={`${LandingStyle.line} ${LandingStyle.line_top_bottom}`} d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
+                  <path className={LandingStyle.line} d="M7 16 27 16"></path>
+                </svg>
+            </label>
+          </div> */}
+          <MenuIcon style={{ position: 'absolute', top: -5, left: -5, color: 'white', cursor: 'pointer', color: "black", zIndex: "1000" }} onClick={handleMenuOpen} />
+          <Avatar style={{ width: 100, height: 100, cursor: "pointer" }} onClick={handleMenuOpen}>
+            <Avvvatars size={100} value={username_text } id={username_text + username_text.substring(username_text.length / 2)} style={username_text + username_text.substring(username_text.length / 2)} />
+          </Avatar>
+          {
+            guest_place_holder !== username_text &&
+            <div className={userObj.isadmin ? LandingStyle.admin_ribbon : LandingStyle.user_ribbon}>{userObj.isadmin ? "admin" : "user"}</div>
+          }
+          {
+            guest_place_holder === username_text &&
+            <div className={LandingStyle.guest_ribbon}>Guest</div>
+          }
+          </div>
+          
+            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}
+              PaperProps={{
+                style: { borderRadius: '10px', background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.06), rgba(200, 200, 200, 0.4))', backdropFilter: 'blur(50px)', WebkitBackdropFilter: 'blur(10px)', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.18)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)' },
+              }}
+            >
+              <MenuItem disabled > </MenuItem>
+              <MenuItem sx={{ backgroundColor: '#1976d1', color: "white", '&:hover': { backgroundColor: '#6097cd', color: "white" }}} style={{marginTop: "-12px"}} onClick={() => { setUpdatePass(true) }} >Update password <EditNote style={{ marginLeft: '15px', marginBottom: "2px" }} /> </MenuItem>
+              <MenuItem sx={{ backgroundColor: '#c82a2b', color: "white", '&:hover': { backgroundColor: '#d36161', color: "white" }}} style={{marginTop: "5px"}} onClick={handleLogout} >Log Out <WarningIcon style={{ marginLeft: '15px', marginBottom: "2px" }} /> </MenuItem>
+              <MenuItem sx={{ backgroundColor: '#c82a2b', color: "white", '&:hover': { backgroundColor: '#d36161', color: "white" }}} style={{marginTop: "5px"}} onClick={() => { setDeleteFilesDiag(true) }} >Delete all files <DangerousIcon style={{ marginLeft: '15px', marginBottom: "2px" }} /> </MenuItem>
+              <MenuItem sx={{ backgroundColor: '#c82a2b', color: "white", '&:hover': { backgroundColor: '#d36161', color: "white" }}} style={{marginTop: "5px"}} onClick={() => { setDeleteAccDiag(true) }} >Delete My Account <DangerousIcon style={{ marginLeft: '15px', marginBottom: "2px" }} /> </MenuItem>
+            </Menu>
+        </div>
+        {
+          guest_place_holder === username_text && (
           <div style={{ textAlign: 'center', marginTop: 10 }}>
             <Button variant='contained' color='info' href='/signup' sx={{ textTransform: "none", paddingLeft: 10, paddingRight: 10 }}>
               <Typography fontSize={20}>
@@ -107,8 +232,8 @@ const ProfilePage = ({ isValidUser }) => {
             </Button>
           </div>
         )}
-        <Box sx={{ boxShadow: '0.2px 2px 9px white', marginTop: 2}} width="80%" mx="auto" style={{ backdropFilter: 'blur(40px)', borderRadius: '10px', padding: '20px' }}>
-          <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginTop: -15 }} className={LandingStyle.username}> Project's main topics</h1>
+        <Box sx={{ /* boxShadow: '0.2px 2px 9px white', */ marginTop: 2 }} width="80%" mx="auto" style={{ /* backdropFilter: 'blur(40px)', */ /* borderRadius: '10px', */ padding: '20px' }}>
+          <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginTop: -15, marginBottom: 20 }} className={LandingStyle.username}> Project's main topics</h1>
           <Stack spacing={2} direction={"row"} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Stack spacing={2}>
               <InfoCard src={L4InfoCover} title={L4InfoTitle} description={L4InfoDesc} />
@@ -120,10 +245,8 @@ const ProfilePage = ({ isValidUser }) => {
             </Stack>
           </Stack>
         </Box>
-        <div style={{ marginTop: "20px", marginBottom: "-10px" }}>
-          <Typography  >
-            Network Analyzer - Coded by Yair Elad © {new Date().getFullYear()}
-          </Typography>
+        <div style={{ marginTop: "8px", marginBottom: "-10px" }}>
+          <ContactBtn />
         </div>
       </div>
     </div>

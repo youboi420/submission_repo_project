@@ -1,7 +1,9 @@
 import * as React from "react"
 const NoPAgeSvgComp = (props) => (
   <svg
-    style={{marginTop: "20px" ,backdropFilter: "blur(100px)", borderStyle: 'solid', borderRadius: "2em", borderColor: 'transparent', boxShadow: "inset 0 0 0 200px rgba(255,255,255,0.3)" }}
+    style={{marginTop: "20px" ,
+      
+    }}
     /* 
     position: "absolute",
     left: "-25px",

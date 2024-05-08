@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Network Analyzer",
+  "name": "Network Analyzer - webapp system yair elad",
   "icons": [
     {
       "src": "favicon.ico",

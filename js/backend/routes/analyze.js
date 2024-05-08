@@ -23,7 +23,7 @@ analyzeRoute.get('/:id', async (req, res) => {
   const jwtCookie = req.cookies.jwt
   jwt.verify(jwtCookie, SEC_KEY, (err) => {
     if (err) {
-      console.log("...")
+      console.log("(analyze_route)---------> ...")
       res.status(403).json({ valid: false })
     }
   })
@@ -86,7 +86,7 @@ analyzeRoute.get('/:id', async (req, res) => {
       })
     }
   } catch (error) {
-    console.log("Error...", error)
+    console.log("(analyze_route)---------> Error...", error)
     res.status(500).send()
   }
 })

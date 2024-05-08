@@ -73,13 +73,8 @@ const analyze_file = async (report_folder_path, file_path, user_id, pcap_file_id
             if (report.success !== true) {
               reject({ success: false })
             } else {
-              console.log("After")
-              console.log("------------------------")
               const files = await files_service.list_files(report_folder_path)
               const files_arr = files?.files
-              console.log("------------------------")
-              console.log("Inserted file `gis l2 l4` to table")
-              console.log(files_arr)
               resolve({ success: true, output_files: files_arr })
             }
           } else if (!!(error.code & files_service.ANALYZE_EXIT_CODE.FAILED)) {
@@ -92,7 +87,7 @@ const analyze_file = async (report_folder_path, file_path, user_id, pcap_file_id
           reject({ success: false, error: error.message })
           return
         } else if (stderr) {
-          console.log(`stderr: ${stderr}`)
+          console.error(`stderr: ${stderr}`)
           reject({ some: -2, stderr: stderr })
           return
         } else {

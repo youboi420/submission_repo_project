@@ -46,7 +46,7 @@ const create_json_report_table = () => {
   return new Promise((resolve, reject) => {
     connection.query(create_json_report_query, (err, results) => {
       if (err) {
-        console.log("error creating json reports table: ", err)
+        console.log("(report_service)---------> error creating json reports table: ", err)
         reject(err)
       } else {
         console.log(results.affectedRows !== 0 ? "created table json reports" : "table json reports already exist's")
@@ -72,10 +72,10 @@ const get_reports_by_id = (id) => {
           reject(err)
         } else {
           if (res.length > 0) {
-            console.log("reports -> user found: " + id)
+            console.log("(report_service)---------> reports -> user found: " + id)
             resolve({ valid: true, reports: res})
           } else {
-            console.log("reports -> user not found: " + id)
+            console.log("(report_service)---------> reports -> user not found: " + id)
             resolve({ valid: false, message: not_report_msg})
           }
         }
@@ -175,10 +175,10 @@ const delete_all_reports_by_user_id = (owner_id) => {
           reject(err);
         } else {
           if (result.affectedRows > 0) {
-            console.log("deleted reports for owner_id:", owner_id);
+            console.log("(report_service)---------> deleted reports for owner_id:", owner_id);
             resolve({ success: true });
           } else {
-            console.log("no reports found for owner_id:", owner_id);
+            console.log("(report_service)---------> no reports found for owner_id:", owner_id);
             resolve({ success: false, message: not_report_msg });
           }
         }
@@ -203,10 +203,10 @@ const delete_report_by_file_id = (file_id) => {
           reject({success: false, message: err});
         } else {
           if (result.affectedRows > 0) {
-            console.log("deleted reports for owner_id:", file_id);
+            console.log("(report_service)---------> deleted reports for owner_id:", file_id);
             resolve({ success: true });
           } else {
-            console.log("no reports found for owner_id:", file_id);
+            console.log("(report_service)---------> no reports found for owner_id:", file_id);
             resolve({ success: false, message: not_report_msg });
           }
         }

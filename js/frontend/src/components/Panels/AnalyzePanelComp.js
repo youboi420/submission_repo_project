@@ -16,6 +16,7 @@ import AnalyzePageStyle from '../../Style/AnalyzePage.module.css';
 import { NOTIFY_TYPES, notify } from '../../services/notify_service';
 import * as analyze_service from '../../services/analyze_service'
 import * as file_service from '../../services/files_service'
+import * as websocket_service from '../../services/websocket_service'
 import AnalyzePanelGISView from '../Views/AnalyzePanelGISView';
 import AnalyzePanelL4View from '../Views/AnalyzePanelL4View';
 import AnalyzePanelL2View from '../Views/AnalyzePanelL2View';
@@ -24,6 +25,8 @@ import GraphL2Comp from '../Charts/GraphL2Comp';
 import GraphAttacks from '../Charts/GraphAttacks';
 
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
+import TrashIcon from '@mui/icons-material/DeleteForever';
+import RadarLoader from '../Loaders/RadarLoaderComp';
 
 const sleep = (milliseconds) => {
   return new Promise(resolve => {
@@ -267,6 +270,7 @@ const AnalyzePanelComp = ({ fileData, fetchDataCallBack, resetDataFallBack, dese
         await file_service.delete_file(file_id)
         notify("File deleted", NOTIFY_TYPES.success)
         fetchDataCallBack()
+        websocket_service.update(websocket_service.signal_codes.FILEDEL, "deleted_file" + file_id)
       } catch (error) {
         notify("couldn't delete the file this time", NOTIFY_TYPES.error)
       }
@@ -284,6 +288,7 @@ const AnalyzePanelComp = ({ fileData, fetchDataCallBack, resetDataFallBack, dese
         if (fileData.analyzed !== 1) {
           await analyze_service.analyze(file_id)
           notify(`FILE: ${fileData.filename} is now analyzed!`, NOTIFY_TYPES.success);
+          websocket_service.update(websocket_service.signal_codes.FILEANZ, "file_analyzed" + file_id)
           fetchDataCallBack()
         } else {
           notify(`FILE: ${fileData.filename} ALREADY ANALYZED!`, NOTIFY_TYPES.info);
@@ -350,8 +355,7 @@ const AnalyzePanelComp = ({ fileData, fetchDataCallBack, resetDataFallBack, dese
       }
 
       <div style={{ textAlign: 'center', fontSize: "34px" }}>
-        <div >{(fileData.file_id === undefined ? "pick a file from your uploaded files" : "id {" + fileData.file_id + "} is selected")}</div>
-        <div style={{color: fileData.filename === undefined ? "transparent" : "black" }} >{(fileData.filename === undefined ? "pick a file from your uploaded files" : "filename: " + fileData.filename)}</div>
+        <div style={{color: fileData.filename === undefined ? "transparent" : "black", marginTop: "calc(1.8%)"}} >{(fileData.filename === undefined ? "pick a file from your uploaded files" : "file name: " + fileData.filename)}</div>
       </div>
       {
         mainAnalyze &&
@@ -375,26 +379,26 @@ const AnalyzePanelComp = ({ fileData, fetchDataCallBack, resetDataFallBack, dese
                     <MenuItem value={analyze_service.l4MODES.UDP} > {analyze_service.l4MODES.UDP} </MenuItem>
                   </Select>
                 </FormControl>
-                <ButtonGroup orientation="vertical">
+                <Stack spacing={button_spacing} orientation="vertical">
                   <Button disabled={fileData.analyzed !== 1 ? true : false} color='primary' variant='contained' size='large' onClick={handleL4AnalyzeClicked}>
                     <h3 style={{ textTransform: 'none', display: 'flex', alignItems: 'center', fontSize: '16px', fontFamily: 'inherit' }} > {analyzeL4Mode === analyze_service.l4MODES.TCP ? `${ANALYZE_L4} ${analyze_service.l4MODES.TCP}` : analyzeL4Mode === analyze_service.l4MODES.UDP ? `${ANALYZE_L4} ${analyze_service.l4MODES.UDP}` : `${ANALYZE_L4} Both`} <SearchIcon style={{ paddingBottom: 7, marginLeft: '5px', fontSize: '22px' }} /> </h3>
                   </Button>
                   <Button disabled={fileData.analyzed !== 1 ? true : false} color='primary' variant='contained' size='large' onClick={handleL2AnalyzeClicked}>
                     <h1 style={{ textTransform: 'none', display: 'flex', alignItems: 'center', fontSize: '18px', fontFamily: 'inherit' }} > Analyze L2 <SwitchIcon style={{ paddingBottom: 4, marginLeft: '5px', fontSize: '22px' }} />  </h1>
                   </Button>
-                </ButtonGroup>
+                </Stack>
               </Stack>
             </Stack>
 
             <Stack spacing={button_spacing} direction={'column'} alignItems="center" justifyContent={'center'} sx={{ pr: 11 }}>
-              <ButtonGroup orientation="vertical">
+              <Stack  spacing={button_spacing}orientation="vertical">
                 <Button disabled={fileData.analyzed !== 1 ? true : false} color='primary' variant='contained' size='large' onClick={handleGraph1Clicked}>
-                  <h3 style={{ textTransform: 'none', display: 'flex', alignItems: 'center', fontSize: '16px', fontFamily: 'inherit' }} > {analyzeL4Mode === analyze_service.l4MODES.TCP ? `${GRAPH_L4} ${analyze_service.l4MODES.TCP}` : analyzeL4Mode === analyze_service.l4MODES.UDP ? `${GRAPH_L4} ${analyze_service.l4MODES.UDP}` : `${GRAPH_L4} Both`}  <GraphIcon style={{ paddingBottom: 5, marginLeft: '5px' }} /> </h3>
+                  <h3 style={{ textTransform: 'none', display: 'flex', alignItems: 'center', fontSize: '16px', fontFamily: 'inherit' }} >{GRAPH_L4} Both<GraphIcon style={{ paddingBottom: 5, marginLeft: '5px' }} /> </h3>
                 </Button>
                 <Button disabled={fileData.analyzed !== 1 ? true : false} color='primary' variant='contained' size='large' onClick={handleGraph2Clicked}>
                   <h3 style={{ textTransform: 'none', display: 'flex', alignItems: 'center', fontSize: '16px', fontFamily: 'inherit' }} > {GRAPH_L2} <GraphIcon style={{ paddingBottom: 5, marginLeft: '5px' }} /> </h3>
                 </Button>
-              </ButtonGroup>
+              </Stack>
             </Stack>
           </Stack>
 
@@ -417,19 +421,15 @@ const AnalyzePanelComp = ({ fileData, fetchDataCallBack, resetDataFallBack, dese
           {
             fileData.file_id &&
             <Stack alignItems="center" justifyContent={'center'} direction={'row'} spacing={10}>
-              <Button color='error' variant='contained' onClick={() => { if (fileData.file_id) setDeleteDialogOpen(true); else notify("Please select a file", NOTIFY_TYPES.warn) }} >
-                <h3>DELETE FILE</h3>
+              <Button color='error' variant='contained' sx={{width: "10%"}} onClick={() => { if (fileData.file_id) setDeleteDialogOpen(true); else notify("Please select a file", NOTIFY_TYPES.warn) }} >
+                <h2 style={{ textTransform: "none" }}>Delete file</h2>
+                <TrashIcon sx={{ marginLeft: "4px", fontSize: '32px', marginBottom: "4px" }} />
               </Button>
-              <Button style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', backgroundColor: "grey" }} color='secondary' variant='contained' onClick={() => { deselectCallback() }}>
+              {/* <Button style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', backgroundColor: "grey" }} color='secondary' variant='contained' onClick={() => { deselectCallback() }}>
                 <div>
                   <h3>DESELECT FILE</h3>
                 </div>
-              </Button>
-              <Button style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center',  textTransform: "none" }} color='secondary' variant='contained' onClick={() => { deselectCallback() }}>
-                <div>
-                  <h3>Export to PDF</h3>
-                </div>
-              </Button>
+              </Button> */}
             </Stack>
           }
           <div style={{ marginTop: "-3px", marginBottom: "-35px", display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end', textAlign: 'center' }}>
@@ -444,8 +444,9 @@ const AnalyzePanelComp = ({ fileData, fetchDataCallBack, resetDataFallBack, dese
       }
       {
         !mainAnalyze &&
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }} >
-            <CircularProgress style={{ marginTop: '40px' }} size={"100px"} />
+        <div style={{ flexDirection: "column", display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }} >
+            <h3>Analyzing file</h3>
+            <RadarLoader size={"200px"} style={{marginTop: "calc(9%)"}} />
         </div>
       }
       {

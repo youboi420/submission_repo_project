@@ -1,20 +1,28 @@
 /* react-comps */
 import React from 'react'
-import AddIcon from '@mui/icons-material/PersonAdd';
-import DeleteIcon from '@mui/icons-material/Delete'
-import EditNote from '@mui/icons-material/EditNote'
 import { DataGrid } from '@mui/x-data-grid'
 import { Box, Button, LinearProgress, Stack } from '@mui/material'
-import { getAllUsers, deleteUser } from '../services/user_service'
-import AnalyzePageStyle from '../Style/AnalyzePage.module.css';
+import { Navigate } from 'react-router-dom'
+import io from 'socket.io-client';
+
 import AdminIcon from '@mui/icons-material/AdminPanelSettings';
+import AddIcon from '@mui/icons-material/PersonAdd';
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditNoteIcon from '@mui/icons-material/EditNote'
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close'
+import AnalyzePageStyle from '../Style/AnalyzePage.module.css';
 
 /* my comps */
+import * as user_service from '../services/user_service'
+import { notify, NOTIFY_TYPES } from '../services/notify_service'
 import UserUpdateDialog from '../components/Dialogs/UserUpdateDialog'
 import UserCreateDialog from '../components/Dialogs/UserCreateDialog'
-import { notify, NOTIFY_TYPES } from '../services/notify_service'
-import { Navigate } from 'react-router-dom'
 import GenereicDeleteDialog from '../components/Dialogs/GenereicDeleteDialog'
+import DevicesLoader from '../components/Loaders/DevicesLoader';
+
+const socket = io(user_service.SOCKETS_URL)
+
 
 const UserManagePage = ({ isValidUser, userData }) => {
   const [time, setTime] = React.useState(30);
@@ -27,13 +35,14 @@ const UserManagePage = ({ isValidUser, userData }) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false, false)
   const [deleteId, setDeleteId] = React.useState(undefined)
   const [deleteName, setDeleteName] = React.useState(undefined)
-
+  
   const handleDelete = async (userId) => {
     try {
       if (userId !== undefined) {
-        await deleteUser(userId)
+        await user_service.deleteUser(userId)
+        // here i want to notify ive deleted user (userId)
+        socket.emit("user_update", userId)
         await fetchDataAndSetRows()
-        notify("user deleted succesfully", NOTIFY_TYPES.success)
       } else {
         notify("please select a user to delete", NOTIFY_TYPES.warn)
       }
@@ -63,7 +72,7 @@ const UserManagePage = ({ isValidUser, userData }) => {
   const fetchDataAndSetRows = async () => {
     setGridLoading(true);
     try {
-      const userData = await getAllUsers()
+      const userData = await user_service.getAllUsers()
       setRows(() => {
         return userData.map(
           (obj) => ({ ...obj, delete: "d", edit: "e" })
@@ -76,9 +85,13 @@ const UserManagePage = ({ isValidUser, userData }) => {
   }
 
   React.useEffect(() => {
-    document.title = "Admin panel"
-    if (userData.isadmin)
+    document.title = "Admin page"
+    if (userData.isadmin) {
       fetchDataAndSetRows()
+      socket.on("update_panel", (data) => {
+        fetchDataAndSetRows()
+      })
+    }
   }, []);
 
   const handleDeleteClicked = (userId) => {
@@ -93,34 +106,35 @@ const UserManagePage = ({ isValidUser, userData }) => {
   
   
   const columns = [
-    { field: 'id', headerName: 'UID', headerAlign: 'center', align: 'center', width: 250 },
-    { field: 'username', headerName: 'Username', headerAlign: 'center', align: 'center', width: 250 },
+    { field: 'id', headerName: 'UID', headerAlign: 'center', align: 'center', width: 150 },
+    { field: 'username', headerName: 'Username', headerAlign: 'center', align: 'center', width: 300 },
     {
-      field: 'isadmin', headerName: 'Admin', headerAlign: 'center', align: 'center', width: 250, renderCell: (params) => {
-        return <span className={AnalyzePageStyle.files_grid} style={{ fontWeight: 'bold',borderRadius: '12px', width: "20%", backgroundColor: params.value === 1 ? "#77FF26" : "#d32f2f", textAlign: 'center' }}> {params.value === 1 ? "YES" : "NO"} </span>
+      // ask gepeto to make it flex box
+      field: 'isadmin', headerName: 'Admin', headerAlign: 'center', align: 'center', width: 150, renderCell: (params) => {
+        return <Box sx={{ boxShadow: 4 }} className={AnalyzePageStyle.files_grid} style={{ fontWeight: 'lighter', fontFamily: "monospace", fontSize: "16px",borderRadius: '4px', width: "60%",  color: "white" , backgroundColor: params.value === 1 ? "#2e7d32" : "#d32f2f", textAlign: 'center' }}> {params.value === 1 ? <div>Yes</div> : <div>No</div>} </Box>
       }
     },
     { field: 'file_count', headerName: 'Files', headerAlign: 'center', align: 'center', width: 250 },
-    { field: 'analyzed_file_count', headerName: 'Analyzed', headerAlign: 'center', align: 'center', flex: 1 },
-    { field: 'edit', headerName: "", align: "center", width: 150, renderCell: (params) => {
+    { field: 'analyzed_file_count', headerName: 'Analyzed', headerAlign: 'center', align: 'center', width: 200 },
+    { field: 'edit', headerName: "Edit user", headerAlign: 'right', align: 'right', width: 250, renderCell: (params) => {
       return (
         <div>
           <Button onClick={() => { handleEdit(params.row.id) }} color='primary' variant='contained'  sx={{textTransform: "none"}} >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginLeft: "15px", marginRight: "15px" }}>
-              <span style={{fontSize: "16px"}} >Edit</span>
-              <EditNote style={{ marginLeft: '5px', marginBottom: "2px" }} />
+              <span style={{fontSize: "16px", fontFamily: "monospace"}} >Edit</span>
+              <EditNoteIcon style={{ marginLeft: '5px', marginBottom: "2px" }} />
             </div>
           </Button>
         </div>
       )
     }
   },
-    { field: 'delete', headerName: "", align: "center", width: 150, renderCell: (params) => {
+    { field: 'delete', headerName: "Delete user", headerAlign: 'center', align: 'center', width: 210, renderCell: (params) => {
         return (
           <div>
             <Button onClick={() => { handleDeleteClicked(params.row.id) }} color='error' variant='contained' sx={{textTransform: "none"}} >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-                <span style={{fontSize: "16px"}} >Delete</span>
+                <span style={{fontSize: "16px", fontFamily: "monospace"}} >Delete</span>
                 <DeleteIcon style={{ marginLeft: '5px', marginBottom: "4px" }} />
               </div>
             </Button>
@@ -130,21 +144,12 @@ const UserManagePage = ({ isValidUser, userData }) => {
     }
   ]
 
-  // // should be a ws with push data...
-  // React.useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     if (isValidUser && userData.isadmin)
-  //       fetchDataAndSetRows()
-  //   }, 30000);
-  //   return () => clearInterval(interval);
-  // })
-  
   if (isValidUser && userData.isadmin)
     return (
       <div>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
-          <Box className={AnalyzePageStyle.files_grid} sx={{ mt: "20px", mx: "10px", width: '100%' ,height: "88vh", display: 'flex', flexDirection: 'column', borderRadius: "12px", backdropFilter: "blur(100px)", borderStyle: 'solid', borderWidth: 'medium', borderColor: 'white', textAlign: 'center' }}>
-            <Box sx={{ fontSize: "10px", marginBottom: '-10px', justifyContent: 'center', textAlign: 'center', paddingTop: 1 }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}> <h1>Welcome Admin - {userData.username}</h1> <AdminIcon style={{ marginLeft: '5px' }} /> </Box>
+          <Box className={AnalyzePageStyle.files_grid} sx={{ mt: "20px", mx: "10px", width: '80%' ,height: "88vh", display: 'flex', flexDirection: 'column', textAlign: 'center', borderRadius: '10px', background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.06), rgba(200, 200, 200, 0.4))', backdropFilter: 'blur(50px)', WebkitBackdropFilter: 'blur(10px)', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.18)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)' }}>
+            <Box sx={{ fontSize: "22px", marginBottom: 'calc(-2%)', justifyContent: 'center', textAlign: 'center', paddingTop: 0.5 }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}> <h1>Welcome Admin - {userData.username}</h1> <AdminIcon style={{ marginLeft: '5px', fontSize: "52px" }} /> </Box>
             <div style={{ justifyContent: 'flex-end', textAlign: 'right', alignItems: "flex-end", marginRight: "calc(1%)"}}>
             <Button onClick={handleCreate} color='success' variant='contained' sx={{marginBottom: '10px',}} >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center'}}>
@@ -153,41 +158,28 @@ const UserManagePage = ({ isValidUser, userData }) => {
               </div>
             </Button>
             </div>
-            <Box sx={{ flex: 1, overflow: 'hidden', zIndex: '-1'}}>
+            <Box sx={{ flex: 1, overflow: 'hidden', zIndex: '-100' }}>
               {
-                gridLoading && <LinearProgress size={75} />
+                // gridLoading && <LinearProgress size={75} />
+                gridLoading && <DevicesLoader />
               }
               {
                 !gridLoading &&
-                <DataGrid rows={rows} columns={columns} onRowDoubleClick={(row) => { setEditData(row.row); setEditDialogOpen(true); }} onRowSelectionModelChange={handleSelectionChange} style={{ backdropFilter: "blur(300px)", fontWeight: "bold", overflow: 'hidden', borderColor: 'transparent', borderRadius: '12px'}} />
+                <DataGrid rows={rows} columns={columns} onRowDoubleClick={(row) => { setEditData(row.row); setEditDialogOpen(true); }} onRowSelectionModelChange={handleSelectionChange} style={{ backdropFilter: "blur(0px)", fontFamily: "monospace", fontSize: "20px" ,fontWeight: "bold", overflow: 'hidden', borderColor: 'transparent', borderRadius: '12px'}} />
               }
             </Box>
           </Box>
         </div>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
-          {/* <Stack spacing={2} direction="row" alignContent='center' justifyContent='center' style={{ marginTop: "10px", marginBottom: "10px", paddingTop: "20px", paddingBottom: "20px", paddingRight: "15px", paddingLeft: "15px", backdropFilter: "blur(300px)", width: "20%", borderRadius: '12px', borderStyle: 'solid', borderColor: 'white' }}>
-            <Button onClick={handleDeleteClicked} color='error' variant='contained' >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-                <span>DELETE</span>
-                <DeleteIcon style={{ marginLeft: '5px' }} />
-              </div>
-            </Button>
-            <Button onClick={handleEdit} color='primary' variant='contained'  >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-                <span>EDIT</span>
-                <EditNote style={{ marginLeft: '5px' }} />
-              </div>
-            </Button>
-          </Stack> */}
         </div>
         {
           editDialogOpen &&
-          <UserUpdateDialog isOpen={editDialogOpen} fetchDataAndSetRows={fetchDataAndSetRows} onClose={() => { setEditDialogOpen(false); setSelectedRow({}) }} userObj={editData} onSuccess={() => { notify("UPDATE USER: Success", NOTIFY_TYPES.success) }} onFailed={() => { notify("UPDATE USER: Failed", NOTIFY_TYPES.error) }} />
+          <UserUpdateDialog isOpen={editDialogOpen} fetchDataAndSetRows={fetchDataAndSetRows} onClose={() => { setEditDialogOpen(false); setSelectedRow({}) }} userObj={editData} onSuccess={() => { notify("UPDATE USER: Success", NOTIFY_TYPES.success); socket.emit("user_update") }} onFailed={() => { notify("UPDATE USER: Failed", NOTIFY_TYPES.error) }} />
         }
 
         {
           createDialogOpen &&
-          <UserCreateDialog isOpen={createDialogOpen} fetchDataAndSetRows={fetchDataAndSetRows} onClose={() => { setCreateDialogOpen(false); setSelectedRow({}) }} onSuccess={() => { notify("CREATE: Success", NOTIFY_TYPES.success) }} onFailed={() => { notify("CREATE: Failed", NOTIFY_TYPES.error) }} />
+          <UserCreateDialog isOpen={createDialogOpen} fetchDataAndSetRows={fetchDataAndSetRows} onClose={() => { setCreateDialogOpen(false); setSelectedRow({}) }} onSuccess={() => { notify("CREATE: Success", NOTIFY_TYPES.success); socket.emit("user_update") }} onFailed={() => { notify("CREATE: Failed", NOTIFY_TYPES.error) }} />
         }
 
         {

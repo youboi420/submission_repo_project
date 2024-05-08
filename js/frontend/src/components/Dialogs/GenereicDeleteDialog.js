@@ -4,7 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 
-const GenereicDeleteDialog = ({ isOpen = false, callBackFunction, onClose, userId, deletionType }) => {
+const GenericDeleteDialog = ({ isOpen = false, callBackFunction, onClose, userId, deletionType }) => {
   const handleConfirm =  () => {
     callBackFunction()
     onClose()
@@ -26,4 +26,4 @@ const GenereicDeleteDialog = ({ isOpen = false, callBackFunction, onClose, userI
   )
 }
 
-export default GenereicDeleteDialog
+export default GenericDeleteDialog

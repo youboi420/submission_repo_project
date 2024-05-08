@@ -7,11 +7,15 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import CloseIcon from '@mui/icons-material/Close'
 import Transion from '@mui/material/Slide'
-import { Box, CircularProgress, Stack, Tooltip } from '@mui/material'
+import { Box, Button, CircularProgress, Stack, Tooltip } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
-import InfoIcon from '@mui/icons-material/Info';
-
+import InfoIcon from '@mui/icons-material/Info'
 import AnalyzePanelViewStyle from '../../Style/AnalyzePanelViewStyle.module.css'
+
+import SaveAsIcon from '@mui/icons-material/Save'
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
+import TypeWriterLoader from '../Loaders/TypeWriterLoader'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Transion direction="up" ref={ref} {...props} />
@@ -21,11 +25,11 @@ const AnalyzePanelGISView = ({ isOpen, fileData, jsonData, onCloseCallBack, fetc
   const [open, setOpen] = React.useState(false)
   const [viewMode, setViewMode] = React.useState(false)
   const FLOATING_LIMITER = 3
-  const { hosts, ports } = jsonData;
+  const { hosts, ports } = jsonData
 
   const VERBAL_BOX_HEIGHT = "75vh"
-  const hostsWithIds = hosts?.map((host, index) => ({ ...host, id: `host_${index}` }));
-  const portsWithIds = ports?.map((port, index) => ({ ...port, id: `port_${index}` }));
+  const hostsWithIds = hosts?.map((host, index) => ({ ...host, id: `host_${index}` }))
+  const portsWithIds = ports?.map((port, index) => ({ ...port, id: `port_${index}` }))
   
   const portsGridCols = [
     { field: "count", headerName: 
@@ -59,6 +63,20 @@ const AnalyzePanelGISView = ({ isOpen, fileData, jsonData, onCloseCallBack, fetc
     ), headerAlign: "center", align: "center"       ,  flex: 1 },
   ]
 
+  const exportToPDF = () => {
+    const cap = document.querySelector('.gis_report')
+    const scaleFactor = 1
+    html2canvas(cap, { scale: scaleFactor }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png')
+      const doc = new jsPDF('l', 'mm', 'a4')
+      const compWidth = doc.internal.pageSize.getWidth()
+      const compHeight = doc.internal.pageSize.getHeight()
+      const marginTop = 20
+      doc.addImage(imgData, 'PNG', 0, marginTop, compWidth, compHeight * 0.75)
+      doc.save(`gisReport_${String(fileData?.filename).replace(".pcap", '')}.pdf`)
+    })
+  }
+  
   return (
     <div>
       <Dialog fullScreen open={isOpen} onClose={() => { setViewMode(false); onCloseCallBack() }} TransitionComponent={Transition} onAbort={() => { setViewMode(false); onCloseCallBack() }} 
@@ -84,12 +102,29 @@ const AnalyzePanelGISView = ({ isOpen, fileData, jsonData, onCloseCallBack, fetc
             >
               <CloseIcon />
             </IconButton>
-            <Typography sx={{ ml: '20px' }} variant="h6" component="div">
+            <Typography sx={{ ml: '20px', }} variant="h6" component="div">
               {fileData?.filename ? "General info about file: " + fileData?.filename : "Somehow not selected"}
             </Typography>
+
           </Toolbar>
         </AppBar>
-        <div style={{ backgroundColor: "transparent" }}>
+        {
+          fetchingStatus &&
+          <div style={{ zIndex: 1000, position: "absolute", right: "calc(25%)", top: "calc(8%)" }}>
+            <Button
+              sx={{ ml: 1, textTransform: 'none' }}
+              edge="end"
+              color="primary"
+              variant='contained'
+              onClick={exportToPDF}
+              aria-label="export to PDF"
+              endIcon={<SaveAsIcon sx={{ mb: "4px" }} />}
+              >
+              <Typography variant="h6">Export to PDF</Typography>
+            </Button>
+          </div>
+        }
+        <div style={{ backgroundColor: "transparent" }} className='gis_report'>
           {/* <div>
             <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', color: !fetchingStatus ? "grey" : "black" }} sx={{ mt: "20px" }}>
               <Typography>
@@ -103,18 +138,21 @@ const AnalyzePanelGISView = ({ isOpen, fileData, jsonData, onCloseCallBack, fetc
           </div> */}
           { // loading animatio
             !fetchingStatus &&
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', height: '80vh' }}>
-              <CircularProgress style={{ marginTop: '40px' }} size={"100px"} />
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: 'calc(22%)' }}>
+              {/* <CircularProgress style={{ marginTop: 'calc(22%)' }} size={"100px"} /> */}
+              <TypeWriterLoader />
             </div>
           }
           { // verbal view
             !viewMode && fetchingStatus &&
-            <div style={{marginBottom: "calc(3%)", height: "20vh"}}>
-              <h1 className={AnalyzePanelViewStyle.data_title} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', paddingTop: 10, paddingBottom: 10 }} >General info text based</h1>
+            <div style={{marginBottom: "calc(3%)"}}>
+              <h1 className={AnalyzePanelViewStyle.data_title} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', paddingTop: "-200px", paddingBottom: "-200px" }} >General info text based 
+            
+              </h1>
                 <Stack direction={'row'} spacing={2} style={{ justifyContent: 'center' }} >
                   <Stack direction={'column'} sx={{ borderRadius: "12px", borderStyle: "solid", height: VERBAL_BOX_HEIGHT}} >
                     <div style={{ alignItems: 'center', justifyContent: 'flex-end', textAlign: 'center'}}>
-                      <div >
+                      <div style={{marginTop: "calc(35%)"}}>
                         <h1 className={AnalyzePanelViewStyle.data_title} >File Size</h1>
                         <h3>
                           {jsonData.file_size_mb ? Number(jsonData.file_size_mb).toFixed(FLOATING_LIMITER) + " MB" : "Oh..."}
@@ -147,17 +185,16 @@ const AnalyzePanelGISView = ({ isOpen, fileData, jsonData, onCloseCallBack, fetc
                         <h3>
                           {jsonData.num_ports ? jsonData.num_ports : "Oh..."}
                         </h3>
-                      <Divider orientation='horizontal' sx={{ bgcolor: "black" }} />
                       </div>
                     </div>
                   </Stack>
-                  <Box sx={{ height: VERBAL_BOX_HEIGHT, width: "35%", borderRadius: "12px", borderStyle: "solid", overflow: "hidden" }}>
+                  <Box sx={{ height: VERBAL_BOX_HEIGHT, width: "39%", borderRadius: "12px", borderStyle: "solid", overflow: "hidden" }}>
                     <h1 className={AnalyzePanelViewStyle.data_title} style={{textAlign: 'center'}} > Port's Table</h1>
                     <div style={{ width: "100%", height: "calc(100% - 75px)", overflow: "auto" }}>
                       <DataGrid rows={portsWithIds} columns={portsGridCols} style={{fontFamily: "monospace", fontSize: "16px"}}/>
                     </div>
                   </Box>
-                  <Box sx={{ height: VERBAL_BOX_HEIGHT, width: "35%", borderRadius: "12px", borderStyle: "solid", overflow: "hidden" }}>
+                  <Box sx={{ height: VERBAL_BOX_HEIGHT, width: "39%", borderRadius: "12px", borderStyle: "solid", overflow: "hidden" }}>
                     <h1 className={AnalyzePanelViewStyle.data_title} style={{ textAlign: 'center' }}> Host's Table </h1>
                     <div style={{ width: "100%", height: "calc(100% - 75px)", overflow: "auto" }}>
                       <DataGrid rows={hostsWithIds} columns={hostsGridCols}  style={{fontFamily: "monospace", fontSize: "16px"}} />

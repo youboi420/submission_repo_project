@@ -6,7 +6,7 @@ class WinSizeChartComp extends React.Component {
     super(props)
     this.state = {
       series: [{
-        name: "packet size",
+        name: "window size",
         data: this.props.xDataPoints?.map((x, index) => [x, this.props.yDataPoints[index]])
       }],
       options: {

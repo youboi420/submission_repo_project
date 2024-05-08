@@ -19,12 +19,17 @@ const UserUpdateDialog = ({ isOpen = false, onClose, fetchDataAndSetRows, userOb
   const [usernameError, setUsernameError] = React.useState('')
   const [passwordError, setPasswordError] = React.useState('')
   const [adminError, setAdminError] = React.useState('')
-  const userErrMsg = 'No spaces allowed or special chars'
-  const passErrMsg = 'Minimum length of 6 characters'
+  const userErrMSG = 'No spaces allowed or special chars'
+  const passErrMSG = 'Minimum length of 6 characters and at least two special characters'
   const adminErrMsg = 'Invalid value. Please use true/false or 1/0.'
   const isUsernameValid = (username) => /^[a-zA-Z][a-zA-Z0-9]{0,250}$/.test(username)
-  const isPasswordValid = (password) => password.length >= 6 && /^.{0,250}$/.test(password)
-  const isAdminValid = (admin) => /^(true|false|1|0)$/.test(admin)
+  const passMatchMSG = "Password's match, please pick a new one"
+  const isPasswordValid = (password) => {
+    if (password.length < 6 || password.length > 254) return false
+    const specialChars = /[^A-Za-z0-9]/g
+    const specialCharCount = (password.match(specialChars) || []).length
+    return specialCharCount >= 2
+  };const isAdminValid = (admin) => /^(true|false|1|0)$/.test(admin)
 
   const handleUpdate = async () => {
     try {
@@ -35,12 +40,12 @@ const UserUpdateDialog = ({ isOpen = false, onClose, fetchDataAndSetRows, userOb
         onSuccess()
         onClose()
       } else {
-        setUsernameError(isUsernameValid(newUsername) ? '' : userErrMsg)
-        setPasswordError(isPasswordValid(newPassword) ? '' : passErrMsg)
+        setUsernameError(isUsernameValid(newUsername) ? '' : userErrMSG)
+        setPasswordError(isPasswordValid(newPassword) ? '' : passErrMSG)
         setAdminError(isAdminValid(newIsAdmin) ? '' : adminErrMsg)
       }
     } catch (error) {
-      if (error.response.status === 409) {
+      if (error?.response?.status === 409) {
         setDuplicateUsernameError("duplicate username")
       } else {
         console.error('Error updating user:', error)
@@ -91,9 +96,7 @@ const UserUpdateDialog = ({ isOpen = false, onClose, fetchDataAndSetRows, userOb
         <DialogContent>
           <Stack>
             <TextField
-              InputProps={{
-                readOnly: true,
-              }}
+              disabled
               label="id"
               value={userObj === undefined ? "NaN" : userObj.id}
               sx={{ marginBottom: 1, marginTop: 1 }}
@@ -104,7 +107,7 @@ const UserUpdateDialog = ({ isOpen = false, onClose, fetchDataAndSetRows, userOb
               value={newUsername}
               onChange={(e) => {
                 setNewUsername(e.target.value)
-                setUsernameError(isUsernameValid(e.target.value) ? '' : userErrMsg)
+                setUsernameError(isUsernameValid(e.target.value) ? '' : userErrMSG)
               }}
               error={!!usernameError}
               helperText={usernameError}
@@ -115,7 +118,7 @@ const UserUpdateDialog = ({ isOpen = false, onClose, fetchDataAndSetRows, userOb
               value={newPassword}
               onChange={(e) => {
                 setNewPassword(e.target.value)
-                setPasswordError(isPasswordValid(e.target.value) ? '' : passErrMsg)
+                setPasswordError(isPasswordValid(e.target.value) ? '' : passErrMSG)
               }}
               type={showPassword ? 'text' : 'password'}
               error={!!passwordError} /* covert to boolean */
@@ -147,11 +150,12 @@ const UserUpdateDialog = ({ isOpen = false, onClose, fetchDataAndSetRows, userOb
               <FormHelperText>{adminError}</FormHelperText>
             </FormControl>
           </Stack>
-          {duplicateUsernameError && (
+          {
+            duplicateUsernameError && 
             <Alert severity="error" sx={{ marginTop: 0, marginBottom: 2 }}>
               {duplicateUsernameError}
             </Alert>
-          )}
+          }
           <Stack>
             <Button onClick={handleUpdate} color='info' variant='outlined' startIcon={<EditNote />} >UPDATE</Button>
           </Stack>

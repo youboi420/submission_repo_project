@@ -16,13 +16,13 @@ import KeyIcon from '@mui/icons-material/VpnKey'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 
-import SignupIcon from '@mui/icons-material/PersonAdd';
+import LoginIcon from '@mui/icons-material/Login'
 import { notify, NOTIFY_TYPES } from '../services/notify_service'
 import * as user_service from '../services/user_service'
 import { hashPassword } from '../services/hashPassword'
 import { Navigate, useNavigate } from 'react-router-dom'
 import * as utils_service from '../services/utils_service'
-import { IconButton, InputAdornment } from '@mui/material'
+import { Alert, IconButton, InputAdornment } from '@mui/material'
 
 
 const defaultTheme = createTheme()
@@ -34,6 +34,16 @@ export default function LoginPage({ isValidUser }) {
   const [password_value, setPassword] = React.useState('')
   const [usernameError, setUsernameError] = React.useState('')
   const [passwordError, setPasswordError] = React.useState('')
+  const [formError, setFormError] = React.useState('')
+
+  const passErrMSG = 'Invalid password'
+  const isPasswordValid = (password) => {
+    if (password.length < 6 || password.length > 254) return false
+    const specialChars = /[^A-Za-z0-9]/g
+    const specialCharCount = (password.match(specialChars) || []).length
+    return specialCharCount >= 2
+  };
+
   let navigate = useNavigate();
 
   const handleUsernameChange = (event) => {
@@ -45,11 +55,11 @@ export default function LoginPage({ isValidUser }) {
   const handlePasswordChange = (event) => {
     const value = event.target.value
     setPassword(value)
-    setPasswordError(isPasswordValid(value) ? '' : 'Invalid password')
+    setPasswordError(isPasswordValid(value) ? '' : passErrMSG)
   }
 
   const isUsernameValid = (username) => /^[a-zA-Z][a-zA-Z0-9]{0,250}$/.test(username)
-  const isPasswordValid = (password) => password.length >= 6 && /^.{0,250}$/.test(password)
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
   }
@@ -61,7 +71,7 @@ export default function LoginPage({ isValidUser }) {
       return
     }
     if (!isPasswordValid(password_value)) {
-      setPasswordError('Invalid password')
+      setPasswordError(passErrMSG)
       return
     }
     const hashed_pass = await hashPassword(password_value)
@@ -74,15 +84,15 @@ export default function LoginPage({ isValidUser }) {
       if (res.data.valid === true) {
         navigate(ANALYZE_PAGE);
         utils_service.refreshPage()
-        notify(`conncted going to "/home"`, NOTIFY_TYPES.success)
+        notify(`conncted going to files & analyze page`, NOTIFY_TYPES.success)
       } else {
         notify("Incorrect user name or password", NOTIFY_TYPES.error)
         setPasswordError("Incorrect password")
       }
     } catch (error) {
       if (error.message === user_service.DB_ERROR_CODES.nouser) {
-        notify("user not found", NOTIFY_TYPES.error)
-        setUsernameError("Username not found")
+        notify("username or password are incorrect, please try again.", NOTIFY_TYPES.error)
+        setFormError("username or password are incorrect, please try again.")
       }
       else notify("server error", NOTIFY_TYPES.error)
     }
@@ -101,7 +111,14 @@ export default function LoginPage({ isValidUser }) {
         <ThemeProvider theme={defaultTheme}>
           <Container component="main" maxWidth="xs" style={{ justifyContent: 'center' }} className={LoginPageStyle.body}>
             <CssBaseline />
-            <Box sx={{ margin: -10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backdropFilter: "blur(10000px)", borderRadius: "4%", borderStyle: 'dashed', borderColor: "white" }}>
+            <Box sx={{ margin: -10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
+              background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0))',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              borderRadius: '20px',
+              border: '1px solid rgba(255, 255, 255, 0.5)',
+              boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.6)'
+            }}>
               <Avatar sx={{ m: 2, bgcolor: '#1976d2' }}>
                 <UserIcon />
               </Avatar>
@@ -121,7 +138,7 @@ export default function LoginPage({ isValidUser }) {
                       value={username}
                       onChange={handleUsernameChange}
                       error={!!usernameError}
-                      helperText={<Typography sx={{fontSize: "14px", fontWeight: "bold"}}>{usernameError}</Typography>}
+                      helperText={<Typography sx={{fontSize: "14px", fontWeight: "bold", color: "lightcoral"}}>{usernameError}</Typography>}
                       InputLabelProps={{ style: { 
                         color: "black", 
                         fontSize: "18px"
@@ -143,7 +160,7 @@ export default function LoginPage({ isValidUser }) {
                       value={password_value}
                       onChange={handlePasswordChange}
                       error={!!passwordError}
-                      helperText={<Typography sx={{fontSize: "14px", fontWeight: "bold"}}>{passwordError}</Typography>}
+                      helperText={<Typography sx={{fontSize: "14px", fontWeight: "bold", color: "lightcoral"}}>{passwordError}</Typography>}
                       InputLabelProps={{ style: { color: "black", fontSize: "18px" } }}
                       InputProps={{
                         startAdornment: <InputAdornment position="start"><KeyIcon sx={{ color: "black" }}/></InputAdornment>,
@@ -156,6 +173,12 @@ export default function LoginPage({ isValidUser }) {
                     />
                   </Grid>
                 </Grid>
+                {
+                  formError &&
+                  <Alert severity="error" sx={{ marginTop: 2, marginBottom: -1 }}>
+                    {formError}
+                  </Alert>
+                }
                 <Button
                   type="submit"
                   fullWidth
@@ -165,11 +188,11 @@ export default function LoginPage({ isValidUser }) {
                   <Typography sx={{ color: "white", fontSize: "22px" }} >
                   Login
                   </Typography>
-                  <SignupIcon sx={{ color: "white", fontSize: "22px", marginBottom: "3px", ml: "10px" }}/>
+                  <LoginIcon   sx={{ color: "white", fontSize: "22px", marginBottom: "3px", ml: "10px" }}/>
                 </Button>
                 <Grid container justifyContent="center">
                   <Grid item style={{ padding: '10px' }}>
-                    <Link href="/signup"  variant="body1" style={{ color: '#314852', paddingBottom: '10px'}}>
+                    <Link href="/signup"  variant="body1" style={{ color: '#d8eaf2', paddingBottom: '10px'}}>
                     Don't have an account? - Sign up here
                     </Link>
                   </Grid>

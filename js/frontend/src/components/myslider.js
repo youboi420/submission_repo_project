@@ -1,4 +1,5 @@
 const [sliderValue, setSliderValue] = React.useState([0, Number.MAX_SAFE_INTEGER]);
+const [maxSliderValue, setSliderValue] = React.useState([0, Number.MAX_SAFE_INTEGER]);
 function valuetext(value) {
     return `${value}°C`;
   }
@@ -6,25 +7,17 @@ function valuetext(value) {
   const marks = [
     {
       value: 0,
-      label: '0°C',
+      label: "0's'",
     },
     {
-      value: 20,
-      label: '20°C',
-    },
-    {
-      value: 37,
-      label: '37°C',
-    },
-    {
-      value: 100,
-      label: '100°C',
+      value: maxSliderValue,
+      label: maxSliderValue + "'s'",
     },
   ];
 <Slider
               getAriaLabel={() => 'Temperature'}
               getAriaValueText={valuetext}
-              defaultValue={[0, Number.MAX_SAFE_INTEGER]}
+              defaultValue={[0, ]}
               valueLabelDisplay="auto"
               onChange={handleSliderChange}
               marks={marks}

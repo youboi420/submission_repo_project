@@ -22,6 +22,10 @@ const USERS_URL_PROFILE = `${AUTH_URL}/profile`
 const USERS_URL_VERIFY = `${AUTH_URL}/verify`
 const USERS_URL_LOGIN = `${AUTH_URL}/login`
 const USERS_URL_LOGOUT = `${AUTH_URL}/clear-cookie`
+const USERS_URL_DEL = `${USERS_URL}/delete_account` 
+const USERS_URL_DEL_FILES = `${USERS_URL}/delete_files` 
+const USERS_UPDATE_PASS = `${USERS_URL}/update_pass`
+export const SOCKETS_URL = `${BASE_URL}`
 /* AUTH_URL */
 export const DB_ERROR_CODES =
 {
@@ -47,6 +51,41 @@ export const clearCookie = async () => {
   }
 }
 
+export const updatePassword = async (oldPassword, newPassword) => {
+  try {
+    const response = await axios.put(`${USERS_UPDATE_PASS}`, {
+      oldpassword: oldPassword,
+      newpassword: newPassword,
+    })
+    if (response.status === 200) {
+    } else {
+      console.error('Failed to update password:', response.data)
+      throw new Error('Failed to update password')
+    }
+  } catch (error) {
+    console.error('Error updating password:', error)
+    throw error
+  }
+}
+
+export const deleteAccount = async () => {
+  try {
+    const response = await axios.delete(`${USERS_URL_DEL}`)
+    return {valid: true, ...response}
+  } catch (error) {
+    return {valid: false}
+  }
+}
+
+export const deleteAllFiles = async () => {
+  try {
+    const response = await axios.delete(`${USERS_URL_DEL_FILES}`)
+    return {valid: true, ...response}
+  } catch (error) {
+    return {valid: false}
+  }
+}
+// delete_files
 export const verifyUserCookie = async () => {
   try {
     const response = await axios.get(`${USERS_URL_VERIFY}`)
@@ -72,8 +111,8 @@ export const createUser = async (newUsername, newPassword, newIsAdmin) => {
       throw new Error('Failed to create user')
     }
   } catch (error) {
-    if (error.response) {
-      if (error.response.status === 409) {
+    if (error?.response) {
+      if (error?.response?.status === 409) {
         throw new Error(DB_ERROR_CODES.dup)
       }
       else throw new Error('Failed to create user')
@@ -81,6 +120,7 @@ export const createUser = async (newUsername, newPassword, newIsAdmin) => {
     throw error
   }
 }
+
 export const updateUser = async (userId, newUsername, newPassword, newIsAdmin) => {
   try {
     const response = await axios.put(`${USERS_URL}${sql_api_path}/user/${userId}`, {
@@ -120,8 +160,8 @@ export const login = async (un, password) => {
     const res = await axios.post(`${USERS_URL_LOGIN}`, {un: un, password: password})
     return res
   } catch (error) {
-    if (error.response) {
-      if (error.response.status === 404) {
+    if (error?.response) {
+      if (error?.response?.status === 404) {
         throw new Error(DB_ERROR_CODES.nouser)
       }
       else throw new Error('Failed to create user')
@@ -135,8 +175,8 @@ export const signup = async (un, password) => {
     const res = await axios.post(`${AUTH_URL}/signup`, {un: un, password: password})
     return res
   } catch (error) {
-    if (error.response) {
-      if (error.response.status === 409) {
+    if (error?.response) {
+      if (error?.response?.status === 409) {
         throw new Error(DB_ERROR_CODES.dup)
       }
       else throw new Error('Failed to create user')

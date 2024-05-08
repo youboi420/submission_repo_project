@@ -556,6 +556,7 @@ void save_L4_convs_to_json(const char *filename)
     root = json_object_new_object();
     conversations_array = json_object_new_array();
     json_object_object_add(root, "conv_count",json_object_new_int(conv_id_tcp_g+conv_id_udp_g));
+    json_object_object_add(root, "duration",json_object_new_double(record_time_duration_g));
     json_object_object_add(root, "tcp_count",json_object_new_int(conv_id_tcp_g));
     json_object_object_add(root, "udp_count",json_object_new_int(conv_id_udp_g));
     json_object_object_add(root, "l4_conversations", conversations_array);

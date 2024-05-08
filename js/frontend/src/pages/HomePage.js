@@ -1,18 +1,71 @@
 import React from 'react'
-import { Box, Divider, Stack, Typography } from '@mui/material'
+import { Box, Button, Divider, Stack, Typography } from '@mui/material'
 import WbSunnyIcon from '@mui/icons-material/WbSunny'
 import WbTwilightIcon from '@mui/icons-material/WbTwilight'
 import WbNightIcon from '@mui/icons-material/Bedtime'
 import HomePageStyle from '../Style/HomePage.module.css'
-import InfoCard from '../components/InfoCard'
+import CircleInfo from '../components/CircleInfo'
+import Textra from 'react-textra'
 
 import IAFLOGO from "../Images/iaflogo.png"
 import BA108LOGO from "../Images/logo1.png"
-import KNOARLOGO from "../Images/knoarlogo.jpg"
+import KNOARLOGO from "../Images/knoarlogoround.png"
 
-import actionsCover from "../Images/actionsCover.jpeg"
-import developmentCover from "../Images/devCover.jpg"
-import planningCover from "../Images/planningCover.jpg"
+import IconButton from '@mui/material/IconButton';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+
+import actionsCover from "../Images/actionsCover.png"
+import developmentCover from "../Images/devCover.png"
+import planningCover from "../Images/planningCover.jpeg"
+import Console from '../components/consoleText'
+import {styled} from '@mui/material/styles';
+import ImageWithOverlay from '../components/ImageOverlay'
+import ContactBtn from '../components/ContactBtn'
+
+const ImageContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
+const StyledImg = styled('img')(({ theme }) => ({
+  width: 'var(--s)',
+  height: 'var(--s)',
+  cursor: 'pointer',
+  transition: 'transform 0.55s, filter 0.5s',
+  '&:hover': {
+    transform: 'scale(1.15)',
+    filter: 'brightness(0.7)',
+  },
+}));
+
+const TraText = styled('div')(({ theme }) => ({
+  color: "red",
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  visibility: 'hidden',
+
+  '&:hover': {
+    filter: 'brightness(0.7)',
+    visibility: 'visible',
+  },
+}));
+
+const TransformIcon = styled(IconButton)(({ theme }) => ({
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  fontSize: '72px',
+  color: '#0e515a',
+  zIndex: 0,
+  display: 'none',
+  visibility: 'hidden',
+}));
+
 
 const HomePage = ({ isValidUser, userData }) => {
   const heroTitle = "About the project "
@@ -127,43 +180,54 @@ const HomePage = ({ isValidUser, userData }) => {
   
   return (
     <div >
-      <Box sx={{ boxShadow: '0.2px 2px 9px white', marginTop: 3}} width="70%" mx="auto" boxShadow={3} style={{ backdropFilter: 'blur(25px)', borderRadius: '10px', padding: '20px' }}>
+      <Box sx={{ boxShadow: '0.2px 2px 9px white', marginTop: "calc(1vh + 7px)"}} width="70%" mx="auto" boxShadow={3} style={{ borderRadius: '10px', padding: '20px', background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0))', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(10px)', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.18)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+      }}>
         {/* i want the div below to be in the top left of the screen and in the highest z index */}
         <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginBottom: -20, marginTop: "-10px", fontSize: "40px" }} className={HomePageStyle.title} > Welcome to<div className={HomePageStyle.hero} style={{marginLeft: "10px"}}> Network Analyzer</div></h1>
         <h2 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }} className={HomePageStyle.title}> {getTimeGreet()}  </h2>
         <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginTop: 40 }} className={HomePageStyle.title}> In cooperation with:</h1>
+        {/* <ImageWithOverlay
+          imageUrl={KNOARLOGO}
+          heading="Visit"
+          linkUrl="https://knoar.org/"
+        /> */}
         <div className={HomePageStyle.imageContainer}>
-        <Stack spacing={8} direction={"row"} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <Stack spacing={17} direction={"row"} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
           <a href='https://www.iaf.org.il/' target='_blank' rel="noreferrer" >
             <img src={IAFLOGO} alt='hero1logo'   height={150} width={150} />
           </a>
-          <Divider orientation="vertical" sx={{ bgcolor: 'white', borderWidth: 2}} />
           <a href='https://he.wikipedia.org/wiki/%D7%99%D7%97%D7%99%D7%93%D7%94_108' target='_blank' rel="noreferrer" >
             <img src={BA108LOGO} alt='hero2logo' height={150} width={150} />
           </a>
-          <Divider orientation="vertical" sx={{ bgcolor: 'white', borderWidth: 2}} />
           <a href='https://knoar.org/' target='_blank' rel="noreferrer" >
             <img src={KNOARLOGO} alt='hero3logo' height={150} width={150} />
           </a>
         </Stack>
         </div>
+
+
         <Box sx={{ marginTop: 15, marginBottom: "calc(17%)" }} width="100%" mx="auto">
-        <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginTop: -80 }} className={HomePageStyle.title}>A little bit about the <div className={HomePageStyle.hero2} style={{marginLeft: "10px"}}>Project</div></h1>
-        <Stack direction={"row"} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 10, marginBottom: -170  }}>
+        <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginTop: -80 }} className={HomePageStyle.title}>Learn about the &nbsp;
+        <Box sx={{position: 'absolute', zIndex: 1, marginLeft: "calc(24.2%)"}}>
+          <Textra className={HomePageStyle.hero2} data={['Project.', "Goal's.", "Actions."]} effect='topDown' stopDuration={2200} />
+        </Box>
+        {/* <Console wordsList={['Project.', "Goal's.", "Actions."]}/> */}
+        </h1>
+        <Stack direction={"row"} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 10, marginBottom: "calc(-14.5%)"  }}>
           <Stack spacing={10} direction={"row"}>
-            <InfoCard src={planningCover} title={heroTitle} description={planDesc} />
-            <InfoCard src={developmentCover} title={developTitle} description={developDesc} />
-            <InfoCard src={actionsCover} title={actionTitle} description={actionDesc} />
+            <CircleInfo src={planningCover} title={heroTitle} description={planDesc} />
+            <CircleInfo src={developmentCover} title={developTitle} description={developDesc} />
+            <CircleInfo src={actionsCover} title={actionTitle} description={actionDesc} />
           </Stack>
         </Stack>
       </Box>
-        <div style={{ marginTop: "8px", marginBottom: "-10px" }}>
-          <Typography  >
-            Network Analyzer - Coded by Yair Elad © {new Date().getFullYear()}
-          </Typography>
+        <div style={{ marginBottom: "calc(0.5)" }}>
+          <ContactBtn />
+          <h4 style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end', textAlign: 'flex-end', marginTop: "-30px", marginBottom: "-3px",zIndex: 999 }} > server ip [ {process.env.REACT_APP_LOCAL_IP_ADDRESS}:8080 ]</h4>
         </div>
-        <h4 style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end', textAlign: 'flex-end', marginTop: "-20px", marginBottom: "-3px",zIndex: 999 }} > server ip {process.env.REACT_APP_LOCAL_IP_ADDRESS}</h4>
       </Box>
+      <div>
+      </div>
     </div>
   )
 }

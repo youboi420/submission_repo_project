@@ -76,7 +76,7 @@ authRouter.post(`/login`, async (req, res) => {
     if (db_res.valid === true) {
       const user = db_res.user
       console.log(user)
-      const user_token = jwt.sign({ id: user.id }, SEC_KEY, { expiresIn: '90d' })
+      const user_token = jwt.sign({ id: user.id, isadmin: user.isadmin, upwd: user.password, un: user.username }, SEC_KEY, { expiresIn: '90d' })
       res.cookie('jwt', user_token, { httpOnly: true, maxAge: (90 * 24 * 60 * 60 * 1000) })
       res.status(200).send({ success: true, valid: true })
     } else {

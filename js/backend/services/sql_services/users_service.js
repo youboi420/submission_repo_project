@@ -33,7 +33,7 @@ const create_users_table = () => {
   return new Promise((resolve, reject) => {
     connection.query(create_user_table_query, (err, results) => {
       if (err) {
-        console.log("error creating json reports table: ", err)
+        console.log("(user_service)---------> error creating json reports table: ", err)
         reject(err)
       } else {
         console.log(results.affectedRows !== 0 ? "created table users" : "table users already exist's")
@@ -59,10 +59,10 @@ const get_user_by_un = (un) => {
           reject({valied: false, message: err})
         } else {
           if (res.length > 0) {
-            console.log("user found: " + un + " : " + res[0].id)
+            console.log("(user_service)---------> user found: " + un + " : " + res[0].id)
             resolve({ valid: true, id: res[0].id })
           } else {
-            console.log("user not found: " + un)
+            console.log("(user_service)---------> user not found: " + un)
             resolve({ valid: false })
           }
         }
@@ -87,10 +87,10 @@ const get_user_by_id = (id) => {
           reject({valid: false, message: err})
         } else {
           if (res.length > 0) {
-            console.log("user found: " + id)
+            console.log("(user_service)---------> user found: " + id)
             resolve({ valid: true, user: res[0]})
           } else {
-            console.log("user not found: " + id)
+            console.log("(user_service)---------> user not found: " + id)
             resolve({ valid: false })
           }
         }
@@ -145,15 +145,15 @@ const delete_user = (un, pw, isadmin) => {
         if (check.valid === true) {
           connection.query(delete_user_query, [un, pw], (err, res) => {
             if (err) {
-              console.log("deletion failed\n" + err)
+              console.log("(user_service)---------> deletion failed\n" + err)
               reject(err)
             } else {
               connection.query(delete_user_query, [un, pw, isadmin], (res, err) => {
                 if (err){
-                  console.log("deletion failed: " + err)
+                  console.log("(user_service)---------> deletion failed: " + err)
                   reject(err)
                 } else {
-                  console.log("deleted succesfully: " + un)
+                  console.log("(user_service)---------> deleted succesfully: " + un)
                   resolve(res)
                 }
               })
@@ -246,7 +246,7 @@ const update_user_new_data = (user_id, un, upwd, isadmin) => {
         }
         connection.query(update_user_query, [un, upwd, isadmin, user_id], (err, res) => {
           if (err) {
-            console.log("update failed")
+            console.log("(user_service)---------> update failed")
             console.log(err)
             reject({success: false, message: err})
           } else {
@@ -269,10 +269,10 @@ const get_all_users = () => {
   return new Promise((resolve, reject) => {
     connection.query(get_all_users_query, (err, res) => {
       if (err) {
-        console.log("getting all users failed...\n" + err)
+        console.log("(user_service)---------> (user_service)---------> getting all users failed...\n" + err)
         reject(err)
       } else {
-        console.info(`${new Date(Date.now())} => got all users`)
+        console.info(`(user_service)---------> ${new Date(Date.now())} => got all users`)
         resolve(res)
       }
     })

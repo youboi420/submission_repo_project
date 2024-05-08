@@ -72,22 +72,35 @@
     font-style: normal;
 }
 
-.imageContainer {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
 .imageContainer img {
     --s: 150px;
     width: var(--s);
-    height: var(--s); 
+    height: var(--s);
     box-sizing: border-box;
     object-fit: cover;
     cursor: pointer;
-    transition: transform 0.35s;
+    transition: transform 0.55s, filter 0.5s;
 }
 
 .imageContainer img:hover {
     transform: scale(1.15);
+    filter: brightness(0.7);
+}
+
+.transform_icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    visibility: hidden;
+}
+
+.imageContainer:hover .transform_icon {
+    display: block;
+    visibility: visible;
+}
+
+.imageContainer a {
+    position: relative;
 }

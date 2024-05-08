@@ -21,14 +21,19 @@ const UserCreateDialog = ({ isOpen = false, onClose, fetchDataAndSetRows, onSucc
   const [passwordMissError, setPasswordMissError] = React.useState('')
   const [showPassword, setShowPassword] = React.useState(false)
 
-  const userErrMsg = 'No spaces allowed or special chars'
-  const passErrMsg = 'Minimum length of 6 characters'
-  const passErrMissMsg = "Password's do not match"
-  const adminErrMsg = "empty or invalid option"
+  const userErrMSG = 'No spaces allowed or special chars'
+  const passErrMSG = 'Minimum length of 6 characters and at least two special characters'
+  const passErrMissMSG = "Password's do not match"
+  const adminErrMSG = "empty or invalid option"
 
   const isUsernameValid = (username) => /^[a-zA-Z][a-zA-Z0-9]{0,250}$/.test(username)
-  const isPasswordValid = (password) => password.length >= 6 && /^.{0,250}$/.test(password)
-  const isAdminValid = (admin) => /^(true|false|1|0)$/.test(admin)
+  const passMatchMSG = "Password's match, please pick a new one"
+  const isPasswordValid = (password) => {
+    if (password.length < 6 || password.length > 254) return false
+    const specialChars = /[^A-Za-z0-9]/g
+    const specialCharCount = (password.match(specialChars) || []).length
+    return specialCharCount >= 2
+  };const isAdminValid = (admin) => /^(true|false|1|0)$/.test(admin)
 
   const handleCreate = async () => {
     try {
@@ -40,9 +45,9 @@ const UserCreateDialog = ({ isOpen = false, onClose, fetchDataAndSetRows, onSucc
         onSuccess()
         onClose()
       } else {
-        setUsernameError(isUsernameValid(newUsername) ? '' : userErrMsg)
-        setPasswordError(isPasswordValid(newPassword) ? '' : passErrMsg)
-        setAdminError(isAdminValid(newIsAdmin) ? '' : adminErrMsg)
+        setUsernameError(isUsernameValid(newUsername) ? '' : userErrMSG)
+        setPasswordError(isPasswordValid(newPassword) ? '' : passErrMSG)
+        setAdminError(isAdminValid(newIsAdmin) ? '' : adminErrMSG)
       }
     } catch (error) {
       console.error('Error creating user:', error)
@@ -89,7 +94,7 @@ const UserCreateDialog = ({ isOpen = false, onClose, fetchDataAndSetRows, onSucc
               value={newUsername}
               onChange={(e) => {
                 setNewUsername(e.target.value)
-                setUsernameError(isUsernameValid(e.target.value) ? '' : userErrMsg)
+                setUsernameError(isUsernameValid(e.target.value) ? '' : userErrMSG)
               }}
               error={!!usernameError}
               helperText={usernameError}
@@ -100,7 +105,7 @@ const UserCreateDialog = ({ isOpen = false, onClose, fetchDataAndSetRows, onSucc
               value={newPassword}
               onChange={(e) => {
                 setNewPassword(e.target.value)
-                setPasswordError(isPasswordValid(e.target.value) ? '' : passErrMsg)
+                setPasswordError(isPasswordValid(e.target.value) ? '' : passErrMSG)
               }}
               type={showPassword ? 'text' : 'password'}
               error={!!passwordError} /* covert to boolean */
@@ -136,7 +141,7 @@ const UserCreateDialog = ({ isOpen = false, onClose, fetchDataAndSetRows, onSucc
                 fullWidth
                 onChange={(e) => {
                   setNewIsAdmin(e.target.value)
-                  setAdminError(isAdminValid(e.target.value) ? '' : adminErrMsg)
+                  setAdminError(isAdminValid(e.target.value) ? '' : adminErrMSG)
                 }}
                 error={!!adminError}
               >

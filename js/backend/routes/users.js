@@ -2,6 +2,8 @@ import express from 'express'
 import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser'
 import isAdminMiddleware from '../middleware/isAdmin.js'
+import jwt from 'jsonwebtoken'
+
 
 import * as files_service from '../services/files_service/file_service.js'
 import * as pcap_files_service from '../services/sql_services/pcap_files_service.js'
@@ -102,6 +104,85 @@ usersRouter.delete(`${sql_api_path}/user/:id`, async (req, res) => {
     }
   } else {
     res.status(403).send({ error: "login as admin." })
+  }
+})
+
+usersRouter.delete(`/delete_account`, async (req, res) => {
+  const JWTCookie = req.cookies.jwt
+  if (!JWTCookie) {
+    res.status(401).json("invalid request")
+    return;
+  } else {
+    try {
+      const decodeCookie = jwt.verify(JWTCookie, process.env.JWT_SECRET)
+      const delete_reports = await reports_service.delete_all_reports_by_user_id(decodeCookie.id)
+      const files_flag = await pcap_files_service.delete_all_files_by_user_id(decodeCookie.id)
+      if (files_flag.success) {
+        const flag = await users_service.delete_user_by_id(decodeCookie.id)
+        if (flag.success) {
+          res.clearCookie('jwt')
+          res.status(200).json("deleted account")
+        } else {
+          res.status(flag.code).json("request failed")
+        }
+      } else {
+        const flag = await users_service.delete_user_by_id(decodeCookie.id)
+        res.status(flag.code).json("request failed")
+      }
+    } catch (error) {
+      console.error(error)
+      res.status(403).json("invalid request")
+    }
+  }
+})
+
+usersRouter.delete(`/delete_files`, async (req, res) => {
+  const JWTCookie = req.cookies.jwt
+  if (!JWTCookie) {
+    res.status(401).json("invalid request")
+    return;
+  } else {
+    try {
+      const decodeCookie = jwt.verify(JWTCookie, process.env.JWT_SECRET)
+      const delete_reports = await reports_service.delete_all_reports_by_user_id(decodeCookie.id)
+      const flag = await pcap_files_service.delete_all_files_by_user_id(decodeCookie.id)
+      if (flag.success) {
+        res.status(200).json("deleted files")
+      } else {
+        res.status(flag.code).json("request failed")
+      }
+    } catch (error) {
+      console.error(error)
+      res.status(403).json("invalid request")
+    }
+  }
+})
+
+usersRouter.put(`/update_pass`, async (req, res) => {
+  const JWTCookie = req.cookies.jwt
+  const { newpassword, oldpassword } = req.body
+  if (!JWTCookie) {
+    res.status(401).json("invalid request")
+    return;
+  } else {
+    try {
+      const decodeCookie = jwt.verify(JWTCookie, process.env.JWT_SECRET)
+      if ( oldpassword !== decodeCookie.upwd || newpassword === decodeCookie.upwd) {
+        res.status(400).send("invalid request")
+      } else {
+        const flag = await users_service.update_user_new_data(decodeCookie.id, decodeCookie.un, newpassword, decodeCookie.isadmin)
+        if (flag.success) {
+          const user_token = jwt.sign({ id: decodeCookie.id, isadmin: decodeCookie.isadmin, upwd: newpassword, un: decodeCookie.un }, process.env.JWT_SECRET, { expiresIn: '90d' })
+          res.cookie('jwt', user_token, { httpOnly: true, maxAge: (90 * 24 * 60 * 60 * 1000) })
+          res.status(200).json("updated password")
+        } else {
+          res.status(flag.code).json("request failed")
+        }
+      }
+    } catch (error) {
+      console.error(error)
+      res.status(403).json("invalid request")
+    }
   }
 })
 

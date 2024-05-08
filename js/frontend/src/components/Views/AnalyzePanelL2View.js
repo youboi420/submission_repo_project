@@ -11,6 +11,7 @@ import { CircularProgress, Stack, Switch } from '@mui/material'
 import * as analyze_service from '../../services/analyze_service'
 import L2ConvComp from '../L2ConvComp'
 import { L2_DATA_TYPES } from '../Common/L2Common'
+import TypeWriterLoader from '../Loaders/TypeWriterLoader'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Transion direction="up" ref={ref} {...props} />
@@ -35,6 +36,7 @@ const AnalyzePanelL2View = ({ isOpen, fileData, jsonData, onCloseCallBack, fetch
     packetsPerHost: analyze_service.calculatePacketsPerHost(conversation),
     packetList: conversation.packets_data
   }));
+  
   
 
   return (
@@ -79,9 +81,10 @@ const AnalyzePanelL2View = ({ isOpen, fileData, jsonData, onCloseCallBack, fetch
           </div> */}
           { // loading animation
             !fetchingStatus &&
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', height: '80vh' }}>
-              <CircularProgress style={{ marginTop: '10px' }} size={"100px"} />
-            </div>
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: 'calc(22%)'}}>
+            {/* <CircularProgress style={{ marginTop: 'calc(22%)' }} size={"100px"} /> */}
+            <TypeWriterLoader />
+          </div>
           }
           { // verbal view
             !viewMode && fetchingStatus &&

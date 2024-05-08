@@ -475,7 +475,6 @@ filesRoute.post('/upload', upload.single('file'), async (req, res) => {
         try {
           const valid = await analyze_service.valiate_file(req.file.path)
           res.status(200).send({ success: true })
-
         } catch (error) {
           try {
             const del = await pcap_files_service.delete_file_by_path(req.file.path)
@@ -500,11 +499,18 @@ filesRoute.delete('/delete/:id', async (req, res) => {
     res.status(401).send({success: false, message: "unauthed..."})
   } else {
     try {
-      const ver = jwt.verify(req.cookies.jwt, SEC_KEY)
-      const db_res_reports_delete = await reports_service.delete_report_by_file_id(Number(file_id))
-      const db_res_files_delete = await pcap_files_service.delete_file_by_file_id(Number(file_id))
-      console.log(ver);
-      res.status(200).send("ok.")
+      const user = jwt.verify(req.cookies.jwt, SEC_KEY)
+      const file_owner_id = await pcap_files_service.get_file_by_fileid(file_id)
+      console.log(file_owner_id);
+      console.log(user);
+      if (file_owner_id?.file?.owner_id === user.id) {
+        const db_res_reports_delete = await reports_service.delete_report_by_file_id(Number(file_id))
+        const db_res_files_delete = await pcap_files_service.delete_file_by_file_id(Number(file_id))
+        console.log(ver);
+        res.status(200).send("ok.")
+      } else {
+        res.status(403).send("Invalid request")
+      }
     } catch (error) {
       console.log(error);
       res.status(500).send("error")
@@ -522,16 +528,70 @@ filesRoute.get('/download/:id', async (req, res) => {
       const options = {
         root: path.join('')
       }
-      res.sendFile(file.r.path, options, function (err) {
-        if (err) {
-          console.error('Error sending file:', err)
-          res.status(400).send({message: "requested file is invalid."})
+      try {
+        const user = jwt.verify(req.cookies.jwt, SEC_KEY)
+        console.log(user);
+        console.log(file.r);
+        if (file.r.owner_id === user.id) {
+          res.sendFile(file.r.path, options, function (err) {
+            if (err) {
+              console.error('Error sending file:', err)
+              res.status(400).send({ message: "requested file is invalid." })
+            }
+          })
+        } else {
+          res.status(403).send("unauthed request")
         }
-      })
+      } catch (error) {
+        res.status(401).send("invalid request.")
+      }
     } else {
       res.status(500).send("invalid file id.")
     }
   }
 })
+
+// filesRoute.delete('/delete/:id', async (req, res) => {
+//   const file_id = req.params.id
+//   const jwtCookie = req.cookies.jwt
+//   const dec = cookie_service.decodeCookie(req.cookies)
+//   const user_id = dec.decoded?.id
+//   if (jwtCookie === undefined) {
+//     res.status(401).send({success: false, message: "unauthed..."})
+//   } else {
+//     try {
+//       const ver = jwt.verify(req.cookies.jwt, SEC_KEY)
+//       const db_res_reports_delete = await reports_service.delete_report_by_file_id(Number(file_id))
+//       const db_res_files_delete = await pcap_files_service.delete_file_by_file_id(Number(file_id))
+//       console.log(ver);
+//       res.status(200).send("ok.")
+//     } catch (error) {
+//       console.error(error)
+//       res.status(500).send("error")
+//     }
+//   }
+// })
+
+// filesRoute.get('/download/:id', async (req, res) => {
+//   const file_id = req.params.id
+//   if (file_id === undefined) {
+//     res.status(400).send("invalid request...")
+//   } else {
+//     const file = await pcap_files_service.get_path_by_fileid(file_id)
+//     if (file.success === true) {
+//       const options = {
+//         root: path.join('')
+//       }
+//       res.sendFile(file.r.path, options, function (err) {
+//         if (err) {
+//           console.error('Error sending file:', err)
+//           res.status(400).send({message: "requested file is invalid."})
+//         }
+//       })
+//     } else {
+//       res.status(500).send("invalid file id.")
+//     }
+//   }
+// })
 
 export default filesRoute

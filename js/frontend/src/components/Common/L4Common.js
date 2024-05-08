@@ -185,7 +185,7 @@ const hostsDataTable = (singleMode, perConvData, type) => {
   return (
     <div style={{ flex: 1, borderStyle: "solid", borderRadius: "12px" }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <h1 className={AnalyzePanelViewStyle.data_title}  >{"Conversation: " + (convId + 1)}</h1>
+        <h1 className={AnalyzePanelViewStyle.data_title} >{`${type} Conversation: ${(convId + 1)}`}</h1>
         <Stack spacing={0}>
           <Box>
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: type === L4_DATA_TYPES.UDP ? 20 : -20 }}>

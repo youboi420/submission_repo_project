@@ -11,7 +11,11 @@ import LogoutIcon from '@mui/icons-material/Logout'
 import FilesIcon from '@mui/icons-material/FolderCopy'
 import HomeIcon from '@mui/icons-material/Home'
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import ConnectIcon from '@mui/icons-material/Contacts';
+import ManIcon from '@mui/icons-material/Man';
+import StarIcon from '@mui/icons-material/Star';
 
+import LandingStyle from '../Style/LandingPage.module.css';
 import logo from '../Images/applogo.png'
 
 const BTN_COLOR = "#0a236780"//"#0a238e"
@@ -22,7 +26,7 @@ const StyledNavButton = styled(Button)(({ theme }) => ({
   fontWeight: 'normal',
   textDecoration: 'none',
   color: 'inherit',
-  transition: 'background-color 0.4s ease-in-out',
+  transition: 'background-color 0.25s ease-in-out',
   '&:hover': {
     backgroundColor: BTN_COLOR,
   },
@@ -47,9 +51,11 @@ const NavbarComp = ({ isValidUser, userData }) => {
   );
   
   const guestSVG = (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style={svgStyles}>
-      <circle cx="12" cy="12" r="10" fill="#FF6962" />
-    </svg>
+    <div style={{marginTop: "4.4px"}}>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style={svgStyles}>
+        <circle cx="12" cy="12" r="10" fill="#FF6962"/>
+      </svg>
+    </div>
   );
   
 
@@ -65,12 +71,20 @@ const NavbarComp = ({ isValidUser, userData }) => {
           </a>
           </Box>
           <div style={{ display: 'flex', alignItems: 'center', marginLeft: "calc(35%)", flexGrow: 1, marginTop: "4px" }}>
-            <Typography variant="h6">
-              {isValidUser ?  "logged as: " +userData.username : 'please log in'}
-            </Typography>
-            <div style={{marginLeft: "4px"}}>
+            <div style={{marginRight: "-2px"}}>
               {isValidUser ? loggedInSVG : guestSVG}
             </div>
+            <Typography variant="h6">
+              {isValidUser ? userData.username : 'please log in'}
+            </Typography>
+            {
+              (!isValidUser) &&
+              <div style={{ marginLeft: "calc(0.5%)", marginTop: "calc(-1%)" }} className={LandingStyle.guest_ribbon}>Guest</div>
+            }
+            {
+              isValidUser &&
+              <div style={{ marginLeft: "calc(0.5%)", marginTop: "calc(-1%)" }} className={userData.isadmin ? LandingStyle.admin_ribbon : LandingStyle.user_ribbon}>{userData.isadmin ? "admin" : "user"}</div>
+            }
           </div>
           <Stack direction={'row'} spacing={2} >
             <Card
@@ -95,7 +109,7 @@ const NavbarComp = ({ isValidUser, userData }) => {
               <Divider orientation="vertical" variant="middle" sx={{ borderWidth: 2, bgcolor: BORDER_COLOR }} flexItem />
               {
                 isValidUser &&
-                <StyledNavButton href="/analyzeandfiles" sx={{ textTransform: 'none', fontWeight: isActive('/analyzeandfiles') ? 'bold' : 'normal', backgroundColor: isActive("/analyzeandfiles") ? BTN_COLOR : "inherit" }} >
+                <StyledNavButton href="/analyzeandfiles" sx={{ textTransform: 'none', fontWeight: isActive('/analyzeandfiles') ? 'bold' : 'normal', backgroundColor: isActive("/analyzeandfiles") ? BTN_COLOR : "inherit",  }} >
                   <AnalyzeIcon /> 
                   <div style={{marginTop: "5px", marginLeft: "-7px"}} >
                   Analyze  && 
@@ -147,6 +161,19 @@ const NavbarComp = ({ isValidUser, userData }) => {
                   Login
                   </div>
                 </StyledNavButton>
+              }
+              {
+                  !isValidUser &&
+                  <Divider orientation="vertical" variant="middle" sx={{ borderWidth: 2, bgcolor: BORDER_COLOR }} flexItem />
+              }
+              <StyledNavButton href="/contact" sx={{ textTransform: 'none', fontWeight: isActive('/contact') ? 'bold' : 'normal', backgroundColor: isActive("/contact") ? BTN_COLOR : "inherit" }} startIcon={<ConnectIcon />}>
+                <div style={{ marginTop: "5px", marginLeft: "-7px" }} >
+                  Contact
+                </div>
+              </StyledNavButton>
+              {
+                  isValidUser &&
+                  <Divider orientation="vertical" variant="middle" sx={{ borderWidth: 2, bgcolor: BORDER_COLOR }} flexItem />
               }
               {
                 isValidUser &&

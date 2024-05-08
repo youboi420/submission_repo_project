@@ -506,7 +506,7 @@ filesRoute.delete('/delete/:id', async (req, res) => {
       console.log(ver);
       res.status(200).send("ok.")
     } catch (error) {
-      console.log(error);
+      console.error(error)
       res.status(500).send("error")
     }
   }

@@ -43,6 +43,8 @@ typedef struct ddos_addr_ll{
     struct in_addr addr;
     uint32_t src_port;
     uint32_t dest_port;
+    int packets;
+    uint64_t size_sent;
     struct ddos_addr_ll * next;
 } ddos_addr_ll;
 
@@ -93,11 +95,12 @@ int detect_flood(conv_s convo);
  * @time-complexity O(K) add's as the last ddos in list
  * 
  * @param root the ddos list header
- * @param atkr_addr the attacket host ip address
- * @param src_port the attacket host source port
+ * @param atkr_addr the attacker host ip address
+ * @param src_port the attacker host source port
+ * @param packets_sent the amount of packets the attacker sent
  * @return int 1 if inserted or existed 0 if not inserted
  */
-int add_to_ddos_ll(ddos_addr_ll **root, struct in_addr atkr_addr, uint32_t src_port, uint32_t dest_port);
+int add_to_ddos_ll(ddos_addr_ll **root, struct in_addr atkr_addr, uint32_t src_port, uint32_t dest_port, int packets_sent, uint64_t size);
 
 /**
  * @brief 

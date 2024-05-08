@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Signika+Negative:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Advent+Pro:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oleo+Script+Swash+Caps:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap');
+
+.body {
+    margin-top: 20px;
+    background-color: lightblue;
+    justify-content: center;
+    align-items: center;
+}
+
+.social {
+  font-family: "Signika Negative", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: oblique;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+  font-size: 72px;
+  color: #0c1957;
+  text-shadow: 0px 0px 0px transparent;
+}
+.title {
+    font-family: "Signika Negative", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    color: white;
+    text-shadow: 2px 4px 4px black;
+}
+
+.hero {
+    font-family: "Advent Pro", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: oblique;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+    font-size: 72px;
+    color: #0c1957;
+    text-shadow: 2px 4px 4px white;
+}
+
+.about_me_text {
+    font-family: "Signika Negative", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    color: white;
+    font-size: 20px;
+}
+
+.hobbits {
+    font-family: "Signika Negative", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: oblique;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+    font-size: 72px;
+    margin-top: 4px;
+    color: white;
+    text-shadow: 2px 10px 4px #1c3649;
+}
+
+.hero2 {
+    font-family: "Signika Negative", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: oblique;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+    font-size: 44px;
+    margin-top: 4px;
+    color: white;
+    text-shadow: 2px 6px 4px #2c526d;
+}

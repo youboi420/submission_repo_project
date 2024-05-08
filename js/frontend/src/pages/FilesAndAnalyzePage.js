@@ -1,21 +1,23 @@
-import { keyframes } from '@emotion/react';
 import * as React from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { Backdrop, Box, CircularProgress, Divider, LinearProgress, Stack } from '@mui/material';
-import UploadComp from '../components/UploadComp';
+import { DataGrid } from '@mui/x-data-grid';
+import { Backdrop, Box, Button, CircularProgress, Divider, LinearProgress, Stack } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DownloadIcon from '@mui/icons-material/Download';
 import AdminIcon from '@mui/icons-material/SupervisedUserCircle';
 import UserIcon from '@mui/icons-material/AccountCircle';
 import DownArrowIcon from '@mui/icons-material/ArrowDownward';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close'
 import UpArrowIcon from '@mui/icons-material/ArrowUpward';
-import { DataGrid } from '@mui/x-data-grid';
 
 import { NOTIFY_TYPES, notify } from '../services/notify_service';
+import UploadComp from '../components/UploadComp';
+import AnalyzePanelComp from '../components/Panels/AnalyzePanelComp';
 import FilesPageStyle from '../Style/FilesPage.module.css'
 import * as files_service from '../services/files_service'
-import * as analyze_service from '../services/analyze_service';
-import AnalyzePanelComp from '../components/Panels/AnalyzePanelComp';
+import * as websocket_service from '../services/websocket_service';
+import FilesLoader from '../components/Loaders/FilesLoaderComp';
 
 const sleep = (milliseconds) => {
   return new Promise(resolve => {
@@ -69,20 +71,23 @@ const FilesAndAnalyzePage = ({ isValidUser, userData }) => {
         }
         return (
           // <button className={FilesPageStyle.files_grid}  onClick={() => { handleFileIdClick(params.row.file_id, params.row.filename); }} style={{ color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', background: 'transparent', boxShadow: '0px 0px 0px transparent', border: '0px solid transparent', textShadow: '0px 0px 0px transparent', cursor: 'pointer', borderRadius: "12px", borderStyle: 'solid', borderWidth: '5px', borderColor: 'transparent', backgroundColor: '#1976d2', width: "100%", fontSize: "18px" }} > <DownloadIcon style={{ marginRight: '5px' }} /> {btnText} </button>
-          <button
+          <Button
+            color='primary'
+            variant='contained'
+            sx={{textTransform: "none", fontSize: "18px", width: "50%", height: "65%"}}
             className={`${FilesPageStyle.files_grid_button} ${FilesPageStyle.files_grid}`}
             onClick={() => {
               handleFileIdClick(params.row.file_id, params.row.filename);
             }}
           >
             <DownloadIcon style={{ marginRight: '5px' }} /> {btnText}
-          </button>
+          </Button>
         )
       }
     },
     {
       field: 'analyzed', headerName: 'analyzed', headerAlign: 'center', align: 'center', flex: 1, renderCell: (params) => {
-        return <span className={FilesPageStyle.files_grid} style={{borderRadius: '12px',width: "20%", backgroundColor: params.value === 1 ? "#77DD76" : "#FF6962"}}> {params.value === 1 ? "Yes" : "No"} </span>
+        return <Box sx={{boxShadow: 3}} className={FilesPageStyle.files_grid} style={{ borderRadius: '4px',width: "20%", fontSize: "20px", color: "White", backgroundColor: params.value === 1 ? "#2e7d32" : "#d32f2f", fontWeight: "lighter"}}> {params.value === 1 ? <div>Yes</div> : <div>No</div>} </Box>
         // for users page! -> return <span className={FilesPageStyle.files_grid} style={{borderRadius: '12px',width: "50%", backgroundColor: params.value === 1 ? "#77DD76" : "#FF6962"}}> {params.value === 1 ? "Yes" : "No"} </span>
       }
     },
@@ -167,7 +172,7 @@ const FilesAndAnalyzePage = ({ isValidUser, userData }) => {
   React.useEffect(() => {
     if (isValidUser)
       fetchFilesData()
-    document.title = "analyze page"
+    document.title = "Files and analyze page"
   }, []);
 
   React.useEffect(() => {
@@ -180,10 +185,10 @@ const FilesAndAnalyzePage = ({ isValidUser, userData }) => {
       container.scrollIntoView({ block: 'start', behavior: 'smooth' });
     }
   }
-
+  
   if (isValidUser) {
     return (
-      <div style={{ display: 'flex', height: '900%', marginTop: "-5px" }} className={FilesPageStyle.info_panel}>
+      <div style={{ display: 'flex', marginTop: "calc(-0.05%)" }} className={FilesPageStyle.info_panel}>
         {
           isAnalyzeLoading &&
           <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isAnalyzeLoading} onClick={() => {setIsAnalyzeLoading(false)}} >
@@ -192,7 +197,7 @@ const FilesAndAnalyzePage = ({ isValidUser, userData }) => {
         }
         <Box style={{ width: '100%' }} sx={{ mr: -1, color: 'black' }}>
           <Stack direction={'column'}>
-            <Box sx={{ mt: "10px", mx: "10px", p: 1.5, height: "calc(4%)",backdropFilter: "blur(100px)", borderRadius: "12px", fontSize: "20px", borderStyle: 'solid', borderWidth: '5px', borderColor: BORDER_COLOR, textAlign: "center", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Box sx={{ mt: "10px", mx: "10px", p: 1.5, height: "calc(4%)", background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0))', backdropFilter: 'blur(25px)', WebkitBackdropFilter: 'blur(25px)', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.18)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)', textAlign: "center", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <Stack direction={'row'} spacing={4} justifyContent="center" alignItems="center" /* sx={{marginRight: "calc(4%)"}} */>
                 <h1 className={FilesPageStyle.info_panel} > Hello again, {userAnalyzeData.username} </h1>
                 <Divider orientation='vertical' flexItem sx={{ bgcolor: "black", borderWidth: 1.5 }}/>
@@ -203,10 +208,10 @@ const FilesAndAnalyzePage = ({ isValidUser, userData }) => {
                 <h1 className={FilesPageStyle.info_panel}> {timeText} </h1> */}
               </Stack>
             </Box>
-            <Box sx={{ mt: "6px", mx: "10px", p: 2, backdropFilter: "blur(100px)", borderRadius: "12px", height: "20%", borderStyle: 'solid', borderWidth: '5px', borderColor: BORDER_COLOR, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <UploadComp className={FilesPageStyle.info_panel} userAnalyzeDataCallback={userAnalyzeDataCallback} />
+            <Box sx={{ mt: "6px", mx: "10px", p: 2,  background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0))', backdropFilter: 'blur(25px)', WebkitBackdropFilter: 'blur(25px)', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.18)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <UploadComp className={FilesPageStyle.info_panel} userAnalyzeDataCallback={userAnalyzeDataCallback} fallBack={fallBack}/>
             </Box>
-            <Box id="files_panel_container" className={FilesPageStyle.files_grid} sx={{ mt: "6px", mx: "10px", height: "58.5vh", display: 'flex', flexDirection: 'column', borderRadius: "12px", backdropFilter: "blur(100px)", borderStyle: 'solid', borderWidth: '5px', borderColor: BORDER_COLOR, textAlign: 'center' }}>
+            <Box id="files_panel_container" className={FilesPageStyle.files_grid} sx={{ mt: "6px", mx: "10px", height: "60vh", display: 'flex', flexDirection: 'column',  background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0))', backdropFilter: 'blur(50px)', WebkitBackdropFilter: 'blur(25px)', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.18)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)', textAlign: 'center' }}>
             <Box sx={{ fontSize: "20px", justifyContent: 'center', textAlign: 'center', paddingTop: 1 }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}> <span>Your uploaded pcap files</span> <CloudUploadIcon style={{ marginLeft: '5px' }} /></Box>
               {
                 userAnalyzeData.numOfFiles === 0 &&
@@ -214,20 +219,21 @@ const FilesAndAnalyzePage = ({ isValidUser, userData }) => {
               }
               {
                 userAnalyzeData.numOfFiles !== 0 &&
-                <Box sx={{ fontSize: "20px", marginBottom: '10px', justifyContent: 'center', textAlign: 'center' }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}> <DownArrowIcon style={{ marginRight: '5px' }}/> <span> please select a file to analyze/view</span> <DownArrowIcon style={{ marginLeft: '5px' }}/> </Box>
+                <Box sx={{ fontSize: "20px", marginBottom: '10px', justifyContent: 'center', textAlign: 'center', }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}> <DownArrowIcon style={{ marginRight: '5px' }}/> <span> please select a file to analyze/view</span> <DownArrowIcon style={{ marginLeft: '5px' }}/> </Box>
               }
               <Box sx={{ flex: 1, overflow: 'hidden' }}>
                 {
-                  gridLoading && <LinearProgress size={75} />
+                  // gridLoading && <LinearProgress size={75} style={{marginTop: "calc(20%)"}} />
+                  gridLoading &&  <div style={{justifyContent: 'center', textAlign: 'center', zIndex: 1000, marginTop: "calc(7%)", marginLeft: "calc(44%)"}}><FilesLoader/></div>
                 }
                 {
                   !gridLoading &&
                   userAnalyzeData.numOfFiles !== 0 &&
                   <DataGrid
-                    sx={{ borderRadius: "10px", fontWeight: 'bold', fontFamily: 'monospace', borderColor: "transparent", fontSize: "16px" }}
+                    sx={{ borderRadius: "10px", fontWeight: 'bold', fontFamily: 'monospace', borderColor: "transparent", fontSize: "16px"}}
                     rows={rows}
                     columns={columns}
-                    style={{ backdropFilter: "blur(300px)", fontWeight: "bold" }}
+                    style={{  fontWeight: "bold" }}
                     // rowSelectionModel={handleSelectionChange}
                     onRowClick={(row) => { 
                       setSelectedRow(row.row); 
@@ -239,8 +245,8 @@ const FilesAndAnalyzePage = ({ isValidUser, userData }) => {
             </Box>
               {
                 selectedRow.file_id &&
-                <Box id="analyze_panel_container" sx={{ color: 'black', mt: "5px", mx: "10px", mb: "5px",p: 2, backdropFilter: "blur(100px)", borderRadius: "12px", borderStyle: 'solid', borderWidth: '5px', borderColor: BORDER_COLOR }} style={{ flex: 1 }}>
-                  <AnalyzePanelComp fileData={selectedRow} fetchDataCallBack={fetchDataCallBack} resetDataFallBack={fallBack} analyzeLoading={analyzeLoading} analyzeEndError={analyzeEndError} openViewPanel={openViewPanel} deselectCallback={deselectCallback} scrollToTop={scrollToTop} />
+                <Box id="analyze_panel_container" sx={{ color: 'black', mt: "5px", mx: "10px", mb: "5px",p: 2, background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.16), rgba(255, 255, 255, 0))', backdropFilter: 'blur(25px)', WebkitBackdropFilter: 'blur(25px)', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.18)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)' }} style={{ flex: 1 }}>
+                  <AnalyzePanelComp fileData={selectedRow} fetchDataCallBack={fetchDataCallBack} resetDataFallBack={fallBack} analyzeLoading={analyzeLoading} analyzeEndError={analyzeEndError} openViewPanel={openViewPanel} deselectCallback={deselectCallback} scrollToTop={scrollToTop}/>
                 </Box>
               }
           </Stack>
