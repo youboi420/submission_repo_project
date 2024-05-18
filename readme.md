@@ -1,36 +1,43 @@
-# Network analyzer - by yair elad
+# Network analyzer - by yair elad © 2024
 
-- the project is to create a helpfull tool to automate and shorten the investiagtion of a network pcap record. that includes general info, tcp exceptions, ddos detections, mitm detection, and more.
+- the project is to create a helpful tool to automate and shorten the investigation of a network 
+PCAP file record. that includes general info, tcp exceptions, DDOS detections, MITM detection, and more.
 
-## Run locally
-clone the repoistory and then follow these step's
-- for windows user's please use this tool using [wsl](https://learn.microsoft.com/en-us/windows/wsl/install) because it uses some linux sys and netinet libs which are built in to linux and it won't work native in window's
+## Run the system
+clone the repository and then follow these step's
+- for windows user's please use this tool using [wsl](https://learn.microsoft.com/en-us/windows/wsl/install) because it uses some linux lib's. or consider using [ubuntu](https://ubuntu.com/tutorials/install-ubuntu-desktop#1-overview) normally
 ## installation
-[gcc](https://gcc.gnu.org/install/)
-
-or just
-```
-sudo apt install gcc
-```
-- use your unix based package manager and install these lib's
+- inside your ubuntu machine navigate to the repo cloned location the type the following command
 ```sh
-sudo (your-package-manager) install libjson-c-dev
-sudo (your-package-manager) install libpcap-dev
-# example: sudo apt install libjson-c-dev 
-# example: sudo apt install libpcap-dev 
+cd submission_repo_project
+bash autoinstall.sh
 ```
-
-installation in unix based system's
-```
-sudo apt install make
-```
-## Current Usage (for main alg...)
-Iv'e created some pcap files, to scan the program on. there's a pcap_files folder which conatains the pcap files, with ddos scan's tcp exceptions. if you want you can install [wireshark](https://www.wireshark.org/) and record your own PCAP files.
-
-go to the PoC directory and run the following commands
+after the installment procedure is finished, you need to manually set the mysql connection. (only because it's local) then. it's all done and you can run the system
+- for setting up MySQL if you didn't do so according to the book
 ```sh
-cd c_files/PoC
-make conv
-./build/conv <your-pcap-file.pcap> <your-output.json>
-# example: ./build/conv pcap_files/ddos_captures/mitm_arp.pcap out/mitm.json
+# setting up the user for local db connection to the system
+sudo mysql
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';
+FLUSH PRIVILEGES;
+```
+- for setting up an admin user if you didn't do so according to the book (can be done only after the system has been ran and a user was created & requires a system reload.)
+```sh
+# setting up the first ever admin user
+sudo mysql -u root -p
+# enter root in the prompt.
+use project_schm;
+update users set isadmin = 1 where id = (system-manager-user-id);
+exit
+```
+
+- starting the system with the following command
+```sh
+# based on the idea that your in the project's main directory
+bash run.sh
+```
+
+- stopping the system with the following command
+```sh
+# based on the idea that your in the project's main directory, preferably in another terminal
+bash stop.sh
 ```

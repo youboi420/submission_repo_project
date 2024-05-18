@@ -19,6 +19,76 @@ const SEC_KEY = process.env.JWT_SECRET
 const analyzeRoute = express.Router()
 analyzeRoute.use(cookieParser())
 
+analyzeRoute.get('/demo/:id', async (req, res) => {
+  console.log(req.params.id);
+  const demo_folder = "demo_files/"
+  const demo_files = [`${demo_folder}demo_attacks.pcap`, `${demo_folder}demo_onlytcp.pcap`, `${demo_folder}demo_zero.pcap`]
+  const jwtCookie = req.cookies.jwt
+  jwt.verify(jwtCookie, SEC_KEY, (err) => {
+    if (err) {
+      console.log("(analyze_route)---------> ...")
+      res.status(403).json({ valid: false })
+    }
+  })
+
+  const decodedCookie = await cookie_service.decodeCookie(req.cookies)
+  const uid = decodedCookie.decoded?.id
+  const is_valid = await users_service.get_user_by_id(uid)
+  if (is_valid.valid !== true) {
+    res.status(403).json({ valid: false })
+  }
+  try {
+    const demo_file_id = req.params.id
+    if (demo_file_id != 0 && demo_file_id != 1 && demo_file_id != 2) {
+      res.status(403).json({ valid: false, message: "invalid demo request." })
+    } else {
+      const add_file = await pcap_files_service.create_demo_file(uid, demo_files[demo_file_id], demo_files[demo_file_id].replace(demo_folder, ""))
+      const decodeCookie = await cookie_service.decodeCookie(req.cookies)
+      const user_id = decodeCookie.decoded?.id
+      const next_id = await reports_service.get_next_id_and_inc()
+      if (Number(next_id) === -1) {
+        res.status(500).send({
+          message: "getting next id. not analyzed"
+        })
+      }
+      try {
+        const file_path_promise = pcap_files_service.get_path_by_fileid(add_file?.insertId)
+        const file_path = await file_path_promise
+        const report_folder_path = await files_service.create_report_folder_by_id(user_id, next_id)
+        if (report_folder_path === -1) {
+          res.status(500).send({
+            message: "creating folder failed. not analyzed"
+          })
+        }
+        const analyze_file = await analyze_service.analyze_file( report_folder_path, file_path, user_id, add_file?.insertId )
+        if (analyze_file.success === true) {
+          const updated = await pcap_files_service.update_set_file_is_analyzed(add_file?.insertId)
+          res.status(200).send({
+            updated: updated,
+            analyze_file: analyze_file,
+            report_path: report_folder_path,
+            file_path: file_path,
+          })
+        } else {
+          res.status(500).send({
+            message: "internal server error analyze failed.",
+            err: error,
+          })
+        }
+      } catch (error) {
+        console.log(error)
+        res.status(500).send({
+          message: "internal server error :_(",
+          err: error,
+        })
+      }
+    }
+  } catch (error) {
+    console.log("(analyze_route)---------> Error...", error)
+    res.status(500).send()
+  }
+})
+
 analyzeRoute.get('/:id', async (req, res) => {
   const jwtCookie = req.cookies.jwt
   jwt.verify(jwtCookie, SEC_KEY, (err) => {

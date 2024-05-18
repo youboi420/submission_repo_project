@@ -7,6 +7,7 @@ set -e
 
 cd js
 bash js_conf_env.sh
+
 cd backend
 node server.js &
 cd ..

@@ -6,11 +6,7 @@ import { Navigate } from 'react-router-dom'
 import io from 'socket.io-client';
 
 import AdminIcon from '@mui/icons-material/AdminPanelSettings';
-import AddIcon from '@mui/icons-material/PersonAdd';
-import DeleteIcon from '@mui/icons-material/Delete'
-import EditNoteIcon from '@mui/icons-material/EditNote'
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close'
+
 import AnalyzePageStyle from '../Style/AnalyzePage.module.css';
 
 /* my comps */
@@ -122,7 +118,9 @@ const UserManagePage = ({ isValidUser, userData }) => {
           <Button onClick={() => { handleEdit(params.row.id) }} color='primary' variant='contained'  sx={{textTransform: "none"}} >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginLeft: "15px", marginRight: "15px" }}>
               <span style={{fontSize: "16px", fontFamily: "monospace"}} >Edit</span>
-              <EditNoteIcon style={{ marginLeft: '5px', marginBottom: "2px" }} />
+              <div style={{ marginLeft: '10px', marginBottom: "-8px" }} >
+              <svg xmlns="http://www.w3.org/2000/svg" width="1.6em" height="1.6em" viewBox="0 0 14 14"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="2.75" r="2.25"></circle><path d="M3.5 12.5h-3V11A4.51 4.51 0 0 1 7 7m6.5 1.5l-4.71 4.71l-2.13.29l.3-2.13l4.7-4.71L13.5 8.5z"></path></g></svg>
+              </div>
             </div>
           </Button>
         </div>
@@ -135,7 +133,9 @@ const UserManagePage = ({ isValidUser, userData }) => {
             <Button onClick={() => { handleDeleteClicked(params.row.id) }} color='error' variant='contained' sx={{textTransform: "none"}} >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
                 <span style={{fontSize: "16px", fontFamily: "monospace"}} >Delete</span>
-                <DeleteIcon style={{ marginLeft: '5px', marginBottom: "4px" }} />
+                <div style={{ marginLeft: '10px', marginBottom: "-8px" }} >
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.6em" height="1.6em" viewBox="0 0 14 14"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="2.75" r="2.25"></circle><path d="M5 12.5H.5V11a4.5 4.5 0 0 1 6.73-3.91m6.27 2.17L9.26 13.5m0-4.24l4.24 4.24"></path></g></svg>
+                </div>
               </div>
             </Button>
           </div>
@@ -153,8 +153,10 @@ const UserManagePage = ({ isValidUser, userData }) => {
             <div style={{ justifyContent: 'flex-end', textAlign: 'right', alignItems: "flex-end", marginRight: "calc(1%)"}}>
             <Button onClick={handleCreate} color='success' variant='contained' sx={{marginBottom: '10px',}} >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center'}}>
-                <span style={{padding: 4}}>Create User</span>
-                <AddIcon style={{ marginLeft: '5px', marginBottom: "4px" }} />
+                <span style={{padding: 4, textTransform: "none"}}>Create User</span>
+                <div style={{ marginLeft: '10px', marginBottom: "-8px" }} >
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.6em" height="1.6em" viewBox="0 0 14 14"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M5 5.5a2.5 2.5 0 1 0 0-5a2.5 2.5 0 0 0 0 5m1.5 7h-6v-.542a4.51 4.51 0 0 1 6.5-4m3.5-.458v6m-3-3h6"></path></svg>
+                </div>
               </div>
             </Button>
             </div>

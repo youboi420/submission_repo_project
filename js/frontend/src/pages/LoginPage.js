@@ -66,6 +66,11 @@ export default function LoginPage({ isValidUser }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
+    if (username === '' || password_value === '') {
+      setFormError("One or more fields are empty...")
+      notify("One or more fields are empty...", NOTIFY_TYPES.error)
+      return
+    }
     if (!isUsernameValid(username)) {
       setUsernameError('Invalid username')
       return
@@ -86,8 +91,8 @@ export default function LoginPage({ isValidUser }) {
         utils_service.refreshPage()
         notify(`conncted going to files & analyze page`, NOTIFY_TYPES.success)
       } else {
-        notify("Incorrect user name or password", NOTIFY_TYPES.error)
-        setPasswordError("Incorrect password")
+        notify("Iusername or password are incorrect, please try again.", NOTIFY_TYPES.error)
+        setFormError("username or password are incorrect, please try again.")
       }
     } catch (error) {
       if (error.message === user_service.DB_ERROR_CODES.nouser) {
@@ -186,7 +191,7 @@ export default function LoginPage({ isValidUser }) {
                   sx={{ mt: 3, mb: 2, textTransform: "none" }}
                 >
                   <Typography sx={{ color: "white", fontSize: "22px" }} >
-                  Login
+                  Log In
                   </Typography>
                   <LoginIcon   sx={{ color: "white", fontSize: "22px", marginBottom: "3px", ml: "10px" }}/>
                 </Button>

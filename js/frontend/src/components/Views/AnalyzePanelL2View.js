@@ -89,7 +89,7 @@ const AnalyzePanelL2View = ({ isOpen, fileData, jsonData, onCloseCallBack, fetch
           { // verbal view
             !viewMode && fetchingStatus &&
             <div>
-              <L2ConvComp convsDataArray={conversationDetails}  />
+              <L2ConvComp convsDataArray={conversationDetails} filename={fileData?.filename} />
             </div>
           }
         </div>

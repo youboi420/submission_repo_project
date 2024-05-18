@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import CloseIcon from '@mui/icons-material/Close'
 import Transion from '@mui/material/Slide'
-import { Slider, Stack, TextField } from '@mui/material'
+import { Button, Slider, Stack, TextField } from '@mui/material'
 import { styled } from '@mui/material/styles';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
@@ -17,6 +17,7 @@ import L4ConvPanel from '../L4ConvComp'
 import AnalyzePanelViewStyle from '../../Style/AnalyzePanelViewStyle.module.css';
 import MemoizedL4ConvPanel from '../MemoL4ConvComp'
 import TypeWriterLoader from '../Loaders/TypeWriterLoader'
+import { NOTIFY_TYPES, notify } from '../../services/notify_service'
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -29,11 +30,11 @@ const convInRange = (conv, startTime, endTime) => {
   )
 }
 
-const bothPanel = (tcpConversationDetails, udpConversationDetails) => {
+const bothPanel = (tcpConversationDetails, udpConversationDetails, filename) => {
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', textAlign: 'center' }}>
-      <MemoizedL4ConvPanel convsDataArray={tcpConversationDetails} singleMode={false} proType={L4_DATA_TYPES.TCP} />
-      <MemoizedL4ConvPanel convsDataArray={udpConversationDetails} singleMode={false} proType={L4_DATA_TYPES.UDP} />
+      <MemoizedL4ConvPanel convsDataArray={tcpConversationDetails} singleMode={false} proType={L4_DATA_TYPES.TCP} filename={filename}/>
+      <MemoizedL4ConvPanel convsDataArray={udpConversationDetails} singleMode={false} proType={L4_DATA_TYPES.UDP} filename={filename}/>
     </div>
   )
 }
@@ -203,7 +204,14 @@ const AnalyzePanelL4View = ({ isOpen, fileData, jsonData, onCloseCallBack, fetch
             !viewMode && fetchingStatus &&
             <div >
               <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }} className={AnalyzePanelViewStyle.data_title} >{title}</h1>
-              <div /* style={{ borderStyle: "solid", paddingTop: "10px", paddingLeft: "300px", paddingRight: "300px",  marginLeft: "450px", marginRight: "450px", marginBottom: "20px" }} */>
+              {
+                (
+                  l4Mode === analyze_service.l4MODES.BOTH ? conversationDetails?.length !== 0 :
+                    l4Mode === analyze_service.l4MODES.TCP ? tcpConversationDetails?.length !== 0 :
+                      udpConversationDetails?.length !== 0
+                ) &&
+                jsonData?.duration &&
+                <div /* style={{ borderStyle: "solid", paddingTop: "10px", paddingLeft: "300px", paddingRight: "300px",  marginLeft: "450px", marginRight: "450px", marginBottom: "20px" }} */>
                 <h4 style={{display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center'}}>
                   Time Filter
                 </h4>
@@ -226,12 +234,13 @@ const AnalyzePanelL4View = ({ isOpen, fileData, jsonData, onCloseCallBack, fetch
                     onChange={handleMaxInputChange}
                     variant="outlined"
                     InputProps={{ inputProps: { min: parseFloat(minInputValue), max: maxDuration } }}
-                  />
+                    />
                 </div>
               </div>
+              }
               {
                 l4Mode === analyze_service.l4MODES.BOTH
-                && bothPanel(tcpConversationDetails, udpConversationDetails)
+                && bothPanel(tcpConversationDetails, udpConversationDetails, fileData?.filename)
               }
               {
                 l4Mode === analyze_service.l4MODES.TCP && (
@@ -239,6 +248,7 @@ const AnalyzePanelL4View = ({ isOpen, fileData, jsonData, onCloseCallBack, fetch
                     convsDataArray={tcpConversationDetails}
                     singleMode={true}
                     proType={L4_DATA_TYPES.TCP}
+                    filename={fileData?.filename}
                   />
                 )
               }

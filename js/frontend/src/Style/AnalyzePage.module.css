@@ -17,9 +17,66 @@
     font-weight: bold;
     font-style: normal;
 }
+
 .files_grid_button {
     font-family: "IBM Plex Sans Hebrew", sans-serif;
     font-weight: bold;
     font-style: normal;
-    
+
+}
+
+.cards {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+}
+
+.cards .first {
+    background-color: #303E58;
+}
+
+.cards .second {
+    background-color: #344461;
+}
+
+.cards .third {
+    background-color: #3a4b6b;
+}
+
+.cards .forth {
+    background-color: #3f5172;
+}
+
+.cards .fifth {
+    background-color: #495f86;
+}
+
+.cards .card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    height: 100px;
+    width: 370px;
+    border-radius: 12px;
+    padding: 2%;
+    color: white;
+    cursor: help;
+    transition: 400ms;
+}
+
+.cards .card p.second-text {
+    font-size: .6em;
+}
+
+.cards .card:hover {
+    transform: scale(1.1, 1.1);
+}
+
+.cards:hover>.card:not(:hover) {
+    filter: blur(3px);
+    transform: scale(0.9, 0.9);
 }

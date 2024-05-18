@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 
 import ModernInfoCard from '../components/AnimatedInfoCard'
 // import ModernInfoCard from '../components/ModernInfoCard'
-import HomePageStyle from '../Style/HomePage.module.css'
 import LandingStyle from '../Style/LandingPage.module.css';
 import L2InfoCover from "../Images/info1.svg"
 import L4InfoCover from "../Images/info2.svg"
@@ -17,15 +16,9 @@ import * as user_service from '../services/user_service'
 import * as utils_service from '../services/utils_service'
 import GenericDeleteDialog from '../components/Dialogs/GenereicDeleteDialog';
 
-import FilesLoader from '../components/Loaders/FilesLoaderComp';
-import MenuIcon from '@mui/icons-material/Tune';
-import WarningIcon from '@mui/icons-material/Warning';
-import DangerousIcon from '@mui/icons-material/Dangerous';
 import { NOTIFY_TYPES, notify } from '../services/notify_service';
 
-import EditNote from '@mui/icons-material/EditNote';
 import PasswordUpdate from '../components/Dialogs/PasswordUpdate';
-import DevicesLoader from '../components/Loaders/DevicesLoader';
 import ContactBtn from '../components/ContactBtn';
 
 const L4InfoTitle = "OSI - Layer 4"
@@ -161,6 +154,38 @@ const ProfilePage = ({ isValidUser }) => {
     handleMenuClose();
   };
 
+  const EditPasswordIcon = () => {
+    return (
+      <div style={{ marginLeft: '23px', marginBottom: "-4px" }}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.6em" height="1.6em" viewBox="0 0 24 24"><path fill="currentColor" fillOpacity="0" d="M20 7L17 4L8 13V16H11L20 7Z"><animate fill="freeze" attributeName="fill-opacity" begin="1.2s" dur="0.15s" values="0;0.3"></animate></path><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="20" stroke-dashoffset="20" d="M3 21H21"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="20;0"></animate></path><path stroke-dasharray="44" stroke-dashoffset="44" d="M7 17V13L17 3L21 7L11 17H7"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.4s" dur="0.6s" values="44;0"></animate></path><path stroke-dasharray="8" stroke-dashoffset="8" d="M14 6L18 10"><animate fill="freeze" attributeName="stroke-dashoffset" begin="1s" dur="0.2s" values="8;0"></animate></path></g></svg>
+      </div>
+    )
+  }
+  
+  const LogoutIcon = () => {
+    return (
+      <div style={{ marginLeft: '95px', marginBottom: "-4px" }}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.6em" height="1.6em" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"><path stroke-dasharray="20" stroke-dashoffset="20" d="M5 21V20C5 17.7909 6.79086 16 9 16H13C15.2091 16 17 17.7909 17 20V21"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="20;0"></animate></path><path stroke-dasharray="20" stroke-dashoffset="20" d="M11 13C9.34315 13 8 11.6569 8 10C8 8.34315 9.34315 7 11 7C12.6569 7 14 8.34315 14 10C14 11.6569 12.6569 13 11 13Z"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.5s" dur="0.4s" values="20;0"></animate></path><path stroke-dasharray="6" stroke-dashoffset="6" d="M20 3V7"><animate fill="freeze" attributeName="stroke-dashoffset" begin="1s" dur="0.2s" values="6;0"></animate><animate attributeName="stroke-width" begin="1.5s" dur="3s" keyTimes="0;0.1;0.2;0.3;1" repeatCount="indefinite" values="2;3;3;2;2"></animate></path></g><circle cx="20" cy="11" r="1" fill="currentColor" fillOpacity="0"><animate fill="freeze" attributeName="fill-opacity" begin="1.2s" dur="0.4s" values="0;1"></animate><animate attributeName="r" begin="1.8s" dur="3s" keyTimes="0;0.1;0.2;0.3;1" repeatCount="indefinite" values="1;2;2;1;1"></animate></circle></svg>
+      </div>
+    )
+  }
+  
+  const CloudDeleteIcon = () => {
+    return (
+      <div style={{ marginLeft: '23px', marginBottom: "-4px" }}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 24 24"><path fill="currentColor" d="M13 19c0 .34.04.67.09 1H6.5c-1.5 0-2.81-.5-3.89-1.57C1.54 17.38 1 16.09 1 14.58q0-1.95 1.17-3.48C3.34 9.57 4 9.43 5.25 9.15c.42-1.53 1.25-2.77 2.5-3.72S10.42 4 12 4c1.95 0 3.6.68 4.96 2.04S19 9.05 19 11c1.15.13 2.1.63 2.86 1.5c.51.57.84 1.21 1 1.92A5.9 5.9 0 0 0 19 13c-3.31 0-6 2.69-6 6m8.12-3.54L19 17.59l-2.12-2.12l-1.41 1.41L17.59 19l-2.12 2.12l1.41 1.42L19 20.41l2.12 2.13l1.42-1.42L20.41 19l2.13-2.12z"></path></svg>
+      </div>
+    )
+  }
+
+  const DeleteAccIcon = () => {
+    return (
+      <div style={{ marginLeft: '15px', marginBottom: "-4px" }}>
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.6em" height="1.6em" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"><path stroke-dasharray="20" stroke-dashoffset="20" d="M3 21V20C3 17.7909 4.79086 16 7 16H11C13.2091 16 15 17.7909 15 20V21"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="20;0"></animate></path><path stroke-dasharray="20" stroke-dashoffset="20" d="M9 13C7.34315 13 6 11.6569 6 10C6 8.34315 7.34315 7 9 7C10.6569 7 12 8.34315 12 10C12 11.6569 10.6569 13 9 13Z"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.5s" dur="0.4s" values="20;0"></animate></path><path stroke-dasharray="10" stroke-dashoffset="10" d="M15 3L21 9"><animate fill="freeze" attributeName="stroke-dashoffset" begin="1s" dur="0.2s" values="10;0"></animate></path><path stroke-dasharray="10" stroke-dashoffset="10" d="M21 3L15 9"><animate fill="freeze" attributeName="stroke-dashoffset" begin="1.2s" dur="0.2s" values="10;0"></animate></path></g></svg>
+    </div>
+    )
+  }
+
   return (
     <div className={LandingStyle.container} style={{ marginTop: 55, marginLeft: "calc(15%)", marginRight: "calc(15%)" }}>
       
@@ -197,7 +222,9 @@ const ProfilePage = ({ isValidUser }) => {
                 </svg>
             </label>
           </div> */}
-          <MenuIcon style={{ position: 'absolute', top: -5, left: -5, color: 'white', cursor: 'pointer', color: "black", zIndex: "1000" }} onClick={handleMenuOpen} />
+          <div style={{ position: 'absolute', top: -5, left: -5, color: 'white', cursor: 'pointer', color: "black", zIndex: "1000" }} onClick={handleMenuOpen} >
+            <svg xmlns="http://www.w3.org/2000/svg" width="2.1em" height="2.1em" viewBox="0 0 24 24"><defs><symbol id="lineMdCogFilledLoop0"><path fill="#fff" d="M11 13L15.74 5.5C16.03 5.67 16.31 5.85 16.57 6.05C16.57 6.05 16.57 6.05 16.57 6.05C16.64 6.1 16.71 6.16 16.77 6.22C18.14 7.34 19.09 8.94 19.4 10.75C19.41 10.84 19.42 10.92 19.43 11C19.43 11 19.43 11 19.43 11C19.48 11.33 19.5 11.66 19.5 12z"><animate fill="freeze" attributeName="d" begin="0.5s" dur="0.2s" values="M11 13L15.74 5.5C16.03 5.67 16.31 5.85 16.57 6.05C16.57 6.05 16.57 6.05 16.57 6.05C16.64 6.1 16.71 6.16 16.77 6.22C18.14 7.34 19.09 8.94 19.4 10.75C19.41 10.84 19.42 10.92 19.43 11C19.43 11 19.43 11 19.43 11C19.48 11.33 19.5 11.66 19.5 12z;M11 13L15.74 5.5C16.03 5.67 16.31 5.85 16.57 6.05C16.57 6.05 19.09 5.04 19.09 5.04C19.25 4.98 19.52 5.01 19.6 5.17C19.6 5.17 21.67 8.75 21.67 8.75C21.77 8.92 21.73 9.2 21.6 9.32C21.6 9.32 19.43 11 19.43 11C19.48 11.33 19.5 11.66 19.5 12z"></animate></path></symbol><mask id="lineMdCogFilledLoop1"><path fill="none" stroke="#fff" stroke-dasharray="36" stroke-dashoffset="36" stroke-width="5" d="M12 7C14.76 7 17 9.24 17 12C17 14.76 14.76 17 12 17C9.24 17 7 14.76 7 12C7 9.24 9.24 7 12 7z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="36;0"></animate><set attributeName="opacity" begin="0.4s" to="0"></set></path><g opacity="0"><use href="#lineMdCogFilledLoop0"></use><use href="#lineMdCogFilledLoop0" transform="rotate(60 12 12)"></use><use href="#lineMdCogFilledLoop0" transform="rotate(120 12 12)"></use><use href="#lineMdCogFilledLoop0" transform="rotate(180 12 12)"></use><use href="#lineMdCogFilledLoop0" transform="rotate(240 12 12)"></use><use href="#lineMdCogFilledLoop0" transform="rotate(300 12 12)"></use><set attributeName="opacity" begin="0.4s" to="1"></set><animateTransform attributeName="transform" dur="30s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"></animateTransform></g><circle cx="12" cy="12" r="3.5"></circle></mask></defs><rect width="24" height="24" fill="currentColor" mask="url(#lineMdCogFilledLoop1)"></rect></svg>            
+          </div>
           <Avatar style={{ width: 100, height: 100, cursor: "pointer" }} onClick={handleMenuOpen}>
             <Avvvatars size={100} value={username_text } id={username_text + username_text.substring(username_text.length / 2)} style={username_text + username_text.substring(username_text.length / 2)} />
           </Avatar>
@@ -217,10 +244,10 @@ const ProfilePage = ({ isValidUser }) => {
               }}
             >
               <MenuItem disabled > </MenuItem>
-              <MenuItem sx={{ backgroundColor: '#1976d1', color: "white", '&:hover': { backgroundColor: '#6097cd', color: "white" }}} style={{marginTop: "-12px"}} onClick={() => { setUpdatePass(true) }} >Update password <EditNote style={{ marginLeft: '15px', marginBottom: "2px" }} /> </MenuItem>
-              <MenuItem sx={{ backgroundColor: '#c82a2b', color: "white", '&:hover': { backgroundColor: '#d36161', color: "white" }}} style={{marginTop: "5px"}} onClick={handleLogout} >Log Out <WarningIcon style={{ marginLeft: '15px', marginBottom: "2px" }} /> </MenuItem>
-              <MenuItem sx={{ backgroundColor: '#c82a2b', color: "white", '&:hover': { backgroundColor: '#d36161', color: "white" }}} style={{marginTop: "5px"}} onClick={() => { setDeleteFilesDiag(true) }} >Delete all files <DangerousIcon style={{ marginLeft: '15px', marginBottom: "2px" }} /> </MenuItem>
-              <MenuItem sx={{ backgroundColor: '#c82a2b', color: "white", '&:hover': { backgroundColor: '#d36161', color: "white" }}} style={{marginTop: "5px"}} onClick={() => { setDeleteAccDiag(true) }} >Delete My Account <DangerousIcon style={{ marginLeft: '15px', marginBottom: "2px" }} /> </MenuItem>
+              <MenuItem sx={{ backgroundColor: '#1976d1', color: "white", '&:hover': { backgroundColor: '#6097cd', color: "white" }}} style={{marginTop: "-12px"}} onClick={() => { setUpdatePass(true) }} >Update password <EditPasswordIcon /> </MenuItem>
+              <MenuItem sx={{ backgroundColor: '#c82a2b', color: "white", '&:hover': { backgroundColor: '#d36161', color: "white" }}} style={{marginTop: "5px"}} onClick={handleLogout} >Log out <LogoutIcon /> </MenuItem>
+              <MenuItem sx={{ backgroundColor: '#c82a2b', color: "white", '&:hover': { backgroundColor: '#d36161', color: "white" }}} style={{marginTop: "5px"}} onClick={() => { setDeleteFilesDiag(true) }} >Delete all my files <CloudDeleteIcon /> </MenuItem>
+              <MenuItem sx={{ backgroundColor: '#c82a2b', color: "white", '&:hover': { backgroundColor: '#d36161', color: "white" }}} style={{marginTop: "5px"}} onClick={() => { setDeleteAccDiag(true) }} >Delete my account <DeleteAccIcon /></MenuItem>
             </Menu>
         </div>
         {
@@ -234,7 +261,7 @@ const ProfilePage = ({ isValidUser }) => {
           </div>
         )}
         <Box sx={{ /* boxShadow: '0.2px 2px 9px white', */ marginTop: 2 }} width="80%" mx="auto" style={{ /* backdropFilter: 'blur(40px)', */ /* borderRadius: '10px', */ padding: '20px' }}>
-          <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginTop: -15, marginBottom: 20 }} className={LandingStyle.username}> Project's main topics</h1>
+          <h1 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', marginTop: -15, marginBottom: 20 }} className={LandingStyle.username}> Learn about the project's topics</h1>
           <Stack spacing={4} direction={"row"} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Stack spacing={4}>
               <ModernInfoCard src={L4InfoCover} title={L4InfoTitle} description={L4InfoDesc} />

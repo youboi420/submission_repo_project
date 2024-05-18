@@ -77,8 +77,10 @@ const GraphAttacks = ({ isOpen, onCloseCallBack, fileData, DDOSJsonData, MITMJso
             (MITMCount === 0 && DDOSCount === 0) &&
             fetchingStatus &&
             attackMode === attack_modes_dict.BOTH &&
-            <h1 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: "calc(20%)" }} >
-              Fortenly there were no DDoS/MITM attack's in this network recording file :)
+            <h1 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: "calc(8%)" }} >
+              <svg style={{ marginTop: "40px", marginBottom: "70px" }} xmlns="http://www.w3.org/2000/svg" width="4em" height="4em" viewBox="0 0 48 48"><g fill="none" stroke="#000" stroke-linejoin="round" stroke-width="4"><path stroke-linecap="round" d="M24 6H9C7.34315 6 6 7.34315 6 9V31C6 32.6569 7.34315 34 9 34H39C40.6569 34 42 32.6569 42 31V27"></path><path stroke-linecap="round" d="M24 34V42"></path><rect width="12" height="8" x="30" y="12" fill="#2F88FF" rx="3"></rect><path fill="#2F88FF" d="M36 6C37.6569 6 39 7.34315 39 9L39 12L33 12L33 9C33 7.34315 34.3431 6 36 6Z"></path><path stroke-linecap="round" d="M14 42L34 42"></path></g></svg>
+              <br/>
+              There were no detected DDoS/MITM attack's in this network recording file
             </h1>
           }
           {
@@ -104,7 +106,7 @@ const GraphAttacks = ({ isOpen, onCloseCallBack, fileData, DDOSJsonData, MITMJso
                       </h1>
                   </Tooltip>
                   <div>
-                  <DDOSViewComp attacskDataArray={myDDOS} singleMode={true} />
+                  <DDOSViewComp attacskDataArray={myDDOS} singleMode={true} filename={fileData?.filename} />
                   </div>
                 </div>
                   <Divider orientation="horizontal" sx={{ bgcolor: '#1976d2', borderBottomWidth: 15, marginRight: 15, marginLeft: 15, marginBottom: 5, marginTop: 5 }} />
@@ -120,7 +122,7 @@ const GraphAttacks = ({ isOpen, onCloseCallBack, fileData, DDOSJsonData, MITMJso
                       </h1>
                     </div>
                   </Tooltip>
-                  <MITMViewComp attacskDataArray={myMITM} singleMode={true} />
+                  <MITMViewComp attacskDataArray={myMITM} singleMode={true} filename={fileData?.filename} />
                   <Divider orientation="horizontal" sx={{ bgcolor: '#1976d2', borderBottomWidth: 15, marginRight: 15, marginLeft: 15, marginBottom: 5 }} />
                 </div>
               }
@@ -131,7 +133,11 @@ const GraphAttacks = ({ isOpen, onCloseCallBack, fileData, DDOSJsonData, MITMJso
             fetchingStatus &&
             attackMode === attack_modes_dict.DDOS &&
             <div>
-              <h1 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: "calc(22%)" }} >There were no distributed denail of service (DDoS) attacks!</h1>
+              <h1 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: "calc(8%)" }} >
+                  <svg style={{ marginTop: "40px", marginBottom: "70px" }} xmlns="http://www.w3.org/2000/svg" width="4em" height="4em" viewBox="0 0 48 48"><g fill="none" stroke="#000" stroke-linejoin="round" stroke-width="4"><path stroke-linecap="round" d="M24 6H9C7.34315 6 6 7.34315 6 9V31C6 32.6569 7.34315 34 9 34H39C40.6569 34 42 32.6569 42 31V27"></path><path stroke-linecap="round" d="M24 34V42"></path><rect width="12" height="8" x="30" y="12" fill="#2F88FF" rx="3"></rect><path fill="#2F88FF" d="M36 6C37.6569 6 39 7.34315 39 9L39 12L33 12L33 9C33 7.34315 34.3431 6 36 6Z"></path><path stroke-linecap="round" d="M14 42L34 42"></path></g></svg>
+                  <br />
+                There were no detected distributed denial of service (DDoS) attacks!
+              </h1>
             </div>
           }
           {
@@ -144,7 +150,7 @@ const GraphAttacks = ({ isOpen, onCloseCallBack, fileData, DDOSJsonData, MITMJso
                 {DDOSCount} Distributed denail of service attacks
               </h1>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} >
-                <DDOSViewComp attacskDataArray={myDDOS} singleMode={true} />
+                <DDOSViewComp attacskDataArray={myDDOS} singleMode={true} filename={fileData?.filename}/>
               </div>
               {/* {
                 fetchingStatus &&
@@ -159,7 +165,11 @@ const GraphAttacks = ({ isOpen, onCloseCallBack, fileData, DDOSJsonData, MITMJso
             fetchingStatus &&
             attackMode === attack_modes_dict.MITM &&
             <div>
-              <h1 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: "calc(22%)" }} >There were no man in the middle (MITM) attacks!</h1>
+              <h1 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: "calc(8%)" }} >
+                  <svg style={{ marginTop: "40px", marginBottom: "70px" }} xmlns="http://www.w3.org/2000/svg" width="4em" height="4em" viewBox="0 0 48 48"><g fill="none" stroke="#000" stroke-linejoin="round" stroke-width="4"><path stroke-linecap="round" d="M24 6H9C7.34315 6 6 7.34315 6 9V31C6 32.6569 7.34315 34 9 34H39C40.6569 34 42 32.6569 42 31V27"></path><path stroke-linecap="round" d="M24 34V42"></path><rect width="12" height="8" x="30" y="12" fill="#2F88FF" rx="3"></rect><path fill="#2F88FF" d="M36 6C37.6569 6 39 7.34315 39 9L39 12L33 12L33 9C33 7.34315 34.3431 6 36 6Z"></path><path stroke-linecap="round" d="M14 42L34 42"></path></g></svg>
+                  <br />
+                  There were no detected man in the middle (MITM) attacks!
+              </h1>
             </div>
           }
           {
@@ -174,7 +184,7 @@ const GraphAttacks = ({ isOpen, onCloseCallBack, fileData, DDOSJsonData, MITMJso
               {
                 myMITM &&
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} >
-                  <MITMViewComp attacskDataArray={myMITM} singleMode={true} />
+                  <MITMViewComp attacskDataArray={myMITM} singleMode={true} filename={fileData?.filename} />
                   <Divider orientation="horizontal" sx={{ bgcolor: '#1976d2', borderBottomWidth: 15, marginRight: 15, marginLeft: 15, marginBottom: 5 }} />
                 </div>
               }

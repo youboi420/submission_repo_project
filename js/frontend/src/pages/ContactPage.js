@@ -28,9 +28,9 @@ const ContactPage = ({ isValidUser, userData }) => {
   
   return (
     <div >
-      <Box sx={{ boxShadow: '0.2px 2px 9px white', marginTop: "calc(1vh)" }} width="50%" height="86vh" mx="auto" boxShadow={3} style={{ borderRadius: '10px', padding: '20px', background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0))', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(10px)', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.18)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)' }}>
+      <Box sx={{ boxShadow: '0.2px 2px 9px white', marginTop: "calc(1.8%)" }} width="70%" height="82vh" mx="auto" boxShadow={3} style={{ borderRadius: '10px', padding: '20px', background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0))', backdropFilter: 'blur(25px)', WebkitBackdropFilter: 'blur(25px)', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.18)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)' }}>
         <div>
-          <h1 className={ContactPageStyles.hero2} style={{marginBottom: "calc(-2%)", marginTop: "calc(-2%)"}}>
+          <h1 className={ContactPageStyles.hero2} style={{marginBottom: "calc(-1%)", marginTop: "calc(-1%)"}}>
           About me:
           </h1>
           <p className={ContactPageStyles.about_me_text}>
@@ -39,11 +39,10 @@ const ContactPage = ({ isValidUser, userData }) => {
             <Divider orientation="horizontal" sx={{ bgcolor: 'lightblue', borderBottomWidth: 8, marginRight: 30, marginLeft: 30, marginTop: "calc(2%)", marginBottom: "calc(2%)", borderStyle: "double", borderColor: "lightcyan" }} />
             <p className={ContactPageStyles.about_me_text}>
               I love making the most out of an experience. my though process and my motivation for this project was over the roof. especially because im doing a project for the IAF system's.
-              <br/>
               I am supper excited and proud of the system iv'e built with the work of god, my parent's my family friend's teachers supervisors from the military, and so much more.
               I think that the product iv'e created is an absolutely amazing piece of technology.
             </p>
-            <div className={ContactPageStyles.hobbits} style={{marginTop: "calc(4%)", marginBottom: "calc(-4%)"}}>
+            <div className={ContactPageStyles.hobbits} style={{marginTop: "calc(2%)", marginBottom: "calc(-4%)"}}>
               I like: &nbsp;
               <Textra data={['Coding.', "Making music.", "Pen-testing.", "Reverse engineering.", "Learning.", "Experiencing."]} effect='rightLeft' stopDuration={2200} />
             </div>
@@ -65,9 +64,9 @@ const ContactPage = ({ isValidUser, userData }) => {
         </div>
         <div>
         </div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: "20px", zIndex: 1000}}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: "calc(3.5%)", zIndex: 1000}}>
           <Typography  >
-            Network Analyzer - Coded by Yair Elad © {new Date().getFullYear()}
+            Network Analyzer - developed by Yair Elad © {new Date().getFullYear()}
           </Typography>
         </div>
       </Box>

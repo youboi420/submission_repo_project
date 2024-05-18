@@ -57,9 +57,9 @@
 }
 
 .desc {
-    font-family: "Comfortaa", sans-serif;
+    /* font-family: "Comfortaa", sans-serif; */
     font-optical-sizing: auto;
-    font-weight: 250;
+    font-weight: 450;
     font-style: normal;
     font-size: 18px;
 }

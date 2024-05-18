@@ -1,2 +1,2 @@
-pkill -f "node server.js"
-pkill -f "npm start"
+pkill -f "npm"
+pkill -f "node"

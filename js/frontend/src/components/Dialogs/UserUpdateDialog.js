@@ -46,7 +46,7 @@ const UserUpdateDialog = ({ isOpen = false, onClose, fetchDataAndSetRows, userOb
       }
     } catch (error) {
       if (error?.response?.status === 409) {
-        setDuplicateUsernameError("duplicate username")
+        setDuplicateUsernameError("Duplicate username. Please choose a different one.")
       } else {
         console.error('Error updating user:', error)
         onFailed()

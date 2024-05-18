@@ -13,6 +13,7 @@ const GET_L4_JSON_URL = `http://${LOCAL_IP}:${SER_PORT}${files_api_path}/l4`
 const GET_L2_JSON_URL = `http://${LOCAL_IP}:${SER_PORT}${files_api_path}/l2`
 const GET_DDOS_JSON_URL = `http://${LOCAL_IP}:${SER_PORT}${files_api_path}/ddos`
 const GET_MITM_JSON_URL = `http://${LOCAL_IP}:${SER_PORT}${files_api_path}/mitm`
+const DEMO_FILE_URL = `${ANALYZE_URL}/demo/`
 
 const l4MODES = {
   BOTH: "both",
@@ -103,4 +104,13 @@ const calculatePacketsPerHost = (conversation) => {
   };
 }
 
-export { analyze, getGISJsonData, getL4JsonData, getL2JsonData, getDDOSJsonData, getMITMJsonData, calculateConversationDuration, calculatePacketsPerHost, l4MODES }
+const demoFile = async (file_id) => {
+  try {
+    const response = await axios.get(DEMO_FILE_URL + file_id)
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
+export { analyze, getGISJsonData, getL4JsonData, getL2JsonData, getDDOSJsonData, getMITMJsonData, calculateConversationDuration, calculatePacketsPerHost, demoFile, l4MODES }

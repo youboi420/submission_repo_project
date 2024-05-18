@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS pcap_files (
   file_id INT NOT NULL AUTO_INCREMENT,
   owner_id INT NOT NULL,
   creation_date DATETIME DEFAULT NOW(),
-  path VARCHAR(255) NOT NULL UNIQUE,
+  path VARCHAR(255) NOT NULL,
   filename VARCHAR(255) NOT NULL,
   analyzed BOOLEAN NOT NULL,
   PRIMARY KEY (file_id),
@@ -104,13 +104,37 @@ const create_file = (owner_id, path, filename) => {
             }
           } else {
             if (res.affectedRows > 0) {
-              resolve({ success: true })
+              resolve({ success: true, insertId: res.insertId })
             } else {
               resolve({ success: false, message: "creating file record failed..."})
             }
           }
         })
       }
+    }
+  })
+}
+
+const create_demo_file = (owner_id, path, filename) => {
+  return new Promise( async (resolve, reject) => {
+    if (owner_id === undefined || path === undefined || filename === undefined) {
+      reject({success: false, message: undef_err_msg})
+    } else {
+      connection.query(insert_file_query, [owner_id, path, filename, 0], (err, res) => {
+        if (err) {
+          if (err.code === 'ER_DUP_ENTRY') {
+            reject({success: false, message: 'ER_DUP_ENTRY'})
+          } else {
+            reject({success: false, message: err})
+          }
+        } else {
+          if (res.affectedRows > 0) {
+            resolve({ success: true, insertId: res.insertId })
+          } else {
+            resolve({ success: false, message: "creating file record failed..."})
+          }
+        }
+      })
     }
   })
 }
@@ -368,4 +392,4 @@ const is_owner = (file_id, user_id) => {
   })
 }
 
-export { get_all, create_pcap_table, get_all_files_by_userid, get_file_by_fileid, create_file, delete_all_files_by_user_id, delete_file_by_file_id, update_set_file_is_analyzed, get_path_by_fileid, get_file_analyzed, delete_file_by_path, is_owner }
+export { get_all, create_pcap_table, get_all_files_by_userid, get_file_by_fileid, create_file, create_demo_file, delete_all_files_by_user_id, delete_file_by_file_id, update_set_file_is_analyzed, get_path_by_fileid, get_file_analyzed, delete_file_by_path, is_owner }

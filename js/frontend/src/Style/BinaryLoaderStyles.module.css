@@ -51,7 +51,7 @@
 
 .loader .binary::before,
 .loader .binary::after {
-    font-family: "Lato";
+    font-family: "monospace";
     font-size: 24px;
     position: absolute;
     top: 0;

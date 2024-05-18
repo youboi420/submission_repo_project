@@ -112,11 +112,11 @@ const NavbarComp = ({ isValidUser, userData }) => {
                 <StyledNavButton href="/analyzeandfiles" sx={{ textTransform: 'none', fontWeight: isActive('/analyzeandfiles') ? 'bold' : 'normal', backgroundColor: isActive("/analyzeandfiles") ? BTN_COLOR : "inherit",  }} >
                   <AnalyzeIcon /> 
                   <div style={{marginTop: "5px", marginLeft: "-7px"}} >
-                  Analyze  && 
+                  Files & Analyze 
                   </div>
-                  <FilesIcon />
-                  <div style={{marginTop: "5px", marginLeft: "-7px"}} >
-                    Files
+                  {/* <FilesIcon /> */}
+                  <div style={{marginTop: "5px", marginLeft: "2px"}} >
+                  {/* Files */}
                   </div>
                 </StyledNavButton>
               }

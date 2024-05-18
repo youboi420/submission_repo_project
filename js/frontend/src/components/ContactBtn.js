@@ -6,7 +6,7 @@ function ContactBtn() {
   return (
     <div>
       <Typography>
-        Network Analyzer - Coded by &nbsp;
+        Network Analyzer - developed by &nbsp;
         <a href="/contact" >
         <button className={ContactBtnStyles.btn} sx={{ color: "black", textTransform: "none" }} > 
         Yair Elad © {new Date().getFullYear()}

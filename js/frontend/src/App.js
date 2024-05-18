@@ -43,8 +43,9 @@ function App() {
   if (isLoading) {
     return (
       <Box sx={{ width: '100%', justifyContent: "center", display: 'flex', alignContent: "center" }}>
-          <div style={{backdropFilter: "blur(12px)", borderStyle: "solid", borderWidth: "4px", borderRadius: "12px", borderColor: "rgb(255,255,255,0.4)", padding: 25, marginTop: "calc(18%)"}}>
+          <div style={{backdropFilter: "blur(12px)", borderStyle: "solid", borderWidth: "4px", borderRadius: "12px", borderColor: "rgb(255,255,255,0.4)", padding: 25, marginTop: "calc(17%)"}}>
           <PageLoader />
+          <h1 style={{ color: "white", marginTop: "calc(25%)" }}>Loading ...</h1>
           </div>
       </Box>
     )

@@ -27,6 +27,7 @@ import GraphAttacks from '../Charts/GraphAttacks';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import TrashIcon from '@mui/icons-material/DeleteForever';
 import RadarLoader from '../Loaders/RadarLoaderComp';
+import SwitchControl from '../Common/SwitchControl';
 
 const sleep = (milliseconds) => {
   return new Promise(resolve => {
@@ -63,13 +64,15 @@ const AnalyzePanelComp = ({ fileData, fetchDataCallBack, resetDataFallBack, dese
   const [l4FetchingStatus, setL4FetchingStatus] = React.useState(false)
   const [l2FetchingStatus, setL2FetchingStatus] = React.useState(false)
   const [attacksFetchingStatus, setAttacksFetchingStatus] = React.useState(false)
-  
+  const [showHelpers, setShowHelpers] = React.useState(true)
+
   const [mainAnalyze, setMainAnalyze] = React.useState(true)
   
-  const ANALYZE_L4 = "Analyze L4"
-  const GRAPH_L4 = "Graph L4"
-  const GRAPH_L2 = "Graph L2"
-  const ATTACKS = "Analyze attacks"
+  const REPORT_L4 = "L4 Report"
+  const REPORT_L2 = "L2 Report"
+  const GRAPH_L4 = "Visual L4"
+  const GRAPH_L2 = "Visual L2"
+  const ATTACKS = "Attacks Report"
   const button_spacing = 3
 
   const handleL4ModeSelectClicked = (event) => {
@@ -327,8 +330,53 @@ const AnalyzePanelComp = ({ fileData, fetchDataCallBack, resetDataFallBack, dese
     setMITMJsonData({})
   }, [fileData])
 
+  const onHelperToggle = ( flag ) => {
+    setShowHelpers(flag)
+  }
+
   return (
     <div className={AnalyzePageStyle.file_info} style={{height: "85vh"}}>
+      <div style={{ position: 'relative', textAlign: 'center', marginTop: 'calc(1%)' }}>
+        <div style={{ fontSize: '34px', color: fileData.filename === undefined ? 'transparent' : 'black', marginBottom: '1.8%' }}>{fileData.filename === undefined ? 'Pick a file from your uploaded files' : 'File name: ' + fileData.filename}</div>
+        <div style={{ position: 'absolute', top: '50%', left: 0, transform: 'translateY(-35%)', marginLeft: "calc(8%)" }}>
+          <div style={{ display: 'inline-block', textAlign: 'center', fontSize: '34px' }}>Show helper's</div>
+          <div style={{ display: 'inline-block', marginRight: '1.5%' }}>
+            <SwitchControl id="helperCheckbox" onToggle={onHelperToggle} />
+          </div>
+        </div>
+      </div>
+      {
+        showHelpers &&
+        <div style={{position: "absolute", top: "16%", left: "5.5%",  }}>
+          <div className={AnalyzePageStyle.cards}>
+            <div className={`${AnalyzePageStyle.card} ${AnalyzePageStyle.first}`}>
+              <p className={AnalyzePageStyle.second_text}>L - a short for Layer meaning that L2 is OSI Layer 2, L4 is OSI Layer 4.</p>
+            </div>
+            <div className={`${AnalyzePageStyle.card} ${AnalyzePageStyle.second}`}>
+              <p className={AnalyzePageStyle.second_text}>
+                Visual - a graphical / visual report on selected OSI layer. will show you size of packet's to time graphs. distribution of protocol types and request's and much more.
+              </p>
+            </div>
+            <div className={`${AnalyzePageStyle.card} ${AnalyzePageStyle.third}`}>
+              <p className={AnalyzePageStyle.second_text}>
+                Type - in L4 / Layer is to chose your protocol analysis on report.
+                <br/>Choose either TCP / UDP or Both (default).
+                <br/>In attacks report it's either DDOS attack / MITM attack, or Both.
+              </p>
+            </div>
+            <div className={`${AnalyzePageStyle.card} ${AnalyzePageStyle.forth}`}>
+              <p className={AnalyzePageStyle.second_text}>
+                * Note that in every part of the report you can click export to pdf and download a corresponding pdf selected part, to work offline.
+              </p>
+            </div>
+            <div className={`${AnalyzePageStyle.card} ${AnalyzePageStyle.fifth}`}>
+              <p className={AnalyzePageStyle.second_text}>
+              * Note, your'e still in the same page. you can either scroll up to select another file. or click the back to top button at the bottom right of the page.
+              </p>
+            </div>
+          </div>
+        </div>
+      }
       {
         jsonData &&
         <AnalyzePanelGISView isOpen={isAnalyzeGISViewOpen} onCloseCallBack={() => {setIsAnalyzeGISViewOpen(false)}} fileData={fileData} jsonData={jsonData} fetchingStatus={gisFetchingStatus} />
@@ -353,10 +401,19 @@ const AnalyzePanelComp = ({ fileData, fetchDataCallBack, resetDataFallBack, dese
         jsonData &&
         <GraphAttacks isOpen={isGraphAttacksViewOpen} onCloseCallBack={() => {setIsGraphAttacksViewOpen(false)}} fileData={fileData} DDOSJsonData={DDOSJsonData} MITMJsonData={MITMJsonData} fetchingStatus={attacksFetchingStatus} attackMode={analyzeAttacksMode} />
       }
-
-      <div style={{ textAlign: 'center', fontSize: "34px" }}>
-        <div style={{color: fileData.filename === undefined ? "transparent" : "black", marginTop: "calc(1.8%)"}} >{(fileData.filename === undefined ? "pick a file from your uploaded files" : "file name: " + fileData.filename)}</div>
+      {/* <div>
+        <div style={{textAlign: 'center', fontSize: "34px", color: fileData.filename === undefined ? "transparent" : "black", marginTop: "calc(-1%)"}} ></div>
+        <div style={{textAlign: 'center', fontSize: "34px", color: fileData.filename === undefined ? "transparent" : "black", marginTop: "calc(1.8%)", marginBottom: "calc(3.4%)"}} >{(fileData.filename === undefined ? "pick a file from your uploaded files" : "File name: " + fileData.filename)}</div>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100, margin: "calc(-1.5%)", marginTop: "calc(-3%)", marginRight: "calc(0.6%)"}}>
+        <div style={{textAlign: 'center', fontSize: "34px"}}>
+          Show helper's
+        </div>
+        <div style={{marginLeft: "calc(1.5%)", marginBottom: "calc(-0.5%"}}>
+          <SwitchControl id="helperCheckbox" onToggle={onHelperToggle} />
+        </div>
       </div>
+      </div> */}
+      
       {
         mainAnalyze &&
         <Stack sx={{ p: 2, mt: 6 }} spacing={button_spacing}>
@@ -381,10 +438,10 @@ const AnalyzePanelComp = ({ fileData, fetchDataCallBack, resetDataFallBack, dese
                 </FormControl>
                 <Stack spacing={button_spacing} orientation="vertical">
                   <Button disabled={fileData.analyzed !== 1 ? true : false} color='primary' variant='contained' size='large' onClick={handleL4AnalyzeClicked}>
-                    <h3 style={{ textTransform: 'none', display: 'flex', alignItems: 'center', fontSize: '16px', fontFamily: 'inherit' }} > {analyzeL4Mode === analyze_service.l4MODES.TCP ? `${ANALYZE_L4} ${analyze_service.l4MODES.TCP}` : analyzeL4Mode === analyze_service.l4MODES.UDP ? `${ANALYZE_L4} ${analyze_service.l4MODES.UDP}` : `${ANALYZE_L4} Both`} <SearchIcon style={{ paddingBottom: 7, marginLeft: '5px', fontSize: '22px' }} /> </h3>
+                    <h3 style={{ textTransform: 'none', display: 'flex', alignItems: 'center', fontSize: '16px', fontFamily: 'inherit' }} > {analyzeL4Mode === analyze_service.l4MODES.TCP ? `${REPORT_L4} ${analyze_service.l4MODES.TCP}` : analyzeL4Mode === analyze_service.l4MODES.UDP ? `${REPORT_L4} ${analyze_service.l4MODES.UDP}` : `${REPORT_L4} Both`} <SearchIcon style={{ paddingBottom: 7, marginLeft: '5px', fontSize: '22px' }} /> </h3>
                   </Button>
                   <Button disabled={fileData.analyzed !== 1 ? true : false} color='primary' variant='contained' size='large' onClick={handleL2AnalyzeClicked}>
-                    <h1 style={{ textTransform: 'none', display: 'flex', alignItems: 'center', fontSize: '18px', fontFamily: 'inherit' }} > Analyze L2 <SwitchIcon style={{ paddingBottom: 4, marginLeft: '5px', fontSize: '22px' }} />  </h1>
+                    <h1 style={{ textTransform: 'none', display: 'flex', alignItems: 'center', fontSize: '18px', fontFamily: 'inherit' }} > {REPORT_L2} <SwitchIcon style={{ paddingBottom: 4, marginLeft: '5px', fontSize: '22px' }} />  </h1>
                   </Button>
                 </Stack>
               </Stack>
@@ -393,10 +450,14 @@ const AnalyzePanelComp = ({ fileData, fetchDataCallBack, resetDataFallBack, dese
             <Stack spacing={button_spacing} direction={'column'} alignItems="center" justifyContent={'center'} sx={{ pr: 11 }}>
               <Stack  spacing={button_spacing}orientation="vertical">
                 <Button disabled={fileData.analyzed !== 1 ? true : false} color='primary' variant='contained' size='large' onClick={handleGraph1Clicked}>
-                  <h3 style={{ textTransform: 'none', display: 'flex', alignItems: 'center', fontSize: '16px', fontFamily: 'inherit' }} >{GRAPH_L4} Both<GraphIcon style={{ paddingBottom: 5, marginLeft: '5px' }} /> </h3>
+                  <h3 style={{ textTransform: 'none', display: 'flex', alignItems: 'center', fontSize: '16px', fontFamily: 'inherit' }} >{GRAPH_L4} Both 
+                  <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 24 24"><path fill="currentColor" d="M21 5.47L12 12L7.62 7.62L3 11V8.52L7.83 5l4.38 4.38L21 3zM21 15h-4.7l-4.17 3.34L6 12.41l-3 2.13V17l2.8-2l6.2 6l5-4h4z"></path></svg>
+                  </h3>
                 </Button>
                 <Button disabled={fileData.analyzed !== 1 ? true : false} color='primary' variant='contained' size='large' onClick={handleGraph2Clicked}>
-                  <h3 style={{ textTransform: 'none', display: 'flex', alignItems: 'center', fontSize: '16px', fontFamily: 'inherit' }} > {GRAPH_L2} <GraphIcon style={{ paddingBottom: 5, marginLeft: '5px' }} /> </h3>
+                  <h3 style={{ textTransform: 'none', display: 'flex', alignItems: 'center', fontSize: '16px', fontFamily: 'inherit' }} > {GRAPH_L2} 
+                    <svg style={{ marginLeft: '5px', marginBottom: "4px" }} xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 24 24"><path fill="currentColor" d="M6.222 4.601a9.499 9.499 0 0 1 1.395-.771c1.372-.615 2.058-.922 2.97-.33c.913.59.913 1.56.913 3.5v1.5c0 1.886 0 2.828.586 3.414c.586.586 1.528.586 3.414.586H17c1.94 0 2.91 0 3.5.912c.592.913.285 1.599-.33 2.97a9.498 9.498 0 0 1-10.523 5.435A9.5 9.5 0 0 1 6.222 4.601"></path><path fill="currentColor" d="M21.446 7.069a8.026 8.026 0 0 0-4.515-4.515C15.389 1.947 14 3.344 14 5v4a1 1 0 0 0 1 1h4c1.657 0 3.053-1.39 2.446-2.931"></path></svg>
+                  </h3>
                 </Button>
               </Stack>
             </Stack>
