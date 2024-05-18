@@ -1,0 +1,42 @@
+.card-link-circle {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.card-circle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; 
+    margin: 4px;
+    overflow: hidden;
+    transition: transform 200ms ease-in-out;
+    cursor: pointer;
+    min-height: calc(20vh - 100px);
+    min-width: calc(20vh);
+    max-height: 450px;
+    max-width: 650px;
+}
+
+.card-circle img {
+    object-fit: cover;
+    width: 80%;
+    height: 16vh;
+    border-radius: 50%;
+    margin-top: 25px;
+}
+
+.card-circle:hover {
+    transform: scale(1.09);
+}
+
+.card_info-circle {
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 18px;
+    margin-top: 2px;
+    margin-bottom: 8px;
+    color: white/* rgb(19, 43, 80) */;
+    text-shadow: 1px 4px 4px rgba(12, 25, 87, 1);
+}

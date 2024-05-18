@@ -7,7 +7,13 @@
 #include <stdlib.h>
 #include <json-c/json.h>
 
-void analyze_ddos(conv_s conversations[MAX_L4_CONVERSATIONS], char * filename, uint32_t conv_count)
+#define MIN_CONVS 1
+int attacket_id_g = 0;
+
+
+uint64_t calc_data_size(packet_node_s *packet_list);
+
+void analyze_ddos(conv_s conversations[MAX_L4_CONVERSATIONS], char * filename, uint32_t conv_count, ret_val * MAIN_RET_VAL)
 {
     int count_flood = 0, index, write_flag = 0;
     double a = 2.0, b = 10.0, ema = 0.0;
@@ -44,7 +50,7 @@ void analyze_ddos(conv_s conversations[MAX_L4_CONVERSATIONS], char * filename, u
                     info.victim.s_addr = conversations[index].dest_ip.s_addr;
                     info.dst_port = conversations[index].dest_port;
                 }
-                add_to_ddos_ll(&(info.attackers), conversations[index].src_ip, conversations[index].src_port);
+                add_to_ddos_ll(&(info.attackers), conversations[index].src_ip, conversations[index].src_port, conversations[index].dest_port, conversations[index].packets_from_a_to_b, calc_data_size(conversations[index].packet_list));
                 count_flood++;
             }
             /* dont forget to get the first and last time for each coversation */
@@ -79,7 +85,7 @@ void analyze_ddos(conv_s conversations[MAX_L4_CONVERSATIONS], char * filename, u
             if (DEBUG) info("-------------------------------------");
         }
     }
-    if ((count_flood >= conv_count/2) && (conv_count != 1) )
+    if ((count_flood >= conv_count/2) && ( conv_count > MIN_CONVS ) )
     {
         if (!filename) error("given file name is null");
         else
@@ -92,14 +98,16 @@ void analyze_ddos(conv_s conversations[MAX_L4_CONVERSATIONS], char * filename, u
                 attack_obj = json_object_new_object();
                 write_flag = 1;
                 json_object_object_add(attack_obj, "victim", json_object_new_string(inet_ntoa(info.victim)));
-                json_object_object_add(attack_obj, "dest_port", json_object_new_int(ntohs(info.dst_port)));
                 atkrs_arr = json_object_new_array();
                 while(temp_ddos != NULL)
                 {
                     atkr_obj = json_object_new_object();
                     json_object_object_add(atkr_obj, "id", json_object_new_int(temp_ddos->id));
                     json_object_object_add(atkr_obj, "attacker_ip", json_object_new_string(inet_ntoa(temp_ddos->addr)));
-                    json_object_object_add(atkr_obj, "src_port", json_object_new_int(ntohs(temp_ddos->src_port)));
+                    json_object_object_add(atkr_obj, "src_port", json_object_new_int(/* ntohs */(temp_ddos->src_port)));
+                    json_object_object_add(atkr_obj, "dest_port", json_object_new_int(/* ntohs */(temp_ddos->dest_port)));
+                    json_object_object_add(atkr_obj, "packets", json_object_new_int((temp_ddos->packets)));
+                    json_object_object_add(atkr_obj, "size", json_object_new_uint64((temp_ddos->size_sent)));
                     json_object_array_add(atkrs_arr, atkr_obj);
                     temp_ddos = temp_ddos->next;
                 }
@@ -110,6 +118,7 @@ void analyze_ddos(conv_s conversations[MAX_L4_CONVERSATIONS], char * filename, u
                     fp = fopen(filename, "w"); /* dump the JSON to a file */
                     if (fp != NULL && write_flag)
                     {
+                        (*MAIN_RET_VAL) |= with_ddos;
                         fprintf(fp, "%s\n", json_object_to_json_string_ext(root, JSON_C_TO_STRING_PRETTY));
                         fclose(fp);
                     }
@@ -223,11 +232,13 @@ double calculate_avg_packets_per_time(conv_s conv, double start_time, double end
     return (num_packets / time_range);
 }
 
-int add_to_ddos_ll(ddos_addr_ll **root, struct in_addr atkr_addr, uint32_t src_port)
+/* 
+    - packet_node_s -> maybe create a list of packets to have time trend visual...
+ */
+int add_to_ddos_ll(ddos_addr_ll **root, struct in_addr atkr_addr, uint32_t src_port, uint32_t dest_port, int packets_sent, uint64_t size)
 {
     ddos_addr_ll *temp = *root, *node, *prev = NULL;
     int flag = 0;
-    static int id = 0;
 
     while (temp != NULL)
     {
@@ -249,8 +260,11 @@ int add_to_ddos_ll(ddos_addr_ll **root, struct in_addr atkr_addr, uint32_t src_p
         }
         node->next = NULL;
         node->addr.s_addr = atkr_addr.s_addr;
-        node->id = id;
+        node->id = attacket_id_g++;
         node->src_port = src_port;
+        node->dest_port = dest_port;
+        node->packets = packets_sent;
+        node->size_sent = size;
         if (prev != NULL)
         {
             prev->next = node;
@@ -262,6 +276,18 @@ int add_to_ddos_ll(ddos_addr_ll **root, struct in_addr atkr_addr, uint32_t src_p
         flag = 1;
     }
     return flag;
+}
+
+uint64_t calc_data_size(packet_node_s *packet_list)
+{
+    packet_node_s *temp = packet_list;
+    uint64_t size = 0;
+    while (temp)
+    {
+        size += (temp->packet_size);
+        temp = temp->next;
+    }
+    return size;
 }
 
 void free_ddos_list(ddos_addr_ll **root)

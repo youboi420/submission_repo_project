@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Signika+Negative:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Advent+Pro:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oleo+Script+Swash+Caps:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap');
+
+.body {
+    margin-top: 20px;
+    background-color: lightblue;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    background-color: red;
+}
+
+.title {
+    font-family: "Signika Negative", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    color: white;
+    text-shadow: 2px 4px 4px black;
+}
+
+.hero {
+    font-family: "Advent Pro", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: oblique;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+    font-size: 72px;
+    color: #0c1957;
+    text-shadow: 2px 4px 4px white;
+}
+
+.hero2 {
+    font-family: "Advent Pro", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: oblique;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+    font-size: 42px;
+    margin-top: 4px;
+    color: #0c1957;
+    text-shadow: 2px 2px 4px white;
+}
+
+.hero3 {
+    font-family: "Signika Negative", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    color: white;
+}
+
+.desc {
+    /* font-family: "Comfortaa", sans-serif; */
+    font-optical-sizing: auto;
+    font-weight: 450;
+    font-style: normal;
+    font-size: 18px;
+}
+
+
+.time_title {
+    font-family: "Signika Negative", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.imageContainer img {
+    --s: 150px;
+    width: var(--s);
+    height: var(--s);
+    box-sizing: border-box;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.55s, filter 0.5s;
+}
+
+.imageContainer img:hover {
+    transform: scale(1.15);
+    filter: brightness(0.7);
+}
+
+.transform_icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    visibility: hidden;
+}
+
+.imageContainer:hover .transform_icon {
+    display: block;
+    visibility: visible;
+}
+
+.imageContainer a {
+    position: relative;
+}

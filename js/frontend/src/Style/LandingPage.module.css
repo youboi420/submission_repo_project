@@ -1,0 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@100;200;300;400;500;600;700&family=Major+Mono+Display&family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap');
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+
+.centered {
+    background-color: #3b92beb2;
+    border-radius: 12px;
+    border: 5px solid;
+    width: 80%;
+    border-color: #1b455a;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+
+.title {
+    /* -webkit-text-stroke: 1px #7579a8; */
+    /* font-family: "Major Mono Display", serif; */
+    font-family: "Inter Tight", sans-serif;
+    color: white;
+    text-shadow: 0px 4px 4px black;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 72px;
+    margin-bottom: 10px;
+    padding: 2px;
+    margin: 2px;
+    text-align: center;
+}
+
+.username {
+    text-shadow: 0px 7px 7px black;
+    padding: 2px;
+    font-family: "Inter Tight", sans-serif;
+    margin: 2px;
+    text-align: center;
+    font-size: 42px;
+    color: white;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+}
+
+.paragrph {
+    font-family: "IBM Plex Sans Hebrew", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    text-align: right;
+    font-size: 20px;
+    color: black;
+    padding: 2px;
+    margin: 10px;
+}
+
+.admin_ribbon {
+    z-index: 100000;
+    font-size: 14px;
+    position: relative;
+    margin-top: -25%;
+    margin-left: 50%;
+    padding: 0.5em 0.5em;
+    line-height: 0.8;
+    background: #251ca0;
+    color: white;
+    border-radius: 20px;
+    width: fit-content;
+}
+
+.user_ribbon {
+    z-index: 100000;
+    font-size: 14px;
+    position: relative;
+    margin-top: -25%;
+    margin-left: 60%;
+    padding: 0.5em 0.5em;
+    line-height: 0.8;
+    background: #1fb897;
+    color: white;
+    border-radius: 20px;
+    width: fit-content;
+}
+
+.guest_ribbon {
+    z-index: 100000;
+    font-size: 14px;
+    position: relative;
+    margin-top: -25%;
+    margin-left: 50%;
+    padding: 0.5em 0.5em;
+    line-height: 0.8;
+    background: #ff6962;
+    color: white;
+    border-radius: 20px;
+    width: fit-content;
+}
+
+
+.hamburger {
+    cursor: pointer;
+}
+
+.hamburger input {
+    display: none;
+}
+
+.hamburger svg {
+    /* The size of the SVG defines the overall size */
+    height: 3em;
+    /* Define the transition for transforming the SVG */
+    transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.line {
+    fill: none;
+    stroke: black;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 3;
+    /* Define the transition for transforming the Stroke */
+    transition: stroke-dasharray 600ms cubic-bezier(0.4, 0, 0.2, 1),
+        stroke-dashoffset 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.line_top_bottom {
+    stroke-dasharray: 12 63;
+}
+
+.hamburger input:checked+svg {
+    transform: rotate(-45deg);
+}
+
+.hamburger input:checked+svg .line_top_bottom {
+    stroke-dasharray: 20 300;
+    stroke-dashoffset: -32.42;
+}

@@ -1,0 +1,160 @@
+.container_SevMini {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.Ghost {
+    transform: translate(0px, -25px);
+    z-index: -1;
+    animation: opacidad 4s infinite ease-in-out;
+}
+
+@keyframes opacidad {
+    0% {
+        opacity: 1;
+        scale: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+        scale: 0.9;
+    }
+
+    100% {
+        opacity: 1;
+        scale: 1;
+    }
+}
+
+@keyframes estroboscopico {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    51% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes rebote {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes estroboscopico1 {
+    0%,
+    50% {
+        fill: rgb(255, 95, 74);
+    }
+    25%,
+    75%,
+    100%{
+        fill: rgb(16, 53, 115);
+    }
+}
+
+@keyframes estroboscopico2 {
+
+    0% {
+        fill: rgb(16, 53, 115);
+    }
+    50%,
+    100% {
+        fill: rgb(16, 53, 115);
+    }
+
+    25%,
+    75% {
+        fill: #17e300e0;
+    }
+}
+
+@keyframes estroboscopico4 {
+    0%,
+    50%,
+    100% {
+        fill: rgb(16, 53, 115);
+    }
+    25%,
+    75% {
+        fill: #ffe816;
+    }
+}
+
+@keyframes estroboscopico5 {
+    0% {
+        fill: #68c54c;
+    }
+    50% {
+            fill: #5ac54c;
+    }
+    100% {
+        fill: #62e651;
+    }
+    25%,
+    75% {
+        fill: #5ac54c;
+    }
+}
+
+@keyframes estroboscopico6 {
+    0%,
+    50% {
+        fill: rgb(255, 140, 74);
+    }
+    25%,
+    75%,
+    100%{
+        fill: rgb(16, 53, 115);
+    }
+}
+
+.SevMini {
+    animation: rebote 4s infinite ease-in-out;
+}
+
+.strobe_led1 {
+    animation: estroboscopico 0.5s infinite;
+    animation-delay: 3s;
+}
+
+.strobe_color2 {
+    animation: estroboscopico2 0.8s infinite;
+}
+
+.strobe_color3 {
+    animation: estroboscopico1 0.8s infinite;
+    animation-delay: 3s;
+}
+
+.strobe_color4 {
+    animation: estroboscopico4 0.8s infinite;
+    animation-delay: 3s;
+}
+
+.strobe_color5 {
+    animation: estroboscopico5 0.8s infinite;
+    animation-delay: 2s;
+}
+
+.strobe_color6 {
+    animation: estroboscopico6 1.4s infinite;
+    animation-delay: 1s;
+}

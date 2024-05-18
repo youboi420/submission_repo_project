@@ -120,8 +120,10 @@ void save_L2_convs_to_json(arp_conv convs[MAX_L2_CONVERSATIONS], const char *fil
     arp_packet_node_s *temp;
     size_t i;
     FILE *fp;
-    const char ARP_REQ[] = "ARP REQUEST";
-    const char ARP_RES[] = "ARP RESPONSE";
+    /* const char ARP_REQ[] = "ARP REQUEST";
+    const char ARP_RES[] = "ARP RESPONSE"; */
+    const char ARP_REQ[] = "REQ";
+    const char ARP_RES[] = "RES";
     char *ts_date;
 
     if (convs == NULL)
@@ -133,7 +135,7 @@ void save_L2_convs_to_json(arp_conv convs[MAX_L2_CONVERSATIONS], const char *fil
     root = json_object_new_object();
     conversations_array = json_object_new_array();
     
-    json_object_object_add(root, "L2_coversations", conversations_array);
+    json_object_object_add(root, "L2_conversations", conversations_array);
     for(i = 0; i < MAX_L2_CONVERSATIONS; i++)
     {
         if (convs[i].src_ip.s_addr != 0)
@@ -171,6 +173,8 @@ void save_L2_convs_to_json(arp_conv convs[MAX_L2_CONVERSATIONS], const char *fil
                     json_object_object_add(packet_info, "time_stamp_raw_sec", json_object_new_uint64(temp->time_stamp.tv_sec));
                     json_object_object_add(packet_info, "time_stamp_raw_usec", json_object_new_uint64(temp->time_stamp.tv_usec));
                     json_object_object_add(packet_info, "time_stamp_rltv", json_object_new_double((temp->time_stamp_rltv)));
+                    json_object_object_add(packet_info, "from_mac", json_object_new_string(ether_ntoa(&(temp->src_mac))));
+                    json_object_object_add(packet_info, "to_mac", json_object_new_string(ether_ntoa(&(temp->dest_mac))));
                     json_object_object_add(packet_info, "type", json_object_new_string(temp->p_type == ARP_TYPE_REPLAY ? ARP_RES : ARP_REQ));
                     json_object_array_add(packets_arr, packet_info);
                 }
@@ -224,9 +228,8 @@ void free_mitm_list(mitm_node_s **root)
     }
 }
 
-void analyze_mitm(arp_conv l2_convs[MAX_L2_CONVERSATIONS], char * filename, uint32_t conv_count)
+void analyze_mitm(arp_conv l2_convs[MAX_L2_CONVERSATIONS], char * filename, uint32_t conv_count, ret_val * MAIN_RET_VAL)
 {
-    // דני טאובר
     json_object *root, *attacks_arr, *attack_obj, *vict_arr, *vict_obj;
     int replay_count, replay_count_inner, index, index_inner, v_c, flag, write_flag = 0;
     arp_packet_node_s *temp = NULL, *temp_inner = NULL;
@@ -345,6 +348,7 @@ void analyze_mitm(arp_conv l2_convs[MAX_L2_CONVERSATIONS], char * filename, uint
             fp = fopen(filename, "w"); /* dump the JSON to a file */
         if (fp != NULL && write_flag)
         {
+            (*MAIN_RET_VAL) |= with_mitm;
             fprintf(fp, "%s\n", json_object_to_json_string_ext(root, JSON_C_TO_STRING_PRETTY));
             fclose(fp);
         }
