@@ -19,13 +19,14 @@ after the installment procedure is finished, you need to manually set the mysql 
 sudo mysql
 ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';
 FLUSH PRIVILEGES;
+CREATE SCHEMA project_schm
 ```
 - for setting up an admin user if you didn't do so according to the book (can be done only after the system has been ran and a user was created & requires a system reload.)
 ```sh
 # setting up the first ever admin user
 sudo mysql -u root -p
 # enter root in the prompt.
-use project_schm;
+USE project_schm;
 update users set isadmin = 1 where id = (system-manager-user-id);
 exit
 ```
