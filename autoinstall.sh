@@ -18,3 +18,6 @@ bash npm_init.sh
 cd ..
 cd c_files/PoC
 make conv
+cd ..
+cd validator
+make validator
