@@ -1,2 +1,2 @@
 pkill -f "npm"
-pkill -f "node"
+pkill -f "node "
