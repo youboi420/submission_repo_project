@@ -58,10 +58,10 @@
     position: absolute;
     z-index: 1000;
     top: 0;
-    left: 0;
-    width: 100%;
+    left: 30%;
+    width: 40%;
     height: 100%;
-    background-color: rgba(222, 222, 222, 0.3);
+    background-color: rgba(222, 222, 222, 0.6);
     /* Semi-transparent black */
     display: flex;
     justify-content: center;

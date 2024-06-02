@@ -92,7 +92,7 @@ const ProfilePage = ({ isValidUser }) => {
   const [deleteFilesDiag, setDeleteFilesDiag] = React.useState(false)
   const [updatePass, setUpdatePass] = React.useState(false)
 
-  const username_text = userObj.username
+  const username_text = userObj.username.substring(0, 25)
   let navigate = useNavigate()
 
 

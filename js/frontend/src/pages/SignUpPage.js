@@ -28,29 +28,18 @@ function SignUpPage({ isValidUser }) {
   const [passwordErrorMiss, setPasswordErrorMiss] = React.useState('')
   const [formError, setFormError] = React.useState('')
   let navigate = useNavigate();
-  const isUsernameValid = (username) => /^[a-zA-Z][a-zA-Z0-9]{0,250}$/.test(username)
-  const isPasswordMatch = (p1, p2) => p1 === p2
-
-  const passErrMSG = 'Minimum length of 6 characters and at least two special characters'
-  const isPasswordValid = (password) => {
-    if (password.length < 6 || password.length > 254) return false
-    const specialChars = /[^A-Za-z0-9]/g
-    const specialCharCount = (password.match(specialChars) || []).length
-    return specialCharCount >= 2
-  };
-  
 
   const handleUsernameChange = (event) => {
     const value = event.target.value
     setUsername(value)
-    setUsernameError(isUsernameValid(value) ? '' : 'Invalid username')
+    setUsernameError(user_service.isUsernameValid(value) ? '' : user_service.loginUserErrMSG)
   }
 
   const handlePasswordChange = (event) => {
     const value = event.target.value
     setPassword(value)
-    setPasswordError(isPasswordValid(value) ? '' : passErrMSG)
-    setPasswordErrorMiss(isPasswordMatch(value, repeat_password) ? '' : "Password's do not match")
+    setPasswordError(user_service.isPasswordValid(value) ? '' : user_service.signupPassErrMSG)
+    setPasswordErrorMiss(user_service.isPasswordMatch(value, repeat_password) ? '' : user_service.repeatErrMSG)
   }
 
   const togglePasswordVisibility = () => {
@@ -64,7 +53,7 @@ function SignUpPage({ isValidUser }) {
   const handleRepPasswordChange = (event) => {
     const value = event.target.value
     setRepeatPassword(value)
-    setPasswordErrorMiss(isPasswordMatch(value, password) ? '' : "Password's do not match")
+    setPasswordErrorMiss(user_service.isPasswordMatch(value, password) ? '' : "Password's do not match")
   }
 
   const handleSubmit = async (event) => {
@@ -75,16 +64,16 @@ function SignUpPage({ isValidUser }) {
       return
     }
 
-    if (!isPasswordMatch(password, repeat_password)) {
-      setPasswordErrorMiss("Password's do not match - please try again")
+    if (!user_service.isPasswordMatch(password, repeat_password)) {
+      setPasswordErrorMiss(user_service.missmatchErrMSG)
       return
     }
-    if (!isPasswordValid(password)) {
-      setPasswordError(passErrMSG)
+    if (!user_service.isPasswordValid(password)) {
+      setPasswordError(user_service.signupPassErrMSG)
       return
     }
-    if (!isUsernameValid(username)) {
-      setUsername('Invalid username')
+    if (!user_service.isUsernameValid(username)) {
+      setUsername(user_service.loginUserErrMSG)
       return
     }
     const hashed_pass = await hashPassword(password)

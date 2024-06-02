@@ -40,8 +40,11 @@ const valiate_file = (file_path) => {
 
 /**
  * run's the analyze command on the given file and the output is the given report path
- * @param {String} report_folder_path 
- * @param {String} file_path 
+ * @param {String} report_folder_path the path to generate the report to.
+ * @param {String} file_path the path of the file to analyze.
+ * 
+ * O(N^2) because it analyze's a file.
+ * 
  * @returns success: ( true if opperation was succesfull false if not ),  error (error.message), [optional] output_files: array of the files 
  */
 const analyze_file = async (report_folder_path, file_path, user_id, pcap_file_id) => {

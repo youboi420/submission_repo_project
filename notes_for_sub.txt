@@ -1,0 +1,21 @@
+/*
+  How did you choose your architecture
+  
+  Why did you choose your design pattern
+  
+  Why ddi you choose client server model
+  
+  Why the  protocol to communicate?
+  
+  Why did you do it like that -> they want to know your shikul daat
+  
+  Why this data structure 
+  
+  Why this technology
+  
+  How does http work? -> what is http Request, Header, Body.
+  
+  I need to learn how does the node server's communication work's how it servers the react JSX and "compiles" it to the data (HTML / CSS / VANILLA  JS)
+
+  
+ */

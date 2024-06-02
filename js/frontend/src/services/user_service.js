@@ -1,14 +1,4 @@
 import axios from 'axios'
-/* 
-  3,4,6
-  עצמיים ודטרמננטים ירד
-  טרנספומציות נשאר
-  ---
-  סייבר נשאר הכל
-  ---
-  רשתות תקשורת 5,8,10,12,13,16
-  17,שיטות שידור
-*/
 
 axios.defaults.withCredentials = true;
 
@@ -184,3 +174,17 @@ export const signup = async (un, password) => {
     throw error
   }
 }
+
+export const signupPassErrMSG = 'Minimum length of 6 characters and at least two special characters'
+export const repeatErrMSG = "Password's do not match"
+export const loginPassErrMSG = 'Invalid password'
+export const loginUserErrMSG = 'Invalid username'
+export const missmatchErrMSG = "Password's do not match - please try again"
+export const isPasswordMatch = (p1, p2) => p1 === p2
+export const isUsernameValid = (username) => /^[a-zA-Z][a-zA-Z0-9]{0,250}$/.test(username)
+export const isPasswordValid = (password) => {
+  if (password.length < 6 || password.length > 254) return false
+  const specialChars = /[^A-Za-z0-9]/g
+  const specialCharCount = (password.match(specialChars) || []).length
+  return specialCharCount >= 2
+};

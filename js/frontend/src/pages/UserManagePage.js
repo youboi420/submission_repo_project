@@ -36,8 +36,8 @@ const UserManagePage = ({ isValidUser, userData }) => {
     try {
       if (userId !== undefined) {
         await user_service.deleteUser(userId)
-        // here i want to notify ive deleted user (userId)
         socket.emit("user_update", userId)
+        notify("successfully deleted user", NOTIFY_TYPES.success)
         await fetchDataAndSetRows()
       } else {
         notify("please select a user to delete", NOTIFY_TYPES.warn)

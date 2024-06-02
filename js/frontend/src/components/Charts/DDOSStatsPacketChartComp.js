@@ -25,7 +25,7 @@ class DDOSStatsPacketChartComp extends React.Component {
           enabled: false,
         },
         title: {
-          text: "Top 3 attacker's packets count sent in the record",
+          text: "Top attacker's packets count sent in the record",
           align: 'center',
         },
         xaxis: {

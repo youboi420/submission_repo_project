@@ -13,7 +13,7 @@ const SwitchControl = ({ id, onToggle }) => {
   };
 
   return (
-    <div className={styles['checkbox-wrapper-51']}>
+    <div className={styles['checkbox']}>
       <input
         id={id}
         type="checkbox"

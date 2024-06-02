@@ -75,7 +75,7 @@ const NavbarComp = ({ isValidUser, userData }) => {
               {isValidUser ? loggedInSVG : guestSVG}
             </div>
             <Typography variant="h6">
-              {isValidUser ? userData.username : 'please log in'}
+              {isValidUser ? userData.username.substring(0, 25) : 'please log in'}
             </Typography>
             {
               (!isValidUser) &&

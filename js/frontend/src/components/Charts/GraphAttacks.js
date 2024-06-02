@@ -123,7 +123,7 @@ const GraphAttacks = ({ isOpen, onCloseCallBack, fileData, DDOSJsonData, MITMJso
                     </div>
                   </Tooltip>
                   <MITMViewComp attacskDataArray={myMITM} singleMode={true} filename={fileData?.filename} />
-                  <Divider orientation="horizontal" sx={{ bgcolor: '#1976d2', borderBottomWidth: 15, marginRight: 15, marginLeft: 15, marginBottom: 5 }} />
+                  <Divider orientation="horizontal" sx={{ bgcolor: '#1976d2', borderBottomWidth: 15, marginRight: 15, marginLeft: 15, marginBottom: 20 }} />
                 </div>
               }
             </div>

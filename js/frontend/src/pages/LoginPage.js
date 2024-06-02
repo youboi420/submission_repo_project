@@ -36,29 +36,19 @@ export default function LoginPage({ isValidUser }) {
   const [passwordError, setPasswordError] = React.useState('')
   const [formError, setFormError] = React.useState('')
 
-  const passErrMSG = 'Invalid password'
-  const isPasswordValid = (password) => {
-    if (password.length < 6 || password.length > 254) return false
-    const specialChars = /[^A-Za-z0-9]/g
-    const specialCharCount = (password.match(specialChars) || []).length
-    return specialCharCount >= 2
-  };
-
   let navigate = useNavigate();
 
   const handleUsernameChange = (event) => {
     const value = event.target.value
     setUsername(value)
-    setUsernameError(isUsernameValid(value) ? '' : 'Invalid username')
+    setUsernameError(user_service.isUsernameValid(value) ? '' : user_service.loginUserErrMSG)
   }
 
   const handlePasswordChange = (event) => {
     const value = event.target.value
     setPassword(value)
-    setPasswordError(isPasswordValid(value) ? '' : passErrMSG)
+    setPasswordError(user_service.isPasswordValid(value) ? '' : user_service.loginPassErrMSG)
   }
-
-  const isUsernameValid = (username) => /^[a-zA-Z][a-zA-Z0-9]{0,250}$/.test(username)
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
@@ -71,12 +61,12 @@ export default function LoginPage({ isValidUser }) {
       notify("One or more fields are empty...", NOTIFY_TYPES.error)
       return
     }
-    if (!isUsernameValid(username)) {
-      setUsernameError('Invalid username')
+    if (!user_service.isUsernameValid(username)) {
+      setUsernameError(user_service.loginUserErrMSG)
       return
     }
-    if (!isPasswordValid(password_value)) {
-      setPasswordError(passErrMSG)
+    if (!user_service.isPasswordValid(password_value)) {
+      setPasswordError(user_service.loginPassErrMSG)
       return
     }
     const hashed_pass = await hashPassword(password_value)

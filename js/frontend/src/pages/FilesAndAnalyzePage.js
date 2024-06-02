@@ -199,7 +199,7 @@ const FilesAndAnalyzePage = ({ isValidUser, userData }) => {
           <Stack direction={'column'}>
             <Box sx={{ mt: "10px", mx: "10px", p: 1.5, height: "calc(4%)", background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0))', backdropFilter: 'blur(25px)', WebkitBackdropFilter: 'blur(25px)', borderRadius: '20px', border: '1px solid rgba(255, 255, 255, 0.18)', boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)', textAlign: "center", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <Stack direction={'row'} spacing={4} justifyContent="center" alignItems="center" /* sx={{marginRight: "calc(4%)"}} */>
-                <h1 className={FilesPageStyle.info_panel} > Hello again, {userAnalyzeData.username} </h1>
+                <h1 className={FilesPageStyle.info_panel} > Hello again, {userAnalyzeData.username.substring(0, 25)} </h1>
                 <Divider orientation='vertical' flexItem sx={{ bgcolor: "black", borderWidth: 1.5 }}/>
                 {/* <div className={FilesPageStyle.info_panel} >{userAnalyzeData.permission}</div> */}
                 {/* <Divider orientation='vertical' flexItem sx={{ bgcolor: "black", marginRight: "20px", borderWidth: 1 }}/> */}
